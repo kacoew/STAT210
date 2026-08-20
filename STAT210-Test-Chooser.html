@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Test?</title>
+<meta name="description" content="STAT210 decision charts: every hypothesis test, which mean square goes on the bottom, and the degrees of freedom for each.">
+<style>
+:root{
+  --ground:#F6F7F5; --surface:#FFFFFF; --sunk:#EDEFEB;
+  --ink:#171B18; --ink-2:#4A524C; --ink-3:#7C847E;
+  --rule:#DCE0DA; --rule-strong:#BCC2B9;
+  --mu:#1B5FBE; --tau:#1A8C40; --eps:#C13030; --rand:#7040A8; --exam:#B0741A;
+  --mu-wash:#E9F0FC; --tau-wash:#E6F4EB; --eps-wash:#FBEAE9;
+  --rand-wash:#F1EBF9; --exam-wash:#FBF2E3;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101310; --surface:#171B18; --sunk:#1E231F;
+    --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+    --rule:#2A302B; --rule-strong:#3E453F;
+    --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+    --mu-wash:#14233A; --tau-wash:#122A1C; --eps-wash:#2E1917;
+    --rand-wash:#241B36; --exam-wash:#2C2415;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101310; --surface:#171B18; --sunk:#1E231F;
+  --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+  --rule:#2A302B; --rule-strong:#3E453F;
+  --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+  --mu-wash:#14233A; --tau-wash:#122A1C; --eps-wash:#2E1917;
+  --rand-wash:#241B36; --exam-wash:#2C2415;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);
+     font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px 90px;}
+header{border-bottom:3px double var(--ink);padding:52px 0 22px;margin-bottom:28px;}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+         color:var(--exam);font-weight:700;margin:0 0 13px;}
+h1{font-weight:600;font-size:clamp(2.2rem,6vw,3.5rem);line-height:1.03;letter-spacing:-.02em;margin:0 0 14px;}
+.stand{font-size:1.08rem;color:var(--ink-2);max-width:58ch;margin:0;}
+h2{font-size:1.85rem;font-weight:600;margin:64px 0 8px;padding-top:20px;
+   border-top:2px solid var(--ink);line-height:1.14;scroll-margin-top:14px;}
+h2 .cn{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.18em;
+       text-transform:uppercase;color:var(--exam);font-weight:700;margin-bottom:7px;}
+h3{font-size:1.2rem;font-weight:600;margin:34px 0 8px;line-height:1.25;}
+h4{font-family:var(--sans);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;
+   color:var(--ink-3);font-weight:700;margin:26px 0 7px;}
+p{margin:0 0 13px;}
+.lede{font-size:1.04rem;color:var(--ink-2);}
+ul,ol{margin:0 0 14px;padding-left:1.3em;} li{margin-bottom:5px;} li::marker{color:var(--ink-3);}
+a{color:var(--mu);}
+.m{font-style:italic;white-space:nowrap;}
+.mu{color:var(--mu);font-weight:700;} .tau{color:var(--tau);font-weight:700;}
+.eps{color:var(--eps);font-weight:700;} .rnd{color:var(--rand);font-weight:700;}
+.b{border-left:3px solid var(--rule-strong);background:var(--surface);padding:13px 17px;margin:20px 0;font-size:.95rem;}
+.b p:last-child,.b ul:last-child{margin-bottom:0;}
+.b .l{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+      font-weight:700;display:block;margin-bottom:6px;}
+.b.why{border-left-color:var(--mu);background:var(--mu-wash);} .b.why .l{color:var(--mu);}
+.b.key{border-left-color:var(--tau);background:var(--tau-wash);} .b.key .l{color:var(--tau);}
+.b.trap{border-left-color:var(--eps);background:var(--eps-wash);} .b.trap .l{color:var(--eps);}
+.b.rand{border-left-color:var(--rand);background:var(--rand-wash);} .b.rand .l{color:var(--rand);}
+.b.exam{border-left-color:var(--exam);background:var(--exam-wash);} .b.exam .l{color:var(--exam);}
+.tw{overflow-x:auto;margin:20px 0;}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:13.5px;font-variant-numeric:tabular-nums;}
+caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;
+        text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-bottom:8px;}
+th,td{text-align:left;padding:7px 12px 7px 0;border-bottom:1px solid var(--rule);vertical-align:top;}
+thead th{border-bottom:1.5px solid var(--ink-2);color:var(--ink-2);font-weight:700;font-size:12px;}
+tbody tr:hover{background:var(--sunk);}
+td.n{text-align:right;padding-right:18px;}
+.y{color:var(--tau);font-weight:700;} .no{color:var(--ink-3);} .rr{color:var(--rand);font-weight:700;}
+.wr{color:var(--eps);font-weight:700;}
+code{font-family:var(--mono);font-size:.83em;background:var(--sunk);padding:.1em .34em;}
+figure{margin:26px 0;}
+figure svg{display:block;width:100%;height:auto;color:var(--ink-2);background:var(--surface);
+           border:1px solid var(--rule);padding:8px;}
+figcaption{font-family:var(--sans);font-size:12.5px;line-height:1.5;color:var(--ink-3);margin-top:9px;}
+figcaption b{color:var(--ink-2);}
+svg text{font-family:var(--sans);}
+.nb{border:2px dashed var(--exam);background:var(--exam-wash);padding:14px 18px 12px;margin:24px 0;position:relative;font-size:.95rem;}
+.nb::before{content:"WRITE THIS IN YOUR NOTEBOOK";position:absolute;top:-9px;left:14px;
+  background:var(--ground);padding:0 8px;font-family:var(--sans);font-size:10px;letter-spacing:.15em;
+  font-weight:700;color:var(--exam);}
+.nb .tag{font-family:var(--sans);font-size:11px;font-weight:700;color:var(--exam);display:block;margin-bottom:6px;}
+footer{border-top:3px double var(--ink);margin-top:70px;padding-top:18px;
+       font-family:var(--sans);font-size:12.5px;color:var(--ink-3);}
+:focus-visible{outline:2px solid var(--exam);outline-offset:3px;}
+@media print{body{background:#fff;color:#000;font-size:10pt;}
+  figure{break-inside:avoid;} table{break-inside:avoid;} h2{break-before:page;}
+  .nb{border-color:#000;} .nb::before{color:#000;background:#fff;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">STAT210 · NMBU · decision charts</p>
+  <h1>Which Test?</h1>
+  <p class="stand">Every hypothesis test in lectures 1–8, arranged so you can find the right one from the question being asked — with the statistic, the mean square that goes on the bottom, and both degrees of freedom for each.</p>
+</header>
+
+<div class="b exam"><span class="l">How to use this in the exam</span>
+<p>Work top-down. <strong>Chart 1</strong> tells you which family of test the question belongs to. Then go to that family's chart for the exact statistic and degrees of freedom. The <a href="#master">master table</a> at the end has everything in one place if you already know what you are looking for.</p>
+<p>Print it. Charts 1, 2 and 3 are the three worth copying into your notebook by hand.</p>
+</div>
+
+<h2 id="c1"><span class="cn">Chart 1</span>What is the question?</h2>
+
+<p class="lede">Every exam question about analysis is asking one of five things. Identify which, and the rest follows.</p>
+
+<figure>
+<svg viewBox="0 0 900 430" role="img" aria-label="Router diagram: the question being asked splits into five families — does the factor matter, which levels differ, how big is the effect, how much variation, is the model sound">
+  <defs>
+    <marker id="r1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+  </defs>
+
+  <rect x="330" y="12" width="240" height="42" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="450" y="32" font-size="14" text-anchor="middle" fill="currentColor" font-weight="700">What am I being asked?</text>
+  <text x="450" y="47" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">read the question stem, not the output</text>
+
+  <path d="M400,54 L90,118" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#r1)"/>
+  <path d="M425,54 L270,118" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#r1)"/>
+  <path d="M450,54 L450,118" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#r1)"/>
+  <path d="M475,54 L630,118" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#r1)"/>
+  <path d="M500,54 L810,118" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#r1)"/>
+
+  <g>
+    <rect x="10" y="122" width="160" height="118" fill="none" stroke="var(--tau)" stroke-width="2"/>
+    <text x="90" y="141" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">A · DOES IT MATTER?</text>
+    <text x="90" y="160" font-size="10.5" text-anchor="middle" fill="currentColor">"is there an effect</text>
+    <text x="90" y="173" font-size="10.5" text-anchor="middle" fill="currentColor">of this factor at all?"</text>
+    <line x1="30" y1="184" x2="150" y2="184" stroke="var(--rule-strong)"/>
+    <text x="90" y="201" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">the F-test</text>
+    <text x="90" y="217" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">→ Chart 2</text>
+    <text x="90" y="232" font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".6">L2 · L5 · L6 · L8</text>
+  </g>
+
+  <g>
+    <rect x="190" y="122" width="160" height="118" fill="none" stroke="var(--mu)" stroke-width="2"/>
+    <text x="270" y="141" font-size="12" text-anchor="middle" fill="var(--mu)" font-weight="700">B · WHICH ONES?</text>
+    <text x="270" y="160" font-size="10.5" text-anchor="middle" fill="currentColor">"which groups differ</text>
+    <text x="270" y="173" font-size="10.5" text-anchor="middle" fill="currentColor">from each other?"</text>
+    <line x1="210" y1="184" x2="330" y2="184" stroke="var(--rule-strong)"/>
+    <text x="270" y="201" font-size="11.5" text-anchor="middle" fill="var(--mu)" font-weight="700">contrasts · Tukey</text>
+    <text x="270" y="217" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">→ Chart 3</text>
+    <text x="270" y="232" font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".6">L4</text>
+  </g>
+
+  <g>
+    <rect x="370" y="122" width="160" height="118" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="450" y="141" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">C · HOW BIG?</text>
+    <text x="450" y="160" font-size="10.5" text-anchor="middle" fill="currentColor">"estimate a mean,</text>
+    <text x="450" y="173" font-size="10.5" text-anchor="middle" fill="currentColor">or a difference, ± CI"</text>
+    <line x1="390" y1="184" x2="510" y2="184" stroke="var(--rule-strong)"/>
+    <text x="450" y="201" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">the t-test</text>
+    <text x="450" y="217" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">→ Chart 4</text>
+    <text x="450" y="232" font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".6">L3</text>
+  </g>
+
+  <g>
+    <rect x="550" y="122" width="160" height="118" fill="none" stroke="var(--rand)" stroke-width="2"/>
+    <text x="630" y="141" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">D · HOW MUCH VAR?</text>
+    <text x="630" y="160" font-size="10.5" text-anchor="middle" fill="currentColor">"how much of the</text>
+    <text x="630" y="173" font-size="10.5" text-anchor="middle" fill="currentColor">spread comes from…?"</text>
+    <line x1="570" y1="184" x2="690" y2="184" stroke="var(--rule-strong)"/>
+    <text x="630" y="201" font-size="11.5" text-anchor="middle" fill="var(--rand)" font-weight="700">variance components</text>
+    <text x="630" y="217" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">→ Chart 5</text>
+    <text x="630" y="232" font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".6">L3 · L5 · L8</text>
+  </g>
+
+  <g>
+    <rect x="730" y="122" width="160" height="118" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <text x="810" y="141" font-size="12" text-anchor="middle" fill="var(--eps)" font-weight="700">E · IS IT SOUND?</text>
+    <text x="810" y="160" font-size="10.5" text-anchor="middle" fill="currentColor">"do the assumptions</text>
+    <text x="810" y="173" font-size="10.5" text-anchor="middle" fill="currentColor">hold? can I simplify?"</text>
+    <line x1="750" y1="184" x2="870" y2="184" stroke="var(--rule-strong)"/>
+    <text x="810" y="201" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">plots · partial F</text>
+    <text x="810" y="217" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">→ Chart 6</text>
+    <text x="810" y="232" font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".6">L6 · L7</text>
+  </g>
+
+  <line x1="10" y1="272" x2="890" y2="272" stroke="var(--rule)"/>
+  <text x="450" y="296" font-size="12.5" text-anchor="middle" fill="var(--exam)" font-weight="700">TWO THINGS TO SETTLE BEFORE ANY OF THEM</text>
+
+  <rect x="120" y="312" width="300" height="60" fill="none" stroke="var(--exam)" stroke-width="1.6"/>
+  <text x="270" y="332" font-size="12" text-anchor="middle" fill="var(--exam)" font-weight="700">1 · Write down a, b, n, N</text>
+  <text x="270" y="349" font-size="10.5" text-anchor="middle" fill="currentColor">levels of A · levels of B · reps per cell · total</text>
+  <text x="270" y="364" font-size="10.5" text-anchor="middle" fill="currentColor">every df in the course comes from these</text>
+
+  <rect x="480" y="312" width="300" height="60" fill="none" stroke="var(--rand)" stroke-width="2"/>
+  <text x="630" y="332" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">2 · Mark each factor FIXED or RANDOM</text>
+  <text x="630" y="349" font-size="10.5" text-anchor="middle" fill="currentColor">"randomly selected" or r() in the code → RANDOM</text>
+  <text x="630" y="364" font-size="10.5" text-anchor="middle" fill="currentColor">this decides the denominator of every F</text>
+
+  <text x="450" y="404" font-size="11.5" text-anchor="middle" fill="currentColor" opacity=".8">Getting these two wrong makes every later answer wrong, and costs nothing to get right.</text>
+</svg>
+<figcaption><b>Five families, and two things to settle first.</b> Nearly every mark on the exam sits in one of these five columns. The two boxes at the bottom are not a test — they are the thirty seconds of setup that determines which branch you end up on, and they are where most avoidable errors happen.</figcaption>
+</figure>
+
+<h2 id="c2"><span class="cn">Chart 2 · family A</span>Does this factor matter? The F-test</h2>
+
+<p class="lede">Every F in the course is one mean square divided by another. The <strong>only</strong> thing that ever changes is which mean square goes on the bottom — and that is decided by the design, not by the data.</p>
+
+<figure>
+<svg viewBox="0 0 900 730" role="img" aria-label="Decision tree for the F-test: one factor splits into fixed and random with identical F; two factors split by whether the interaction is significant and whether the factors are fixed or random, giving three different denominator rules">
+  <defs>
+    <marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+    <marker id="f2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--rand)"/></marker>
+  </defs>
+
+  <text x="450" y="22" font-size="13" text-anchor="middle" fill="currentColor" font-weight="700" letter-spacing="2">ONE FACTOR</text>
+
+  <rect x="220" y="32" width="460" height="36" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="450" y="55" font-size="12" text-anchor="middle" fill="currentColor">Fixed or random? &nbsp;—&nbsp; the arithmetic is <tspan font-weight="700">identical</tspan> either way</text>
+
+  <path d="M380,68 L235,104" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#f1)"/>
+  <path d="M520,68 L665,104" stroke="var(--rand)" stroke-width="1.5" fill="none" marker-end="url(#f2)"/>
+
+  <rect x="85" y="108" width="280" height="80" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="225" y="127" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">FIXED · levels chosen</text>
+  <text x="225" y="145" font-size="11" text-anchor="middle" fill="currentColor">H₀: τ₁ = τ₂ = ⋯ = τₐ = 0</text>
+  <text x="225" y="163" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">F = MS_Tr ⁄ MS_E</text>
+  <text x="225" y="180" font-size="11" text-anchor="middle" fill="currentColor">df = (a−1, N−a)</text>
+
+  <rect x="535" y="108" width="280" height="80" fill="none" stroke="var(--rand)" stroke-width="2"/>
+  <text x="675" y="127" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">RANDOM · levels sampled</text>
+  <text x="675" y="145" font-size="11" text-anchor="middle" fill="var(--rand)">H₀: σ²τ = 0 &nbsp;(one-sided)</text>
+  <text x="675" y="163" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">F = MS_Tr ⁄ MS_E</text>
+  <text x="675" y="180" font-size="11" text-anchor="middle" fill="currentColor">df = (a−1, N−a)</text>
+
+  <text x="450" y="152" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">same F,</text>
+  <text x="450" y="166" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">same df,</text>
+  <text x="450" y="180" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">new question</text>
+
+  <line x1="10" y1="212" x2="890" y2="212" stroke="var(--rule-strong)" stroke-dasharray="5 4"/>
+  <text x="450" y="242" font-size="13" text-anchor="middle" fill="currentColor" font-weight="700" letter-spacing="2">TWO FACTORS</text>
+
+  <rect x="215" y="254" width="470" height="56" fill="none" stroke="var(--exam)" stroke-width="2"/>
+  <text x="450" y="274" font-size="12.5" text-anchor="middle" fill="var(--exam)" font-weight="700">STEP 1 — always test the interaction FIRST</text>
+  <text x="450" y="292" font-size="11.5" text-anchor="middle" fill="currentColor">F = MS_AB ⁄ MS_E &nbsp;&nbsp; df = ( (a−1)(b−1), &nbsp;ab(n−1) )</text>
+  <text x="450" y="305" font-size="10" text-anchor="middle" fill="currentColor" opacity=".7">this one is over MS_E in every model</text>
+
+  <line x1="450" y1="310" x2="450" y2="336" stroke="currentColor" stroke-width="1.3"/>
+  <text x="450" y="330" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">significant?</text>
+
+  <path d="M400,340 L150,382" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#f1)"/>
+  <text x="250" y="358" font-size="11" fill="currentColor" font-weight="700">NO</text>
+  <path d="M450,340 L450,382" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#f1)"/>
+  <text x="462" y="362" font-size="11" fill="currentColor" font-weight="700">YES</text>
+  <path d="M500,340 L750,382" stroke="var(--rand)" stroke-width="1.5" fill="none" marker-end="url(#f2)"/>
+  <text x="640" y="358" font-size="11" fill="var(--rand)" font-weight="700">YES</text>
+
+  <rect x="10" y="386" width="280" height="182" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="150" y="406" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">NOT SIGNIFICANT</text>
+  <text x="150" y="423" font-size="11" text-anchor="middle" fill="currentColor">drop it → additive model</text>
+  <line x1="30" y1="433" x2="270" y2="433" stroke="var(--rule-strong)"/>
+  <text x="150" y="452" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">F_A = MS_A ⁄ MS_E</text>
+  <text x="150" y="468" font-size="10.5" text-anchor="middle" fill="currentColor">df = (a−1, &nbsp;N−a−b+1)</text>
+  <text x="150" y="488" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">F_B = MS_B ⁄ MS_E</text>
+  <text x="150" y="504" font-size="10.5" text-anchor="middle" fill="currentColor">df = (b−1, &nbsp;N−a−b+1)</text>
+  <line x1="30" y1="516" x2="270" y2="516" stroke="var(--rule)"/>
+  <text x="150" y="534" font-size="10.5" text-anchor="middle" fill="currentColor">holds whether the factors are</text>
+  <text x="150" y="548" font-size="10.5" text-anchor="middle" fill="currentColor">fixed OR random — dropping the</text>
+  <text x="150" y="562" font-size="10.5" text-anchor="middle" fill="currentColor">interaction removes σ²tb from every EMS</text>
+
+  <rect x="310" y="386" width="280" height="182" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="450" y="406" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">SIGNIFICANT · BOTH FIXED</text>
+  <text x="450" y="423" font-size="11" text-anchor="middle" fill="currentColor">keep it, and keep both main effects</text>
+  <line x1="330" y1="433" x2="570" y2="433" stroke="var(--rule-strong)"/>
+  <text x="450" y="452" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">F_A = MS_A ⁄ MS_E</text>
+  <text x="450" y="468" font-size="10.5" text-anchor="middle" fill="currentColor">df = (a−1, &nbsp;ab(n−1))</text>
+  <text x="450" y="488" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">F_B = MS_B ⁄ MS_E</text>
+  <text x="450" y="504" font-size="10.5" text-anchor="middle" fill="currentColor">df = (b−1, &nbsp;ab(n−1))</text>
+  <line x1="330" y1="516" x2="570" y2="516" stroke="var(--rule)"/>
+  <text x="450" y="536" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">everything over MS_E</text>
+  <text x="450" y="554" font-size="10.5" text-anchor="middle" fill="currentColor">but report the CELL MEANS —</text>
+  <text x="450" y="566" font-size="10.5" text-anchor="middle" fill="currentColor">main effects alone mislead</text>
+
+  <rect x="610" y="386" width="280" height="182" fill="none" stroke="var(--rand)" stroke-width="2.8"/>
+  <text x="750" y="406" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">SIGNIFICANT · BOTH RANDOM</text>
+  <text x="750" y="423" font-size="11" text-anchor="middle" fill="var(--rand)">the denominator CHANGES</text>
+  <line x1="630" y1="433" x2="870" y2="433" stroke="var(--rand)"/>
+  <text x="750" y="452" font-size="11.5" text-anchor="middle" fill="var(--rand)" font-weight="700">F_A = MS_A ⁄ MS_AB</text>
+  <text x="750" y="468" font-size="10.5" text-anchor="middle" fill="currentColor">df = (a−1, &nbsp;(a−1)(b−1))</text>
+  <text x="750" y="488" font-size="11.5" text-anchor="middle" fill="var(--rand)" font-weight="700">F_B = MS_B ⁄ MS_AB</text>
+  <text x="750" y="504" font-size="10.5" text-anchor="middle" fill="currentColor">df = (b−1, &nbsp;(a−1)(b−1))</text>
+  <line x1="630" y1="516" x2="870" y2="516" stroke="var(--rule)"/>
+  <text x="750" y="536" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">plain anova() in R gets this WRONG</text>
+  <text x="750" y="552" font-size="10.5" text-anchor="middle" fill="currentColor">it always divides by MS_E.</text>
+  <text x="750" y="566" font-size="10.5" text-anchor="middle" fill="currentColor">mixlm with r() gets it right.</text>
+
+  <rect x="150" y="592" width="600" height="34" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="450" y="613" font-size="11.5" text-anchor="middle" fill="currentColor">ONE FIXED + ONE RANDOM = a <tspan font-weight="700">mixed model</tspan> — lecture 10, its own denominator rules</text>
+
+  <text x="450" y="660" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">WHY the denominator changes when both factors are random</text>
+  <text x="450" y="680" font-size="11" text-anchor="middle" fill="currentColor">E(MS_A) = σ² + n·σ²tb + bn·σ²t &nbsp;&nbsp;and&nbsp;&nbsp; E(MS_AB) = σ² + n·σ²tb</text>
+  <text x="450" y="698" font-size="11" text-anchor="middle" fill="currentColor">Their ratio is 1 exactly when σ²t = 0. Dividing by MS_E instead leaves the σ²tb term</text>
+  <text x="450" y="714" font-size="11" text-anchor="middle" fill="currentColor">in the numerator, so a strong interaction would masquerade as a main effect.</text>
+</svg>
+<figcaption><b>Three outcomes, three denominator rules.</b> The interaction test is always <span style="color:var(--tau)">MS_AB over MS_E</span> — that never changes. What its result decides is what happens to the <em>main effects</em>. The violet box is the one worth memorising: with two random factors and a retained interaction, main effects go over <b>MS_AB</b>, and both the right and the wrong answer will be among your five options.</figcaption>
+</figure>
+
+<div class="nb">
+<span class="tag">Copy this chart by hand</span>
+<p>Draw the three outcome boxes with their F formulas and df. Underneath, write the reason in one line:</p>
+<p style="text-align:center;font-family:var(--mono);font-size:.9rem"><strong>E(MS_A) CONTAINS σ²tb — ONLY MS_AB CANCELS IT</strong></p>
+<p>Leave a gap underneath for the mixed-model row from lecture 10.</p>
+</div>
+
+<div class="b trap"><span class="l">The two df people get wrong</span>
+<p><strong>Two random factors:</strong> the denominator df is <span class="m">(a−1)(b−1)</span> — the interaction's df — not <span class="m">ab(n−1)</span>. If you change the denominator mean square, you must change the denominator degrees of freedom to match it.</p>
+<p><strong>Additive model:</strong> once the interaction is pooled into the error, the error df becomes <span class="m">N − a − b + 1</span>, not <span class="m">ab(n−1)</span>. That is the whole point of dropping it — you gain <span class="m">(a−1)(b−1)</span> degrees of freedom, which is where the extra power comes from.</p>
+</div>
+
+<h2 id="c3"><span class="cn">Chart 3 · family B</span>Which levels differ? Contrasts and post-hoc</h2>
+
+<p class="lede">The F-test tells you there is a fire but not which room is burning. What you are allowed to do next depends entirely on <strong>when you decided what to compare</strong>.</p>
+
+<figure>
+<svg viewBox="0 0 900 450" role="img" aria-label="Post-hoc decision chart: a gate requiring the omnibus F to reject, then three routes — Bonferroni for planned comparisons, Tukey for all pairs, Scheffe for comparisons chosen after seeing the data — with their thresholds compared on one scale">
+  <defs>
+    <marker id="p1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+  </defs>
+
+  <rect x="170" y="8" width="560" height="46" fill="none" stroke="var(--eps)" stroke-width="2"/>
+  <text x="450" y="28" font-size="12.5" text-anchor="middle" fill="var(--eps)" font-weight="700">GATE — did the omnibus F reject at α?</text>
+  <text x="450" y="45" font-size="11" text-anchor="middle" fill="currentColor">If NO, stop here. Comparing pairs anyway is <tspan font-style="italic">fishing</tspan> — treated as malpractice, not a shortcut.</text>
+
+  <line x1="450" y1="54" x2="450" y2="82" stroke="currentColor" stroke-width="1.3" marker-end="url(#p1)"/>
+
+  <rect x="250" y="84" width="400" height="34" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="450" y="106" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">When did you decide which comparisons to make?</text>
+
+  <path d="M400,118 L150,156" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#p1)"/>
+  <path d="M450,118 L450,156" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#p1)"/>
+  <path d="M500,118 L750,156" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#p1)"/>
+
+  <rect x="10" y="160" width="280" height="168" fill="none" stroke="var(--mu)" stroke-width="1.8"/>
+  <text x="150" y="180" font-size="11.5" text-anchor="middle" fill="var(--mu)" font-weight="700">BEFORE · a few, named</text>
+  <text x="150" y="200" font-size="13" text-anchor="middle" fill="var(--mu)" font-weight="700">Bonferroni</text>
+  <line x1="30" y1="209" x2="270" y2="209" stroke="var(--rule-strong)"/>
+  <text x="150" y="228" font-size="11.5" text-anchor="middle" fill="currentColor">test each at &nbsp;α ⁄ m</text>
+  <text x="150" y="246" font-size="10.5" text-anchor="middle" fill="currentColor">m = how many YOU planned</text>
+  <text x="150" y="268" font-size="11" text-anchor="middle" fill="currentColor">|T| &gt; t<tspan font-size="8" dy="3">α/(2m), N−a</tspan></text>
+  <text x="150" y="288" font-size="10.5" text-anchor="middle" fill="currentColor">df = N − a</text>
+  <line x1="30" y1="298" x2="270" y2="298" stroke="var(--rule)"/>
+  <text x="150" y="316" font-size="10.5" text-anchor="middle" fill="currentColor">simple, but harsh as m grows</text>
+
+  <rect x="310" y="160" width="280" height="168" fill="none" stroke="var(--tau)" stroke-width="2.6"/>
+  <text x="450" y="180" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">ALL PAIRS — the usual case</text>
+  <text x="450" y="200" font-size="13" text-anchor="middle" fill="var(--tau)" font-weight="700">Tukey HSD</text>
+  <line x1="330" y1="209" x2="570" y2="209" stroke="var(--rule-strong)"/>
+  <text x="450" y="228" font-size="11" text-anchor="middle" fill="currentColor">|ȳ<tspan font-size="8" dy="3">i·</tspan><tspan dy="-3"> − ȳ</tspan><tspan font-size="8" dy="3">j·</tspan><tspan dy="-3">| &gt; q</tspan><tspan font-size="8" dy="3">α,a,N−a</tspan><tspan dy="-3"> ·√(MS_E ⁄ n)</tspan></text>
+  <text x="450" y="248" font-size="10.5" text-anchor="middle" fill="currentColor">covers all m = a(a−1)/2 pairs</text>
+  <text x="450" y="268" font-size="10.5" text-anchor="middle" fill="currentColor">uses the studentized range q</text>
+  <text x="450" y="288" font-size="10.5" text-anchor="middle" fill="currentColor">df = N − a</text>
+  <line x1="330" y1="298" x2="570" y2="298" stroke="var(--rule)"/>
+  <text x="450" y="316" font-size="10.5" text-anchor="middle" fill="var(--tau)" font-weight="700">most powerful for this job</text>
+
+  <rect x="610" y="160" width="280" height="168" fill="none" stroke="var(--eps)" stroke-width="1.8"/>
+  <text x="750" y="180" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">AFTER looking at the data</text>
+  <text x="750" y="200" font-size="13" text-anchor="middle" fill="var(--eps)" font-weight="700">Scheffé</text>
+  <line x1="630" y1="209" x2="870" y2="209" stroke="var(--rule-strong)"/>
+  <text x="750" y="228" font-size="11" text-anchor="middle" fill="currentColor">|T₀| &gt; √( (a−1)·F<tspan font-size="8" dy="3">α,a−1,N−a</tspan><tspan dy="-3"> )</tspan></text>
+  <text x="750" y="248" font-size="10.5" text-anchor="middle" fill="currentColor">protects EVERY possible contrast,</text>
+  <text x="750" y="264" font-size="10.5" text-anchor="middle" fill="currentColor">not only the pairwise ones</text>
+  <text x="750" y="288" font-size="10.5" text-anchor="middle" fill="currentColor">df = N − a</text>
+  <line x1="630" y1="298" x2="870" y2="298" stroke="var(--rule)"/>
+  <text x="750" y="316" font-size="10.5" text-anchor="middle" fill="currentColor">safest, least powerful</text>
+
+  <text x="450" y="356" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">The same four thresholds on one scale — trout data, a = 4, N = 40, df = 36</text>
+
+  <line x1="80" y1="400" x2="820" y2="400" stroke="currentColor" stroke-width="1.4"/>
+  <g font-size="10" fill="currentColor" text-anchor="middle" opacity=".7">
+    <text x="80" y="418">1.9</text><text x="265" y="418">2.2</text><text x="450" y="418">2.5</text>
+    <text x="635" y="418">2.8</text><text x="820" y="418">3.1</text>
+  </g>
+
+  <line x1="159" y1="400" x2="159" y2="378" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 2"/>
+  <text x="159" y="372" font-size="10.5" text-anchor="middle" fill="currentColor" font-weight="700">2.03</text>
+  <text x="159" y="440" font-size="9.5" text-anchor="middle" fill="currentColor">no correction</text>
+
+  <line x1="569" y1="400" x2="569" y2="372" stroke="var(--tau)" stroke-width="2.6"/>
+  <text x="569" y="366" font-size="10.5" text-anchor="middle" fill="var(--tau)" font-weight="700">2.69</text>
+  <text x="569" y="440" font-size="9.5" text-anchor="middle" fill="var(--tau)" font-weight="700">Tukey</text>
+
+  <line x1="630" y1="400" x2="630" y2="384" stroke="var(--mu)" stroke-width="1.8"/>
+  <text x="630" y="440" font-size="9.5" text-anchor="middle" fill="var(--mu)">Bonf 2.79</text>
+
+  <line x1="716" y1="400" x2="716" y2="384" stroke="var(--eps)" stroke-width="1.8"/>
+  <text x="716" y="440" font-size="9.5" text-anchor="middle" fill="var(--eps)">Scheffé 2.93</text>
+</svg>
+<figcaption><b>Tukey sits lowest of the three corrections</b> — it will find real differences the other two miss, while still holding the family-wise error rate at exactly 5%. It manages that because it only has to control the single largest gap between any two means, rather than bounding all six comparisons separately. <b>Note the timetable says Tukey by hand is not required</b> — you need to know what it is for and how to read its output, not how to compute a studentized range.</figcaption>
+</figure>
+
+<div class="b key"><span class="l">Reading a TukeyHSD table — the only skill actually tested</span>
+<p>R prints one row per pair with a difference, a lower and upper bound, and an adjusted p-value. <strong>If the interval contains zero, that pair is not significantly different.</strong> That is the whole reading.</p>
+<p>These are <em>simultaneous</em> intervals — all pairs together have 95% coverage — so they are wider than six separate 95% intervals would be. That is by design, not an error.</p>
+</div>
+
+<h2 id="c4"><span class="cn">Chart 4 · family C</span>How big is it? t-tests and confidence intervals</h2>
+
+<p class="lede">One formula, four numerators. Everything in this family is the same t-statistic with a different thing on top and a different standard error underneath.</p>
+
+<figure>
+<svg viewBox="0 0 900 400" role="img" aria-label="The universal t statistic at the top, feeding four targets: a treatment mean, the grand mean, a difference of two means, and a contrast, each with its own standard error">
+  <defs>
+    <marker id="t1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+  </defs>
+
+  <rect x="200" y="10" width="500" height="62" fill="none" stroke="var(--mu)" stroke-width="2.4"/>
+  <text x="450" y="32" font-size="13" text-anchor="middle" fill="var(--mu)" font-weight="700">T = ( estimate − hypothesised value ) ⁄ se(estimate)</text>
+  <text x="450" y="50" font-size="11" text-anchor="middle" fill="currentColor">CI = estimate ± t<tspan font-size="8" dy="3">α/2, df</tspan><tspan dy="-3"> · se(estimate)</tspan></text>
+  <text x="450" y="65" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">df = N − a for all four — they all use the pooled MS_E</text>
+
+  <path d="M300,72 L120,116" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#t1)"/>
+  <path d="M400,72 L370,116" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#t1)"/>
+  <path d="M500,72 L620,116" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#t1)"/>
+  <path d="M600,72 L820,116" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#t1)"/>
+
+  <g>
+    <rect x="10" y="120" width="205" height="106" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="112" y="140" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">ONE GROUP'S MEAN</text>
+    <text x="112" y="160" font-size="11" text-anchor="middle" fill="currentColor">estimate: ȳ<tspan font-size="8" dy="3">i·</tspan></text>
+    <line x1="30" y1="170" x2="195" y2="170" stroke="var(--rule)"/>
+    <text x="112" y="192" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">se = √( MS_E ⁄ n )</text>
+    <text x="112" y="212" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">n = size of THAT group</text>
+  </g>
+
+  <g>
+    <rect x="235" y="120" width="205" height="106" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="337" y="140" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">THE GRAND MEAN</text>
+    <text x="337" y="160" font-size="11" text-anchor="middle" fill="currentColor">estimate: ȳ<tspan font-size="8" dy="3">··</tspan></text>
+    <line x1="255" y1="170" x2="420" y2="170" stroke="var(--rule)"/>
+    <text x="337" y="192" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">se = √( MS_E ⁄ N )</text>
+    <text x="337" y="212" font-size="10" text-anchor="middle" fill="var(--rand)" font-weight="700">random model? see Chart 5</text>
+  </g>
+
+  <g>
+    <rect x="460" y="120" width="205" height="106" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="562" y="140" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">A DIFFERENCE</text>
+    <text x="562" y="160" font-size="11" text-anchor="middle" fill="currentColor">estimate: ȳ<tspan font-size="8" dy="3">i·</tspan><tspan dy="-3"> − ȳ</tspan><tspan font-size="8" dy="3">j·</tspan></text>
+    <line x1="480" y1="170" x2="645" y2="170" stroke="var(--rule)"/>
+    <text x="562" y="192" font-size="11" text-anchor="middle" fill="var(--tau)" font-weight="700">se = √( MS_E(1/n<tspan font-size="8" dy="3">i</tspan><tspan dy="-3">+1/n</tspan><tspan font-size="8" dy="3">j</tspan><tspan dy="-3">) )</tspan></text>
+    <text x="562" y="212" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">balanced: √(2·MS_E ⁄ n)</text>
+  </g>
+
+  <g>
+    <rect x="685" y="120" width="205" height="106" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="787" y="140" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">A CONTRAST</text>
+    <text x="787" y="160" font-size="11" text-anchor="middle" fill="currentColor">estimate: Σ c<tspan font-size="8" dy="3">i</tspan><tspan dy="-3">ȳ</tspan><tspan font-size="8" dy="3">i·</tspan></text>
+    <line x1="705" y1="170" x2="870" y2="170" stroke="var(--rule)"/>
+    <text x="787" y="192" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">se = √( (MS_E ⁄ n)·Σc<tspan font-size="8" dy="3">i</tspan><tspan dy="-3">² )</tspan></text>
+    <text x="787" y="212" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">requires Σc<tspan font-size="7" dy="2">i</tspan><tspan dy="-2"> = 0</tspan></text>
+  </g>
+
+  <line x1="10" y1="252" x2="890" y2="252" stroke="var(--rule)"/>
+
+  <text x="450" y="278" font-size="12" text-anchor="middle" fill="var(--exam)" font-weight="700">TWO SHORTCUTS WORTH KNOWING</text>
+
+  <rect x="60" y="292" width="360" height="72" fill="none" stroke="var(--mu)" stroke-width="1.5"/>
+  <text x="240" y="312" font-size="11.5" text-anchor="middle" fill="var(--mu)" font-weight="700">Duality</text>
+  <text x="240" y="330" font-size="10.5" text-anchor="middle" fill="currentColor">A test and a CI are the same procedure.</text>
+  <text x="240" y="346" font-size="10.5" text-anchor="middle" fill="currentColor">Reject H₀: θ = θ₀ ⟺ θ₀ lies OUTSIDE the interval.</text>
+  <text x="240" y="360" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">given a CI, you never need to compute the test</text>
+
+  <rect x="480" y="292" width="360" height="72" fill="none" stroke="var(--tau)" stroke-width="1.5"/>
+  <text x="660" y="312" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">T² = F</text>
+  <text x="660" y="330" font-size="10.5" text-anchor="middle" fill="currentColor">t²<tspan font-size="8" dy="3">k</tspan><tspan dy="-3"> = F</tspan><tspan font-size="8" dy="3">1,k</tspan></text>
+  <text x="660" y="346" font-size="10.5" text-anchor="middle" fill="currentColor">A t-test IS an F-test with 1 numerator df.</text>
+  <text x="660" y="360" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">identical p-values; t is signed, F is not</text>
+</svg>
+<figcaption><b>Same machine, four inputs.</b> The denominator is always built from the pooled <span style="color:var(--eps)">MS_E</span> and always carries <span class="m">N − a</span> degrees of freedom — with exactly one exception, the grand mean in a <em>random</em> effects model, which is the subject of the next chart.</figcaption>
+</figure>
+
+<h2 id="c5"><span class="cn">Chart 5 · family D</span>How much variation, and from where?</h2>
+
+<p class="lede">When a factor is random you stop asking "which level is best" and start asking "how much do levels vary". The target of estimation becomes a <strong>variance</strong>.</p>
+
+<figure>
+<svg viewBox="0 0 900 520" role="img" aria-label="Variance components for one random factor and for two random factors, with the estimators, the ICC, the confidence interval for mu, and the negative variance problem">
+  <defs>
+    <marker id="v1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--rand)"/></marker>
+  </defs>
+
+  <rect x="200" y="8" width="500" height="42" fill="none" stroke="var(--rand)" stroke-width="2.4"/>
+  <text x="450" y="28" font-size="12.5" text-anchor="middle" fill="var(--rand)" font-weight="700">A RANDOM factor → you want VARIANCES, not means</text>
+  <text x="450" y="44" font-size="10.5" text-anchor="middle" fill="currentColor">set each observed mean square equal to its expected value, and solve</text>
+
+  <path d="M350,50 L222,76" stroke="var(--rand)" stroke-width="1.4" fill="none" marker-end="url(#v1)"/>
+  <path d="M550,50 L678,76" stroke="var(--rand)" stroke-width="1.4" fill="none" marker-end="url(#v1)"/>
+
+  <rect x="10" y="80" width="425" height="298" fill="none" stroke="var(--rand)" stroke-width="1.6"/>
+  <text x="222" y="100" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">ONE RANDOM FACTOR · lecture 5</text>
+  <text x="222" y="122" font-size="11" text-anchor="middle" fill="currentColor">E(MS_Tr) = σ² + n·σ²τ</text>
+  <text x="222" y="139" font-size="11" text-anchor="middle" fill="currentColor">E(MS_E) = σ²</text>
+  <line x1="30" y1="150" x2="415" y2="150" stroke="var(--rule-strong)"/>
+  <text x="222" y="171" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂² = MS_E</text>
+  <text x="222" y="192" font-size="12" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂²τ = ( MS_Tr − MS_E ) ⁄ n</text>
+  <text x="222" y="214" font-size="12" text-anchor="middle" fill="var(--mu)" font-weight="700">ICC = σ²τ ⁄ ( σ²τ + σ² )</text>
+  <text x="222" y="230" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">= the correlation between two observations</text>
+  <text x="222" y="243" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">from the same group</text>
+  <line x1="30" y1="253" x2="415" y2="253" stroke="var(--rule)"/>
+  <text x="222" y="272" font-size="11" text-anchor="middle" fill="currentColor">H₀: σ²τ = 0 &nbsp;(one-sided) &nbsp;·&nbsp; F = MS_Tr ⁄ MS_E</text>
+  <line x1="30" y1="284" x2="415" y2="284" stroke="var(--rule)"/>
+  <text x="222" y="304" font-size="11" text-anchor="middle" fill="currentColor">CI for μ = ȳ<tspan font-size="8" dy="3">··</tspan><tspan dy="-3"> ± t</tspan><tspan font-size="8" dy="3">α/2, a−1</tspan><tspan dy="-3"> ·√( MS_Tr ⁄ (a·n) )</tspan></text>
+  <text x="222" y="326" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">df = a − 1, NOT N − a</text>
+  <text x="222" y="344" font-size="10" text-anchor="middle" fill="currentColor">the se is built from MS_Tr, so it inherits MS_Tr's df</text>
+  <text x="222" y="360" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">Montgomery 10th ed. p.107 states N−a — that is wrong</text>
+
+  <rect x="465" y="80" width="425" height="298" fill="none" stroke="var(--rand)" stroke-width="2.8"/>
+  <text x="677" y="100" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">TWO RANDOM FACTORS · lecture 8</text>
+  <text x="677" y="120" font-size="10.5" text-anchor="middle" fill="currentColor">E(MS_A) = σ² + n·σ²tb + <tspan font-weight="700">bn</tspan>·σ²t</text>
+  <text x="677" y="136" font-size="10.5" text-anchor="middle" fill="currentColor">E(MS_B) = σ² + n·σ²tb + <tspan font-weight="700">an</tspan>·σ²b</text>
+  <text x="677" y="152" font-size="10.5" text-anchor="middle" fill="currentColor">E(MS_AB) = σ² + n·σ²tb</text>
+  <text x="677" y="168" font-size="10.5" text-anchor="middle" fill="currentColor">E(MS_E) = σ²</text>
+  <line x1="485" y1="179" x2="870" y2="179" stroke="var(--rule-strong)"/>
+  <text x="677" y="199" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂²t = ( MS_A − MS_AB ) ⁄ <tspan font-size="13">bn</tspan></text>
+  <text x="677" y="218" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂²b = ( MS_B − MS_AB ) ⁄ <tspan font-size="13">an</tspan></text>
+  <text x="677" y="237" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂²tb = ( MS_AB − MS_E ) ⁄ n</text>
+  <text x="677" y="255" font-size="11.5" text-anchor="middle" fill="var(--tau)" font-weight="700">σ̂² = MS_E</text>
+  <line x1="485" y1="266" x2="870" y2="266" stroke="var(--rule)"/>
+  <text x="677" y="286" font-size="11" text-anchor="middle" fill="var(--mu)" font-weight="700">ICC for A = σ²t ⁄ ( sum of ALL components in your model )</text>
+  <line x1="485" y1="298" x2="870" y2="298" stroke="var(--rule)"/>
+  <text x="677" y="318" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">If you DROP the interaction (additive model):</text>
+  <text x="677" y="337" font-size="10.5" text-anchor="middle" fill="currentColor">subtract <tspan font-weight="700">MS_E</tspan> instead of MS_AB in the top of each estimator</text>
+  <text x="677" y="354" font-size="10.5" text-anchor="middle" fill="currentColor">— the divisors <tspan font-weight="700">bn</tspan> and <tspan font-weight="700">an</tspan> stay exactly the same</text>
+  <text x="677" y="370" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">because E(MS_A) becomes σ² + bn·σ²t</text>
+
+  <rect x="10" y="396" width="425" height="106" fill="none" stroke="var(--eps)" stroke-width="2"/>
+  <text x="222" y="418" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">THE FLAW OF METHOD OF MOMENTS</text>
+  <text x="222" y="440" font-size="10.5" text-anchor="middle" fill="currentColor">Nothing stops the mean square below being LARGER,</text>
+  <text x="222" y="456" font-size="10.5" text-anchor="middle" fill="currentColor">which returns a <tspan font-weight="700">negative variance</tspan> — impossible.</text>
+  <text x="222" y="476" font-size="10.5" text-anchor="middle" fill="currentColor">Report it as 0, or use <tspan font-weight="700">REML</tspan>, which cannot go negative.</text>
+  <text x="222" y="493" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">any F below 1 produces one — it happens on real data</text>
+
+  <rect x="465" y="396" width="425" height="106" fill="none" stroke="var(--mu)" stroke-width="2"/>
+  <text x="677" y="418" font-size="11.5" text-anchor="middle" fill="var(--mu)" font-weight="700">CI FOR THE ERROR VARIANCE σ² — same in every model</text>
+  <text x="677" y="442" font-size="11.5" text-anchor="middle" fill="currentColor">[ SS_E ⁄ χ²<tspan font-size="8" dy="3">1−α/2, df_E</tspan><tspan dy="-3"> , &nbsp;SS_E ⁄ χ²</tspan><tspan font-size="8" dy="3">α/2, df_E</tspan><tspan dy="-3"> ]</tspan></text>
+  <text x="677" y="466" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">the BIG χ² value gives the SMALL end</text>
+  <text x="677" y="484" font-size="10.5" text-anchor="middle" fill="currentColor">asked for σ and not σ²? take the square root at the end</text>
+  <text x="677" y="499" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">this one is exact — it does not need approximating</text>
+</svg>
+<figcaption><b>The estimators are all the same shape:</b> take a mean square, subtract the mean square directly beneath it in the expected-mean-square list, and divide by whatever multiplies the component you want. The two things that catch people are the <b>divisors</b> — <span class="m">bn</span> for factor A but <span class="m">an</span> for factor B — and the confidence interval for μ, which uses <span class="m">a−1</span> degrees of freedom rather than <span class="m">N−a</span>.</figcaption>
+</figure>
+
+<div class="b rand"><span class="l">There is no exact interval for σ²τ</span>
+<p>The estimator is a <em>difference of two mean squares</em>, which follows no standard distribution. The course uses <strong>Satterthwaite's approximation</strong> to get an effective degrees of freedom, and the lecture states explicitly that you are <strong>not required to compute this by hand</strong>. Knowing why it is hard is the examinable part.</p>
+</div>
+
+<h2 id="c6"><span class="cn">Chart 6 · family E</span>Is the model sound, and can I simplify it?</h2>
+
+<h3>Checking the assumptions</h3>
+
+<div class="tw">
+<table>
+  <caption>Which plot diagnoses what</caption>
+  <thead><tr><th>Assumption</th><th>How to check</th><th>Bad looks like</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Independence</strong></td><td class="no">no plot exists</td><td class="no">— judge it from how the data was collected</td><td>Nothing fixes it afterwards. Bought by randomisation at design time.</td></tr>
+    <tr><td><strong>Constant variance</strong></td><td>Residuals vs Fitted</td><td class="wr">a <strong>funnel</strong> — spread grows with the fitted value</td><td>Try <span class="m">ln(y)</span>. Or Bartlett's test — here a <em>large</em> p is the good outcome.</td></tr>
+    <tr><td><strong>Normality</strong></td><td>Normal Q-Q plot</td><td class="wr">systematic curve, especially a sweeping right tail</td><td>Try <span class="m">ln(y)</span>. t-tests are fairly robust; F loses power.</td></tr>
+    <tr><td><strong>Outliers</strong></td><td>standardized residuals <span class="m">d = ε̂ ⁄ √<span style="border-top:1px solid">MS<sub>E</sub></span></span></td><td class="wr"><span class="m">|d| &gt; 3</span></td><td>Investigate — never delete blindly. Report with and without.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b trap"><span class="l">Two reversals to remember</span>
+<p><strong>1.</strong> For assumption tests (Shapiro–Wilk, Bartlett) a <strong>large p-value is the good outcome</strong> — H₀ there is "the assumption holds". Everywhere else in the course a small p is the interesting one.</p>
+<p><strong>2.</strong> Normality is assumed of the <strong>residuals</strong>, not the raw data. If the treatments work, the raw data is a mixture of several means and will look multi-humped. That is expected, not a violation.</p>
+</div>
+
+<h4>What a log transform does to the interpretation</h4>
+
+<p>Fitting <span class="m">ln(y) = μ + τ<sub>i</sub> + ε</span> is the same as saying the original data are <em>multiplicative</em>: <span class="m">y = e<sup>μ</sup>·e<sup>τ<sub>i</sub></sup>·e<sup>ε</sup></span>. So on the original scale:</p>
+
+<ul>
+<li>Back-transforming a mean gives a <strong>geometric</strong> mean, not an arithmetic one</li>
+<li><strong>A difference on the log scale is a ratio on the original scale</strong> — a log difference of 1.269 means one group is <span class="m">e<sup>1.269</sup> = 3.56 times</span> the other, not 1.269 units more</li>
+<li>A CI <span class="m">[L, U]</span> on the log scale becomes <span class="m">[e<sup>L</sup>, e<sup>U</sup>]</span> — an interval for the <em>ratio</em></li>
+</ul>
+
+<h3>Simplifying the model</h3>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Method</th><th>Statistic</th><th>Degrees of freedom</th><th>Decision</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Partial F-test</strong><br><span class="no">is this block of terms just noise?</span></td>
+        <td><span class="m">F₀ = [(SS<sub>E,R</sub> − SS<sub>E,F</sub>) ⁄ (df<sub>R</sub> − df<sub>F</sub>)] ⁄ [SS<sub>E,F</sub> ⁄ df<sub>F</sub>]</span></td>
+        <td><span class="m">( df<sub>R</sub> − df<sub>F</sub>, &nbsp;df<sub>F</sub> )</span><br><span class="no">numerator = df you gave back;<br>denominator = df of the <strong>full</strong> model</span></td>
+        <td>F small → the terms are noise → safe to drop</td></tr>
+    <tr><td><strong>AIC</strong></td><td><span class="m">−2·ln(L) + 2k</span></td><td class="no">—</td><td rowspan="2">lower is better</td></tr>
+    <tr><td><strong>BIC</strong></td><td><span class="m">−2·ln(L) + ln(N)·k</span></td><td class="no">—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b key"><span class="l">Three rules that govern all simplification</span>
+<p><strong>Marginality.</strong> Keep an interaction → you must keep every lower-order term inside it, whatever their p-values. Always prune from the top down.</p>
+<p><strong>BIC is stricter than AIC.</strong> The penalty per parameter is <span class="m">2</span> for AIC and <span class="m">ln(N)</span> for BIC. Once <span class="m">N &gt; 8</span>, <span class="m">ln(N) &gt; 2</span>, so BIC selects smaller models.</p>
+<p><strong>Type I = Type III on balanced data.</strong> They differ only when the design is unbalanced, where <code>anova()</code> becomes order-dependent and you need <code>drop1()</code> instead.</p>
+</div>
+
+<h2 id="master"><span class="cn">Reference</span>Every test in one table</h2>
+
+<p class="lede">If you already know what you are looking for, skip the charts and use this. <span class="m">a</span> = levels of A, <span class="m">b</span> = levels of B, <span class="m">n</span> = replicates per cell, <span class="m">N</span> = total.</p>
+
+<h4>A · F-tests — does the factor matter?</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Situation</th><th>H₀</th><th>Statistic</th><th>df (num, den)</th><th>L</th></tr></thead>
+<tbody>
+<tr><td>One factor, <strong>fixed</strong></td><td><span class="m">τ₁ = ⋯ = τₐ = 0</span></td><td><span class="m">MS<sub>Tr</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">(a−1, N−a)</span></td><td>2</td></tr>
+<tr class="rr"><td>One factor, <strong>random</strong></td><td><span class="m">σ²τ = 0</span> <span class="no">(one-sided)</span></td><td><span class="m">MS<sub>Tr</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">(a−1, N−a)</span></td><td>5</td></tr>
+<tr><td>Two factors fixed — <strong>interaction</strong></td><td><span class="m">all (τβ)<sub>ij</sub> = 0</span></td><td><span class="m">MS<sub>AB</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">((a−1)(b−1), ab(n−1))</span></td><td>6</td></tr>
+<tr><td>Two factors fixed — main effect A</td><td><span class="m">all τ<sub>i</sub> = 0</span></td><td><span class="m">MS<sub>A</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">(a−1, ab(n−1))</span></td><td>6</td></tr>
+<tr><td>Two factors fixed — main effect B</td><td><span class="m">all β<sub>j</sub> = 0</span></td><td><span class="m">MS<sub>B</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">(b−1, ab(n−1))</span></td><td>6</td></tr>
+<tr><td>Two factors <strong>random</strong> — interaction</td><td><span class="m">σ²<sub>tb</sub> = 0</span></td><td><span class="m">MS<sub>AB</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">((a−1)(b−1), ab(n−1))</span></td><td>8</td></tr>
+<tr class="rr"><td>Two factors <strong>random</strong> — main effect A</td><td><span class="m">σ²<sub>t</sub> = 0</span></td><td><strong><span class="m">MS<sub>A</sub> ⁄ MS<sub>AB</sub></span></strong></td><td><strong><span class="m">(a−1, (a−1)(b−1))</span></strong></td><td>8</td></tr>
+<tr class="rr"><td>Two factors <strong>random</strong> — main effect B</td><td><span class="m">σ²<sub>b</sub> = 0</span></td><td><strong><span class="m">MS<sub>B</sub> ⁄ MS<sub>AB</sub></span></strong></td><td><strong><span class="m">(b−1, (a−1)(b−1))</span></strong></td><td>8</td></tr>
+<tr><td>Two factors, interaction <strong>dropped</strong> (either kind)</td><td><span class="m">τ<sub>i</sub> = 0</span> or <span class="m">σ²<sub>t</sub> = 0</span></td><td><span class="m">MS<sub>A</sub> ⁄ MS<sub>E</sub></span></td><td><span class="m">(a−1, N−a−b+1)</span></td><td>8</td></tr>
+<tr><td>Nested model comparison</td><td>the dropped terms are all 0</td><td>partial F <span class="no">(see Chart 6)</span></td><td><span class="m">(df<sub>R</sub>−df<sub>F</sub>, df<sub>F</sub>)</span></td><td>7</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>B · t-tests and confidence intervals — how big is it?</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Target</th><th>Estimate</th><th>Standard error</th><th>df</th><th>L</th></tr></thead>
+<tbody>
+<tr><td>One treatment mean <span class="m">μ<sub>i</sub></span></td><td><span class="m">ȳ<sub>i·</sub></span></td><td><span class="m">√(MS<sub>E</sub> ⁄ n)</span></td><td><span class="m">N−a</span></td><td>3</td></tr>
+<tr><td>Grand mean <span class="m">μ</span>, <strong>fixed</strong> model</td><td><span class="m">ȳ<sub>··</sub></span></td><td><span class="m">√(MS<sub>E</sub> ⁄ N)</span></td><td><span class="m">N−a</span></td><td>3</td></tr>
+<tr class="rr"><td>Grand mean <span class="m">μ</span>, <strong>random</strong> model</td><td><span class="m">ȳ<sub>··</sub></span></td><td><strong><span class="m">√(MS<sub>Tr</sub> ⁄ (a·n))</span></strong></td><td><strong><span class="m">a−1</span></strong></td><td>5</td></tr>
+<tr><td>Difference <span class="m">μ<sub>i</sub> − μ<sub>j</sub></span></td><td><span class="m">ȳ<sub>i·</sub> − ȳ<sub>j·</sub></span></td><td><span class="m">√(MS<sub>E</sub>(1/n<sub>i</sub> + 1/n<sub>j</sub>))</span></td><td><span class="m">N−a</span></td><td>3</td></tr>
+<tr><td>Contrast <span class="m">Γ = Σc<sub>i</sub>μ<sub>i</sub></span></td><td><span class="m">Σc<sub>i</sub>ȳ<sub>i·</sub></span></td><td><span class="m">√((MS<sub>E</sub> ⁄ n)·Σc<sub>i</sub>²)</span></td><td><span class="m">N−a</span></td><td>4</td></tr>
+<tr><td>Error variance <span class="m">σ²</span></td><td><span class="m">MS<sub>E</sub></span></td><td colspan="2"><span class="m">CI = [SS<sub>E</sub>/χ²<sub>1−α/2,df<sub>E</sub></sub> , SS<sub>E</sub>/χ²<sub>α/2,df<sub>E</sub></sub>]</span> — <span class="no">chi-square, not t</span></td><td>3</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>C · Post-hoc thresholds — which levels differ?</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Method</th><th>Reject when</th><th>Protects</th><th>df</th><th>L</th></tr></thead>
+<tbody>
+<tr><td>Single contrast, no correction</td><td><span class="m">|T₀| &gt; t<sub>α/2, N−a</sub></span>, or <span class="m">F₀ = SS<sub>C</sub>/MS<sub>E</sub> = T₀²</span></td><td>one planned comparison</td><td><span class="m">N−a</span> &nbsp;/&nbsp; <span class="m">(1, N−a)</span></td><td>4</td></tr>
+<tr><td>Bonferroni</td><td><span class="m">|T| &gt; t<sub>α/(2m), N−a</sub></span></td><td>the <span class="m">m</span> comparisons you planned</td><td><span class="m">N−a</span></td><td>4</td></tr>
+<tr class="y"><td>Tukey HSD</td><td><span class="m">|ȳ<sub>i·</sub>−ȳ<sub>j·</sub>| &gt; q<sub>α,a,N−a</sub>·√(MS<sub>E</sub>/n)</span></td><td>all <span class="m">a(a−1)/2</span> pairs</td><td><span class="m">N−a</span>, and <span class="m">a</span> means</td><td>4</td></tr>
+<tr><td>Scheffé</td><td><span class="m">|T₀| &gt; √((a−1)·F<sub>α,a−1,N−a</sub>)</span></td><td>every possible contrast</td><td><span class="m">(a−1, N−a)</span></td><td>4</td></tr>
+</tbody>
+</table>
+</div>
+<p style="font-size:.93rem;color:var(--ink-3)"><span class="m">m = a(a−1)/2</span> for all pairs · <span class="m">FWER = 1 − (1−α)<sup>m</sup></span> · unequal <span class="m">n</span> → R uses <strong>Tukey–Kramer</strong> automatically.</p>
+
+<h4>D · Variance components</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Model</th><th>Component</th><th>Estimator</th><th>L</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">One random factor</td><td><span class="m">σ²</span></td><td><span class="m">MS<sub>E</sub></span></td><td rowspan="3">5</td></tr>
+<tr><td><span class="m">σ²τ</span></td><td><span class="m">(MS<sub>Tr</sub> − MS<sub>E</sub>) ⁄ n</span></td></tr>
+<tr><td>ICC</td><td><span class="m">σ²τ ⁄ (σ²τ + σ²)</span></td></tr>
+<tr class="rr"><td rowspan="4">Two random factors,<br>interaction kept</td><td><span class="m">σ²<sub>t</sub></span></td><td><span class="m">(MS<sub>A</sub> − MS<sub>AB</sub>) ⁄ <strong>bn</strong></span></td><td rowspan="4">8</td></tr>
+<tr class="rr"><td><span class="m">σ²<sub>b</sub></span></td><td><span class="m">(MS<sub>B</sub> − MS<sub>AB</sub>) ⁄ <strong>an</strong></span></td></tr>
+<tr class="rr"><td><span class="m">σ²<sub>tb</sub></span></td><td><span class="m">(MS<sub>AB</sub> − MS<sub>E</sub>) ⁄ n</span></td></tr>
+<tr class="rr"><td><span class="m">σ²</span></td><td><span class="m">MS<sub>E</sub></span></td></tr>
+<tr><td>Two random, interaction dropped</td><td><span class="m">σ²<sub>t</sub></span>, <span class="m">σ²<sub>b</sub></span></td><td><span class="m">(MS<sub>A</sub> − MS<sub>E</sub>) ⁄ bn</span>, &nbsp;<span class="m">(MS<sub>B</sub> − MS<sub>E</sub>) ⁄ an</span></td><td>8</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>E · Distributions — for the opening section of the paper</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Built from</th><th>Gives</th><th>Mean</th><th>Variance</th></tr></thead>
+<tbody>
+<tr><td><span class="m">Z₁² + ⋯ + Z<sub>k</sub>²</span></td><td><span class="m">χ²<sub>k</sub></span></td><td><span class="m">k</span></td><td><span class="m">2k</span></td></tr>
+<tr><td><span class="m">Z ⁄ √(χ²<sub>k</sub>/k)</span></td><td><span class="m">t<sub>k</sub></span></td><td>0</td><td><span class="m">k/(k−2)</span></td></tr>
+<tr><td><span class="m">(χ²<sub>u</sub>/u) ⁄ (χ²<sub>v</sub>/v)</span></td><td><span class="m">F<sub>u,v</sub></span></td><td>≈1 under H₀</td><td>right-skewed</td></tr>
+<tr><td colspan="4"><span class="m">Z² = χ²₁</span> &nbsp;·&nbsp; <span class="m">t²<sub>k</sub> = F<sub>1,k</sub></span> &nbsp;·&nbsp; <span class="m">t<sub>∞</sub> = N(0,1)</span> &nbsp;·&nbsp; <strong>if <span class="m">F ~ F<sub>u,v</sub></span> then <span class="m">1/F ~ F<sub>v,u</sub></span></strong> &nbsp;·&nbsp; <span class="m">Var(ȳ) = σ²/n</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="nb">
+<span class="tag">The three charts worth copying by hand</span>
+<p><strong>Chart 2</strong> — the F-test denominator tree. This is the highest-value page in your notebook.</p>
+<p><strong>Chart 3</strong> — the post-hoc router, including the threshold ordering (none &lt; Tukey &lt; Bonferroni &lt; Scheffé).</p>
+<p><strong>Chart 4</strong> — the universal T and its four standard errors.</p>
+<p>Then copy <strong>table A</strong> above in full. It is nine rows and it covers every F-test in the course. Leave two blank rows at the bottom for the mixed-model cases from lecture 10.</p>
+</div>
+
+<div class="b exam"><span class="l">The 30-second routine, for when you freeze</span>
+<ol style="margin-bottom:0">
+<li>Write down <span class="m">a</span>, <span class="m">b</span>, <span class="m">n</span>, <span class="m">N</span>.</li>
+<li>Mark every factor <strong>FIXED</strong> or <strong>RANDOM</strong>.</li>
+<li>Which of the five families is this question in? → Chart 1</li>
+<li>Find the row in the master table. Copy the df straight off it.</li>
+<li>Compute. Then sanity-check: <strong>F below 1 is never significant.</strong></li>
+<li>Asked for <span class="m">σ</span> or <span class="m">σ²</span>? Check which before answering.</li>
+</ol>
+</div>
+
+<footer>
+  <p><strong>STAT210 · NMBU · decision charts for lectures 1–8.</strong> Every degrees-of-freedom expression here was checked against the lecture sources and verified numerically in R against the course datasets. Lecture 10 adds mixed models — one fixed factor and one random — which have their own denominator rules and will be added as a further row to Chart 2 and table A.</p>
+  <p>Part of the STAT210 study set: <a href="index.html">all documents</a> · <a href="STAT210-Full-Compendium.html">The Full Picture</a></p>
+</footer>
+
+</div>
+</body>
+</html>
