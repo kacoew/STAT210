@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAT210 — Study Documents</title>
+<meta name="description" content="Study compendiums for STAT210, Design of Experiments and Analysis of Variance, NMBU.">
+<style>
+:root{
+  --ground:#F6F7F5; --surface:#FFFFFF; --sunk:#EDEFEB;
+  --ink:#171B18; --ink-2:#4A524C; --ink-3:#7C847E;
+  --rule:#DCE0DA; --rule-strong:#BCC2B9;
+  --mu:#1B5FBE; --tau:#1A8C40; --eps:#C13030; --rand:#7040A8; --exam:#B0741A;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101310; --surface:#171B18; --sunk:#1E231F;
+    --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+    --rule:#2A302B; --rule-strong:#3E453F;
+    --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101310; --surface:#171B18; --sunk:#1E231F;
+  --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+  --rule:#2A302B; --rule-strong:#3E453F;
+  --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);
+     font-size:17.5px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px 90px;}
+header{border-bottom:3px double var(--ink);padding:56px 0 24px;margin-bottom:32px;}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+         color:var(--exam);font-weight:700;margin:0 0 14px;}
+h1{font-weight:600;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.03;letter-spacing:-.02em;
+   margin:0 0 14px;text-wrap:balance;}
+.stand{font-size:1.08rem;color:var(--ink-2);max-width:58ch;margin:0;}
+.grid{display:grid;gap:18px;margin:28px 0;}
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr;}}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);
+       border:1px solid var(--rule);border-left:4px solid var(--rule-strong);
+       padding:18px 20px;transition:border-color .15s ease, transform .15s ease;}
+a.card:hover,a.card:focus-visible{border-left-color:var(--exam);transform:translateY(-2px);}
+a.card.main{border-left-color:var(--exam);}
+a.card.a{border-left-color:var(--mu);}
+a.card.b{border-left-color:var(--tau);}
+a.card.c{border-left-color:var(--rand);}
+.card .tag{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+           font-weight:700;color:var(--ink-3);display:block;margin-bottom:6px;}
+.card h2{font-size:1.32rem;font-weight:600;margin:0 0 6px;line-height:1.2;}
+.card p{margin:0;font-size:.95rem;color:var(--ink-2);line-height:1.5;}
+.card .lec{font-family:var(--sans);font-size:12px;color:var(--ink-3);margin-top:9px;display:block;}
+.note{border-left:3px solid var(--exam);background:var(--sunk);padding:14px 18px;margin:30px 0;
+      font-size:.96rem;}
+.note b{color:var(--exam);}
+.note p:last-child{margin:0;}
+h3{font-family:var(--sans);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+   color:var(--ink-3);font-weight:700;margin:34px 0 10px;}
+footer{border-top:1px solid var(--rule);margin-top:44px;padding-top:18px;
+       font-family:var(--sans);font-size:12.5px;color:var(--ink-3);}
+:focus-visible{outline:2px solid var(--exam);outline-offset:3px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">STAT210 · Design of Experiments and Analysis of Variance · NMBU</p>
+  <h1>Study documents</h1>
+  <p class="stand">Four self-contained compendiums covering the course. Every number in them was re-derived by running R against the course datasets rather than copied from a slide.</p>
+</header>
+
+<div class="note">
+  <p><b>Start here:</b> <em>The Full Picture</em> is the main working document — it covers lectures 1 to 8, and contains the practice questions and the build-list for a handwritten exam notebook. The other three are earlier, narrower documents kept for reference.</p>
+</div>
+
+<h3>The main document</h3>
+
+<div class="grid">
+  <a class="card main" href="STAT210-Full-Compendium.html" style="grid-column:1/-1">
+    <span class="tag">Main · lectures 1–8</span>
+    <h2>The Full Picture</h2>
+    <p>The whole course in one place: every formula written out, said again in plain words, and tied to the question it answers. Colour-coded throughout, with a decision tree for choosing the right F-test, 40 exam-style practice questions with worked answers, and a page-by-page plan for a handwritten notebook.</p>
+    <span class="lec">Probability · one-way ANOVA · inference · contrasts · random effects · diagnostics · factorial designs · two-factor random</span>
+  </a>
+</div>
+
+<h3>Earlier documents</h3>
+
+<div class="grid">
+  <a class="card a" href="STAT210-Compendium.html">
+    <span class="tag">Dense · lectures 1–4</span>
+    <h2>Signal Over Noise</h2>
+    <p>The technical version. Full mathematical notation, formal derivations, and the reasoning behind each result. Good once the ideas have clicked.</p>
+    <span class="lec">Lectures 1–4</span>
+  </a>
+
+  <a class="card b" href="STAT210-Plain-English.html">
+    <span class="tag">Plain language · lectures 1–4</span>
+    <h2>Start From Nothing</h2>
+    <p>The same four lectures with no assumed comfort with mathematical symbols. Every symbol is pronounced, translated, and given a job before it is used.</p>
+    <span class="lec">Lectures 1–4</span>
+  </a>
+
+  <a class="card c" href="STAT210-L5-Random-Effects.html" style="grid-column:1/-1">
+    <span class="tag">In depth · lecture 5</span>
+    <h2>Two Kinds of Variation</h2>
+    <p>Random effects on their own. What changes when the groups are a random sample rather than a deliberate choice — variance components, the intraclass correlation, and why the same F-test now answers a completely different question.</p>
+    <span class="lec">Lecture 5</span>
+  </a>
+</div>
+
+<footer>
+  <p>Built from the lecture sources and calibrated against six past exam papers. Lectures 9 to 11 to be added.</p>
+</footer>
+
+</div>
+</body>
+</html>
