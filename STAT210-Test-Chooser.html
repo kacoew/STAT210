@@ -549,13 +549,27 @@ footer{border-top:3px double var(--ink);margin-top:70px;padding-top:18px;
 
   <rect x="465" y="396" width="425" height="106" fill="none" stroke="var(--mu)" stroke-width="2"/>
   <text x="677" y="418" font-size="11.5" text-anchor="middle" fill="var(--mu)" font-weight="700">CI FOR THE ERROR VARIANCE σ² — same in every model</text>
-  <text x="677" y="442" font-size="11.5" text-anchor="middle" fill="currentColor">[ SS_E ⁄ χ²<tspan font-size="8" dy="3">1−α/2, df_E</tspan><tspan dy="-3"> , &nbsp;SS_E ⁄ χ²</tspan><tspan font-size="8" dy="3">α/2, df_E</tspan><tspan dy="-3"> ]</tspan></text>
-  <text x="677" y="466" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">the BIG χ² value gives the SMALL end</text>
-  <text x="677" y="484" font-size="10.5" text-anchor="middle" fill="currentColor">asked for σ and not σ²? take the square root at the end</text>
-  <text x="677" y="499" font-size="10" text-anchor="middle" fill="currentColor" opacity=".8">this one is exact — it does not need approximating</text>
+  <text x="677" y="440" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">lower = SS_E ⁄ the LARGER χ² &nbsp;·&nbsp; upper = SS_E ⁄ the SMALLER χ²</text>
+  <text x="677" y="458" font-size="10" text-anchor="middle" fill="currentColor">IGNORE the subscripts. The exam gives you both χ² values —</text>
+  <text x="677" y="471" font-size="10" text-anchor="middle" fill="currentColor">divide by the bigger one first and you cannot go wrong.</text>
+  <text x="677" y="487" font-size="10" text-anchor="middle" fill="currentColor" opacity=".85">the printed table labels by upper-tail area, R labels by cumulative</text>
+  <text x="677" y="499" font-size="10" text-anchor="middle" fill="currentColor" opacity=".85">probability — exact opposites, so trust the SIZE, not the label</text>
 </svg>
 <figcaption><b>The estimators are all the same shape:</b> take a mean square, subtract the mean square directly beneath it in the expected-mean-square list, and divide by whatever multiplies the component you want. The two things that catch people are the <b>divisors</b> — <span class="m">bn</span> for factor A but <span class="m">an</span> for factor B — and the confidence interval for μ, which uses <span class="m">a−1</span> degrees of freedom rather than <span class="m">N−a</span>.</figcaption>
 </figure>
+
+<div class="b trap"><span class="l">Trap — the two χ² labelling conventions are exact opposites</span>
+<p>Your printed table booklet labels its columns by <strong>upper-tail area α</strong>. R's <code>qchisq()</code> labels by <strong>cumulative probability</strong>. For 3 degrees of freedom:</p>
+<div class="tw"><table>
+<thead><tr><th>Source</th><th class="n">"0.025"</th><th class="n">"0.975"</th></tr></thead>
+<tbody>
+<tr><td>Exam table booklet (upper-tail area)</td><td class="n">9.35 <span class="no">big</span></td><td class="n">0.22 <span class="no">small</span></td></tr>
+<tr><td><code>qchisq()</code> in R (cumulative)</td><td class="n">0.22 <span class="no">small</span></td><td class="n">9.35 <span class="no">big</span></td></tr>
+</tbody></table></div>
+<p>Lecture 3 writes the interval one way and lecture 5 writes it the other. Both are correct <em>in their own convention</em>, which is exactly why writing the formula symbolically is dangerous.</p>
+<p><strong>The safe rule, which works under either convention:</strong> you will be handed two chi-square numbers. <strong>Divide SS<sub>E</sub> by the larger one to get the lower bound, and by the smaller one to get the upper bound.</strong> Never reason from the subscript.</p>
+<p>The 2025 paper gave <span class="m">χ²<sub>0.975,21</sub> = 10.28</span> and <span class="m">χ²<sub>0.025,21</sub> = 35.48</span> — the table convention. Dividing 55.727 by 35.48 and 10.28 gives <strong>[1.57, 5.42]</strong>. Getting them the wrong way round gives an "interval" running from 5.42 down to 1.57, which is one of the offered distractors.</p>
+</div>
 
 <div class="b rand"><span class="l">There is no exact interval for σ²τ</span>
 <p>The estimator is a <em>difference of two mean squares</em>, which follows no standard distribution. The course uses <strong>Satterthwaite's approximation</strong> to get an effective degrees of freedom, and the lecture states explicitly that you are <strong>not required to compute this by hand</strong>. Knowing why it is hard is the examinable part.</p>
@@ -648,7 +662,7 @@ footer{border-top:3px double var(--ink);margin-top:70px;padding-top:18px;
 <tr class="rr"><td>Grand mean <span class="m">μ</span>, <strong>random</strong> model</td><td><span class="m">ȳ<sub>··</sub></span></td><td><strong><span class="m">√(MS<sub>Tr</sub> ⁄ (a·n))</span></strong></td><td><strong><span class="m">a−1</span></strong></td><td>5</td></tr>
 <tr><td>Difference <span class="m">μ<sub>i</sub> − μ<sub>j</sub></span></td><td><span class="m">ȳ<sub>i·</sub> − ȳ<sub>j·</sub></span></td><td><span class="m">√(MS<sub>E</sub>(1/n<sub>i</sub> + 1/n<sub>j</sub>))</span></td><td><span class="m">N−a</span></td><td>3</td></tr>
 <tr><td>Contrast <span class="m">Γ = Σc<sub>i</sub>μ<sub>i</sub></span></td><td><span class="m">Σc<sub>i</sub>ȳ<sub>i·</sub></span></td><td><span class="m">√((MS<sub>E</sub> ⁄ n)·Σc<sub>i</sub>²)</span></td><td><span class="m">N−a</span></td><td>4</td></tr>
-<tr><td>Error variance <span class="m">σ²</span></td><td><span class="m">MS<sub>E</sub></span></td><td colspan="2"><span class="m">CI = [SS<sub>E</sub>/χ²<sub>1−α/2,df<sub>E</sub></sub> , SS<sub>E</sub>/χ²<sub>α/2,df<sub>E</sub></sub>]</span> — <span class="no">chi-square, not t</span></td><td>3</td></tr>
+<tr><td>Error variance <span class="m">σ²</span></td><td><span class="m">MS<sub>E</sub></span></td><td colspan="2"><span class="m">CI = [ SS<sub>E</sub> ⁄ larger χ² , &nbsp;SS<sub>E</sub> ⁄ smaller χ² ]</span> — <span class="no">chi-square, not t. df<sub>E</sub> = N−a</span></td><td>3</td></tr>
 </tbody>
 </table>
 </div>
