@@ -1,0 +1,1066 @@
+<title>Two Kinds of Variation</title>
+
+<style>
+:root{
+  --ground:#F7F6F3; --surface:#FFFFFF; --sunk:#EEEDE8;
+  --ink:#1B1B18; --ink-2:#4E4E48; --ink-3:#7E7E76;
+  --rule:#DDDCD5; --rule-strong:#BEBDB4;
+  --mu:#1B5FBE; --tau:#1A8C40; --eps:#C13030; --accent:#8A5A1E;
+  --mu-wash:#EAF1FC; --tau-wash:#E7F4EC; --eps-wash:#FBEBEA; --say-wash:#F3EFE7;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#14130F; --surface:#1C1B16; --sunk:#24231D;
+    --ink:#EAE8E1; --ink-2:#ADABA1; --ink-3:#838177;
+    --rule:#33322A; --rule-strong:#4A4940;
+    --mu:#77ACF2; --tau:#5FC87F; --eps:#F2786F; --accent:#D9A45E;
+    --mu-wash:#15243A; --tau-wash:#12291B; --eps-wash:#2E1917; --say-wash:#282419;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#14130F; --surface:#1C1B16; --sunk:#24231D;
+  --ink:#EAE8E1; --ink-2:#ADABA1; --ink-3:#838177;
+  --rule:#33322A; --rule-strong:#4A4940;
+  --mu:#77ACF2; --tau:#5FC87F; --eps:#F2786F; --accent:#D9A45E;
+  --mu-wash:#15243A; --tau-wash:#12291B; --eps-wash:#2E1917; --say-wash:#282419;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.72;-webkit-font-smoothing:antialiased;}
+.shell{max-width:1240px;margin:0 auto;padding:0 26px 100px;}
+
+.masthead{border-bottom:3px double var(--ink);padding:60px 0 26px;margin-bottom:16px;}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 16px;}
+.masthead h1{font-weight:600;font-size:clamp(2.4rem,6vw,3.9rem);line-height:1.02;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance;}
+.standfirst{font-size:1.16rem;color:var(--ink-2);max-width:58ch;margin:0;}
+.masthead-meta{font-family:var(--sans);font-size:12.5px;color:var(--ink-3);margin-top:22px;display:flex;flex-wrap:wrap;gap:6px 22px;}
+
+.band{display:grid;grid-template-columns:1fr;gap:0 40px;align-items:start;}
+@media(min-width:1000px){.band{grid-template-columns:minmax(0,64ch) 260px;}}
+.col{min-width:0;}
+
+.say{background:var(--say-wash);border-left:2px solid var(--accent);padding:11px 14px;margin:18px 0;font-family:var(--sans);font-size:13.5px;line-height:1.5;}
+@media(min-width:1000px){.say{grid-column:2;margin:6px 0 18px;}}
+.say .sym{font-family:var(--serif);font-size:1.5rem;display:block;margin-bottom:2px;color:var(--ink);}
+.say .out{font-weight:700;color:var(--accent);display:block;margin-bottom:4px;}
+
+h2.sec{font-size:2.05rem;font-weight:600;letter-spacing:-.014em;line-height:1.12;margin:80px 0 8px;padding-top:24px;border-top:1px solid var(--rule-strong);text-wrap:balance;scroll-margin-top:18px;}
+h2.sec .num{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:9px;}
+h3{font-size:1.34rem;font-weight:600;margin:46px 0 10px;line-height:1.28;text-wrap:balance;}
+h4{font-family:var(--sans);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:32px 0 8px;}
+p{margin:0 0 17px;}
+.lede{font-size:1.1rem;color:var(--ink-2);}
+ul,ol{margin:0 0 18px;padding-left:1.35em;}
+li{margin-bottom:9px;}
+li::marker{color:var(--ink-3);}
+a{color:var(--mu);}
+
+.mu{color:var(--mu);font-weight:700;}
+.tau{color:var(--tau);font-weight:700;}
+.eps{color:var(--eps);font-weight:700;}
+.m{font-style:italic;white-space:nowrap;}
+
+.box{border-left:3px solid var(--rule-strong);background:var(--surface);padding:16px 20px;margin:26px 0;font-size:.98rem;}
+.box p:last-child{margin-bottom:0;}
+.box .lbl{font-family:var(--sans);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:7px;}
+.box.plain{border-left-color:var(--accent);background:var(--say-wash);}
+.box.plain .lbl{color:var(--accent);}
+.box.big{border-left-color:var(--tau);background:var(--tau-wash);}
+.box.big .lbl{color:var(--tau);}
+.box.careful{border-left-color:var(--eps);background:var(--eps-wash);}
+.box.careful .lbl{color:var(--eps);}
+.box.why{border-left-color:var(--mu);background:var(--mu-wash);}
+.box.why .lbl{color:var(--mu);}
+
+.formula{background:var(--sunk);border-top:2px solid var(--rule-strong);border-bottom:1px solid var(--rule);padding:18px 20px;margin:26px 0;}
+.formula .maths{font-size:1.28rem;text-align:center;display:block;margin-bottom:12px;overflow-x:auto;line-height:1.95;}
+.formula .words{font-family:var(--sans);font-size:14px;text-align:center;color:var(--ink-2);display:block;line-height:1.5;}
+.formula .words b{color:var(--ink);}
+.frac{display:inline-flex;flex-direction:column;vertical-align:-0.5em;text-align:center;margin:0 .22em;font-size:.88em;line-height:1.25;}
+.frac > span:first-child{padding:0 .35em .06em;}
+.frac > span:last-child{border-top:1px solid currentColor;padding:.06em .35em 0;}
+.rad{border-top:1px solid currentColor;padding:0 .15em;}
+
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;font-variant-numeric:tabular-nums;}
+caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-bottom:10px;}
+th,td{text-align:left;padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top;}
+thead th{border-bottom:1.5px solid var(--ink-2);color:var(--ink-2);font-weight:700;font-size:12.5px;}
+td.num,th.num{text-align:right;padding-right:24px;}
+tr.total td{font-weight:700;border-top:1px solid var(--rule-strong);}
+.yes{color:var(--tau);font-weight:700;}
+.no{color:var(--ink-3);}
+.warn{color:var(--eps);font-weight:700;}
+
+pre{font-family:var(--mono);font-size:13px;line-height:1.68;background:var(--sunk);border-left:2px solid var(--rule-strong);padding:16px 18px;overflow-x:auto;margin:22px 0;color:var(--ink);}
+code{font-family:var(--mono);font-size:.84em;background:var(--sunk);padding:.12em .38em;}
+pre code{background:none;padding:0;font-size:inherit;}
+.cmt{color:var(--ink-3);}
+.res{color:var(--tau);}
+
+figure{margin:38px 0;}
+figure svg{display:block;width:100%;height:auto;color:var(--ink-2);background:var(--surface);border:1px solid var(--rule);padding:8px;}
+figcaption{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-3);margin-top:11px;}
+figcaption b{color:var(--ink-2);}
+svg text{font-family:var(--sans);}
+
+.steps{counter-reset:s;list-style:none;padding-left:0;}
+.steps > li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px;}
+.steps > li::before{content:counter(s);position:absolute;left:0;top:2px;font-family:var(--sans);font-size:13px;font-weight:700;color:var(--accent);border:1.5px solid var(--accent);width:26px;height:26px;display:flex;align-items:center;justify-content:center;}
+.footer{border-top:3px double var(--ink);margin-top:90px;padding-top:22px;font-family:var(--sans);font-size:13px;color:var(--ink-3);}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media print{body{background:#fff;color:#000;font-size:11pt;}.band{grid-template-columns:1fr;}}
+</style>
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">STAT210 · NMBU · Lecture 5 · Random effects</p>
+  <h1>Two Kinds of Variation</h1>
+  <p class="standfirst">Until now, your groups were things you picked on purpose. This lecture asks what changes when the groups are just a random sample from a much bigger population — and the answer is: the question you are asking changes completely.</p>
+  <div class="masthead-meta">
+    <span>Third in the plain-language set</span>
+    <span>Every number checked against the real sires data</span>
+  </div>
+</header>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Start here</span>What is actually new</h2>
+
+<p class="lede">Your lecturer calls this "one of the biggest conceptual leaps in applied statistics" and tells you to be patient with yourself. He is right. The maths barely changes. The <em>meaning</em> changes entirely, and that is much harder.</p>
+
+<p>Here is the whole lecture in one comparison. In the trout experiment from lecture 4, you chose four doses of a drug: 0 g, 5 g, 10 g, 15 g. You chose them deliberately. If you ran the study again, you would use those exact same four doses.</p>
+
+<p>Now a different study. You want to know how much a bull's genetics affect his daughters' milk yield. There is a national breeding register with <strong>thousands</strong> of bulls. You cannot test them all, so you pick <strong>5 at random</strong> and measure 8 daughters of each.</p>
+
+<div class="box big">
+  <span class="lbl">The leap</span>
+  <p>You do <strong>not care about those 5 particular bulls.</strong> They are not interesting. They are just a sample.</p>
+  <p>What you want to know is about <em>bulls in general</em>: <strong>how much do bulls vary?</strong> If you picked a different 5 tomorrow, you would want the same answer.</p>
+</div>
+
+<p>That difference — chosen on purpose versus drawn at random — is what separates <strong>fixed effects</strong> (lectures 2 to 4) from <strong>random effects</strong> (this lecture).</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The two paradigms side by side</caption>
+  <thead><tr><th></th><th>Fixed effects (lectures 2–4)</th><th>Random effects (lecture 5)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>The groups are</strong></td><td>Specifically chosen by you</td><td>A random sample from a big population</td></tr>
+    <tr><td><strong>Repeat the study and</strong></td><td>you use the same groups again</td><td>you get a completely new set of groups</td></tr>
+    <tr><td><strong>You are asking</strong></td><td>"Are <em>these particular</em> groups different?"</td><td>"Do groups <em>in general</em> vary at all?"</td></tr>
+    <tr><td><strong>Your conclusion applies to</strong></td><td>only the levels you tested</td><td>the whole population you sampled from</td></tr>
+    <tr><td><strong>Example question</strong></td><td>"Is diet A better than diet B?"</td><td>"How much do bulls vary in genetic quality?"</td></tr>
+    <tr><td><strong>You want to estimate</strong></td><td>group averages</td><td class="yes">how spread out the groups are</td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 330" role="img" aria-label="On the left, four doses picked deliberately from a line of possible doses. On the right, five bulls drawn at random from a large population of thousands.">
+  <defs>
+    <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+    <marker id="a5g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--tau)"/></marker>
+  </defs>
+
+  <text x="180" y="26" font-size="14" fill="var(--mu)" text-anchor="middle" font-weight="700">FIXED — you chose them</text>
+  <text x="540" y="26" font-size="14" fill="var(--tau)" text-anchor="middle" font-weight="700">RANDOM — you drew them</text>
+  <line x1="360" y1="40" x2="360" y2="300" stroke="var(--rule-strong)" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <text x="180" y="52" font-size="11.5" fill="currentColor" text-anchor="middle">every dose you could use</text>
+  <line x1="45" y1="70" x2="315" y2="70" stroke="currentColor" stroke-width="1.5"/>
+  <g fill="var(--ink-3)">
+    <circle cx="70" cy="70" r="3"/><circle cx="118" cy="70" r="3"/><circle cx="166" cy="70" r="3"/>
+    <circle cx="214" cy="70" r="3"/><circle cx="262" cy="70" r="3"/><circle cx="300" cy="70" r="3"/>
+  </g>
+  <g fill="var(--mu)">
+    <circle cx="70" cy="70" r="7"/><circle cx="118" cy="70" r="7"/><circle cx="166" cy="70" r="7"/><circle cx="214" cy="70" r="7"/>
+  </g>
+  <g font-size="10.5" fill="var(--mu)" text-anchor="middle" font-weight="700">
+    <text x="70" y="92">0g</text><text x="118" y="92">5g</text><text x="166" y="92">10g</text><text x="214" y="92">15g</text>
+  </g>
+  <text x="180" y="126" font-size="11.5" fill="var(--mu)" text-anchor="middle">you point at the four you want</text>
+  <text x="180" y="142" font-size="11.5" fill="var(--mu)" text-anchor="middle" font-weight="700">repeat the study → same four</text>
+
+  <ellipse cx="540" cy="82" rx="132" ry="44" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="540" y="66" font-size="11.5" fill="currentColor" text-anchor="middle">thousands of bulls in the register</text>
+  <g fill="var(--ink-3)">
+    <circle cx="466" cy="88" r="2.6"/><circle cx="492" cy="98" r="2.6"/><circle cx="516" cy="84" r="2.6"/>
+    <circle cx="540" cy="100" r="2.6"/><circle cx="566" cy="86" r="2.6"/><circle cx="592" cy="97" r="2.6"/>
+    <circle cx="614" cy="87" r="2.6"/><circle cx="480" cy="78" r="2.6"/><circle cx="556" cy="76" r="2.6"/>
+    <circle cx="604" cy="76" r="2.6"/><circle cx="504" cy="106" r="2.6"/><circle cx="578" cy="106" r="2.6"/>
+    <circle cx="530" cy="70" r="2.6"/><circle cx="452" cy="96" r="2.6"/><circle cx="626" cy="98" r="2.6"/>
+  </g>
+  <g stroke="var(--tau)" stroke-width="1.5">
+    <line x1="492" y1="106" x2="454" y2="158" marker-end="url(#a5g)"/>
+    <line x1="516" y1="94" x2="497" y2="158" marker-end="url(#a5g)"/>
+    <line x1="540" y1="110" x2="540" y2="158" marker-end="url(#a5g)"/>
+    <line x1="566" y1="96" x2="583" y2="158" marker-end="url(#a5g)"/>
+    <line x1="592" y1="107" x2="626" y2="158" marker-end="url(#a5g)"/>
+  </g>
+  <g fill="var(--tau)">
+    <circle cx="452" cy="168" r="7"/><circle cx="496" cy="168" r="7"/><circle cx="540" cy="168" r="7"/>
+    <circle cx="584" cy="168" r="7"/><circle cx="628" cy="168" r="7"/>
+  </g>
+  <text x="540" y="194" font-size="11.5" fill="var(--tau)" text-anchor="middle">blind draw — you take who you get</text>
+  <text x="540" y="210" font-size="11.5" fill="var(--tau)" text-anchor="middle" font-weight="700">repeat the study → five different bulls</text>
+
+  <line x1="45" y1="240" x2="315" y2="240" stroke="var(--rule)"/>
+  <line x1="405" y1="240" x2="675" y2="240" stroke="var(--rule)"/>
+  <text x="180" y="264" font-size="12.5" fill="var(--mu)" text-anchor="middle" font-weight="700">Question: are these four different?</text>
+  <text x="180" y="286" font-size="11.5" fill="currentColor" text-anchor="middle">Answer applies to 0, 5, 10, 15 g only.</text>
+  <text x="540" y="264" font-size="12.5" fill="var(--tau)" text-anchor="middle" font-weight="700">Question: how much do bulls vary?</text>
+  <text x="540" y="286" font-size="11.5" fill="currentColor" text-anchor="middle">Answer applies to the whole register.</text>
+</svg>
+<figcaption><b>The difference is in how the groups got into your study.</b> Deliberate selection means your conclusion is locked to exactly those levels — you cannot say anything about a 7 g dose you never tested. Random selection means the five bulls are stand-ins for the whole population, so your conclusion generalises to bulls you never touched. That single change is what the rest of this lecture is about.</figcaption>
+</figure>
+
+</div>
+
+<aside class="say">
+  <span class="sym">sire</span>
+  <span class="out">"sire" (rhymes with fire)</span>
+  The <strong>father</strong> of an animal, in breeding. The mother is the <em>dam</em>. Here: 5 bulls, each with 8 daughters.
+</aside>
+
+<aside class="say">
+  <span class="sym">a</span>
+  <span class="out">"ay"</span>
+  Number of <strong>groups</strong> — here 5 sires.
+</aside>
+
+<aside class="say">
+  <span class="sym">n</span>
+  <span class="out">"en"</span>
+  Measurements <strong>per group</strong> — here 8 daughters each.
+</aside>
+
+<aside class="say">
+  <span class="sym">N</span>
+  <span class="out">"big en"</span>
+  <strong>Total</strong> measurements — here 5 × 8 = 40 cows.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">The data</span>Five bulls, forty daughters</h2>
+
+<div class="tablewrap">
+<table>
+  <caption>Milk yield in litres — 8 daughters of each sire</caption>
+  <thead><tr><th>Daughter</th><th class="num">Aage</th><th class="num">Hynar</th><th class="num">Lars</th><th class="num">Boss</th><th class="num">Gorm</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="num">6363</td><td class="num">6337</td><td class="num">6330</td><td class="num">6250</td><td class="num">6613</td></tr>
+    <tr><td>2</td><td class="num">6697</td><td class="num">6179</td><td class="num">6571</td><td class="num">6393</td><td class="num">6317</td></tr>
+    <tr><td>3</td><td class="num">6634</td><td class="num">6478</td><td class="num">6676</td><td class="num">6992</td><td class="num">6905</td></tr>
+    <tr><td>4</td><td class="num">7033</td><td class="num">6171</td><td class="num">5970</td><td class="num">7181</td><td class="num">6609</td></tr>
+    <tr><td>5</td><td class="num">6362</td><td class="num">6465</td><td class="num">6480</td><td class="num">6147</td><td class="num">6484</td></tr>
+    <tr><td>6</td><td class="num">6038</td><td class="num">6184</td><td class="num">6022</td><td class="num">6678</td><td class="num">6777</td></tr>
+    <tr><td>7</td><td class="num">6825</td><td class="num">6073</td><td class="num">6011</td><td class="num">6434</td><td class="num">6834</td></tr>
+    <tr><td>8</td><td class="num">7562</td><td class="num">6369</td><td class="num">6546</td><td class="num">7294</td><td class="num">6442</td></tr>
+    <tr class="total"><td>Average</td><td class="num">6689</td><td class="num">6282</td><td class="num">6326</td><td class="num">6671</td><td class="num">6623</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Average of all 40 cows: <strong>6518 litres</strong>. The sire averages run from 6282 to 6689 — a spread of about 400 litres. But look inside a single column: Aage's daughters range from 6038 to 7562, a spread of over 1500 litres, all from the same father.</p>
+
+<p>So again — as with the piglets — <strong>the variation within a group is bigger than the variation between groups.</strong> Keep that in mind; it is what makes the final answer come out the way it does.</p>
+
+</div>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">The model</span>One symbol changes its nature</h2>
+
+<p>The written model is <em>identical</em> to the one you already know:</p>
+
+<div class="formula">
+  <span class="maths">y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span></span>
+  <span class="words">Any measurement = the overall average + the effect of its group + individual randomness.</span>
+</div>
+
+<p>Same letters, same arrangement. But one of them has quietly changed from a <em>fixed unknown number</em> into a <em>random variable</em>.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Symbol</th><th>In lectures 2–4 it was</th><th>Now it is</th></tr></thead>
+  <tbody>
+    <tr><td><span class="mu m">μ</span></td><td>A fixed unknown number — the overall average</td><td class="no">Unchanged. Still a fixed number, now meaning the average of the <em>whole population</em>.</td></tr>
+    <tr><td><span class="tau m">τ<sub>i</sub></span></td><td>A fixed unknown number — this group's effect</td><td class="warn">Now a <strong>random variable</strong>, drawn from a bell curve with average 0 and spread σ²<sub>τ</sub></td></tr>
+    <tr><td><span class="eps m">ε<sub>it</sub></span></td><td>Random individual noise</td><td class="no">Unchanged.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box plain">
+  <span class="lbl">In plain words</span>
+  <p>Before, "the effect of diet S1" was a specific number sitting out there in the world, waiting to be estimated. It had one true value.</p>
+  <p>Now, "the effect of a bull" is not one number — <strong>every bull in the register has his own, and they are scattered around zero.</strong> When you draw a bull at random, you draw his effect at random too. So τ is no longer a fixed thing you estimate; it is a lottery you sample from.</p>
+  <p>And the thing you want to know is not <em>which ticket you drew</em>. It is <strong>how spread out the tickets are</strong>.</p>
+</div>
+
+<p>Written formally, the new assumption is:</p>
+
+<div class="formula">
+  <span class="maths"><span class="tau">τ<sub>i</sub></span> ~ N(0, <span class="tau">σ²<sub>τ</sub></span>)</span>
+  <span class="words">Said aloud: <b>"tau i is normally distributed with mean nought and variance sigma squared tau"</b>.<br>In words: <b>group effects follow a bell curve centred on zero, with a spread we call σ²<sub>τ</sub>.</b></span>
+</div>
+
+<h3>Two consequences fall straight out of this</h3>
+
+<h4>First — every group now has the same expected value</h4>
+
+<div class="formula">
+  <span class="maths">E(y<sub>it</sub>) = <span class="mu">μ</span> + E(<span class="tau">τ<sub>i</sub></span>) + E(<span class="eps">ε<sub>it</sub></span>) = <span class="mu">μ</span> + 0 + 0 = <span class="mu">μ</span></span>
+  <span class="words">Because τ averages to zero across the population, <b>every group has the same long-run average, μ.</b></span>
+</div>
+
+<p>In the fixed model, group 1 was expected to sit at <span class="m">μ + τ₁</span> and group 2 at <span class="m">μ + τ₂</span> — different places. Here, before you know which bull you drew, every group is expected to sit at <span class="m">μ</span>. The differences you actually see are the luck of the draw.</p>
+
+<h4>Second — and this is the important one — variance now has two sources</h4>
+
+<div class="formula">
+  <span class="maths">V(y<sub>it</sub>) = <span class="tau">σ²<sub>τ</sub></span> + <span class="eps">σ²</span></span>
+  <span class="words">Said aloud: <b>"the variance of y equals sigma squared tau plus sigma squared"</b>.<br>In words: <b>how much a cow's yield varies = how much bulls vary + how much cows of the same bull vary.</b></span>
+</div>
+
+<div class="box why">
+  <span class="lbl">Why there are suddenly two</span>
+  <p>In the fixed model, <span class="m">τ<sub>i</sub></span> was a constant, and constants have no variance — they never wobble. So the only thing that varied was the individual noise, and <span class="m">V(y) = σ²</span>.</p>
+  <p>Now <span class="m">τ<sub>i</sub></span> is a random variable, so it wobbles too, and it contributes its own variance. Pick a cow at random from the country and two independent things happened to her: <strong>her father was drawn from the bull population</strong> (contributing σ²<sub>τ</sub>) and <strong>she turned out however she turned out</strong> (contributing σ²). Both add to how unpredictable she is.</p>
+  <p>This is why the whole framework is also called the <strong>variance components model</strong> — you are decomposing the total variance into components.</p>
+</div>
+
+<div class="box big">
+  <span class="lbl">What you are trying to estimate now</span>
+  <p>Not group averages. <strong>The two variances.</strong></p>
+  <ul>
+    <li><span class="tau">σ²<sub>τ</sub></span> — <strong>between-sire variance.</strong> How much genuine genetic quality differs from bull to bull across the whole register.</li>
+    <li><span class="eps">σ²</span> — <strong>within-sire variance.</strong> How much daughters of the <em>same</em> bull differ, because of feed, environment, and chance.</li>
+  </ul>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">σ²<sub>τ</sub></span>
+  <span class="out">"sigma squared tau"</span>
+  The <strong>between-group</strong> variance — how much the groups themselves vary in the population. <strong>This is the new symbol of the lecture.</strong>
+</aside>
+
+<aside class="say">
+  <span class="sym">σ²</span>
+  <span class="out">"sigma squared"</span>
+  The <strong>within-group</strong> variance — how much individuals in the same group differ. Same meaning as in lectures 2–4.
+</aside>
+
+<aside class="say">
+  <span class="sym">E( )</span>
+  <span class="out">"the expected value of"</span>
+  The long-run average of something if you repeated it forever.
+</aside>
+
+<aside class="say">
+  <span class="sym">V( )</span>
+  <span class="out">"the variance of"</span>
+  How spread out something is. Also written Var( ).
+</aside>
+
+<aside class="say">
+  <span class="sym">~</span>
+  <span class="out">"is distributed as"</span>
+  Says which pattern a random quantity follows. <strong>N</strong> means the bell curve (normal).
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">A side effect</span>Sisters are alike, and that breaks an old assumption</h2>
+
+<p>Here is something that did not happen in the fixed model. Take two daughters of the <em>same</em> bull. Are their yields related?</p>
+
+<p>Yes — because they <strong>share the same τ</strong>. Whatever genetic luck their father had, both of them got it. If he happened to be an above-average bull, both daughters are pushed up together.</p>
+
+<div class="formula">
+  <span class="maths">Cov(y<sub>it</sub>, y<sub>ik</sub>) = <span class="tau">σ²<sub>τ</sub></span></span>
+  <span class="words">Said aloud: <b>"the covariance of y i t and y i k equals sigma squared tau"</b>.<br>In words: <b>two individuals in the same group are related to each other, by exactly the amount that groups vary.</b></span>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — this breaks the independence assumption</span>
+  <p>In lectures 2 to 4, one of the three assumptions was that <strong>all observations are independent</strong>. In a random effects model that is <em>deliberately false</em>: observations inside a group are positively correlated, on purpose, because they share a random effect.</p>
+  <p>This is exactly why ordinary regression tools are not enough here, and why the lecture introduces special software. If you feed correlated data to a method that assumes independence, it thinks it has more information than it really does, and your confidence intervals come out too narrow.</p>
+</div>
+
+<h3>The ICC — turning that correlation into a number you can report</h3>
+
+<p>The correlation between two members of the same group has a name: the <strong>intraclass correlation coefficient</strong>, or ICC. It is just the between-group variance as a fraction of the total.</p>
+
+<div class="formula">
+  <span class="maths">ICC = <span class="frac"><span><span class="tau">σ²<sub>τ</sub></span></span><span><span class="tau">σ²<sub>τ</sub></span> + <span class="eps">σ²</span></span></span></span>
+  <span class="words">In words: <b>of all the variation in milk yield, what fraction is due to which bull the cow's father was?</b></span>
+</div>
+
+<p>Because both variances are positive, this always lands between 0 and 1.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">ICC</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><td class="num">0</td><td>Group membership tells you nothing at all. Knowing the father is useless for predicting the daughter.</td></tr>
+    <tr><td class="num">0.18</td><td>18% of the variation is down to the group. Knowing the father helps a bit.</td></tr>
+    <tr><td class="num">1</td><td>All variation is between groups. Knowing the father tells you the answer exactly.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box plain">
+  <span class="lbl">The intuition — your lecturer's classroom analogy</span>
+  <p>Picture a school with many classrooms, each with a different teacher.</p>
+  <p>If teachers vary a lot in quality, but students within any one classroom all score similarly, then <strong>knowing which classroom a child is in tells you a lot about their grade</strong> — high ICC.</p>
+  <p>If all teachers are much of a muchness, but students within each classroom are wildly different from each other, then knowing the classroom tells you almost nothing — low ICC.</p>
+  <p>So: <strong>ICC answers "how much does knowing the group help me predict the individual?"</strong></p>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img" aria-label="Two panels of dots. On the left, five tight clusters at clearly different heights, showing high ICC. On the right, five overlapping scattered clouds at similar heights, showing low ICC.">
+  <text x="195" y="22" font-size="13.5" fill="var(--tau)" text-anchor="middle" font-weight="700">HIGH ICC — groups matter</text>
+  <text x="545" y="22" font-size="13.5" fill="var(--eps)" text-anchor="middle" font-weight="700">LOW ICC — groups barely matter</text>
+  <line x1="365" y1="34" x2="365" y2="272" stroke="var(--rule-strong)" stroke-dasharray="4 4"/>
+
+  <line x1="52" y1="272" x2="338" y2="272" stroke="currentColor"/>
+  <line x1="52" y1="40" x2="52" y2="272" stroke="currentColor"/>
+  <line x1="398" y1="272" x2="684" y2="272" stroke="currentColor"/>
+  <line x1="398" y1="40" x2="398" y2="272" stroke="currentColor"/>
+
+  <g fill="var(--tau)" opacity=".8">
+    <circle cx="76" cy="209.7" r="3.4"/><circle cx="80" cy="203.8" r="3.4"/><circle cx="84" cy="218.5" r="3.4"/><circle cx="88" cy="217.0" r="3.4"/><circle cx="92" cy="192.9" r="3.4"/><circle cx="96" cy="212.9" r="3.4"/><circle cx="100" cy="191.5" r="3.4"/><circle cx="104" cy="198.2" r="3.4"/>
+    <circle cx="131" cy="179.2" r="3.4"/><circle cx="135" cy="188.3" r="3.4"/><circle cx="139" cy="186.6" r="3.4"/><circle cx="143" cy="182.1" r="3.4"/><circle cx="147" cy="193.3" r="3.4"/><circle cx="151" cy="181.2" r="3.4"/><circle cx="155" cy="189.7" r="3.4"/><circle cx="159" cy="178.6" r="3.4"/>
+    <circle cx="186" cy="155.5" r="3.4"/><circle cx="190" cy="145.0" r="3.4"/><circle cx="194" cy="159.1" r="3.4"/><circle cx="198" cy="159.7" r="3.4"/><circle cx="202" cy="159.9" r="3.4"/><circle cx="206" cy="153.6" r="3.4"/><circle cx="210" cy="157.6" r="3.4"/><circle cx="214" cy="150.1" r="3.4"/>
+    <circle cx="241" cy="128.0" r="3.4"/><circle cx="245" cy="128.6" r="3.4"/><circle cx="249" cy="130.4" r="3.4"/><circle cx="253" cy="136.0" r="3.4"/><circle cx="257" cy="130.8" r="3.4"/><circle cx="261" cy="139.0" r="3.4"/><circle cx="265" cy="140.1" r="3.4"/><circle cx="269" cy="138.6" r="3.4"/>
+    <circle cx="296" cy="101.0" r="3.4"/><circle cx="300" cy="122.5" r="3.4"/><circle cx="304" cy="115.8" r="3.4"/><circle cx="308" cy="102.9" r="3.4"/><circle cx="312" cy="109.3" r="3.4"/><circle cx="316" cy="92.8" r="3.4"/><circle cx="320" cy="113.3" r="3.4"/><circle cx="324" cy="110.8" r="3.4"/>
+  </g>
+  <g stroke="var(--tau)" stroke-width="2">
+    <line x1="72" y1="205.6" x2="108" y2="205.6"/><line x1="127" y1="184.9" x2="163" y2="184.9"/>
+    <line x1="182" y1="155.1" x2="218" y2="155.1"/><line x1="237" y1="134.0" x2="273" y2="134.0"/>
+    <line x1="292" y1="108.6" x2="328" y2="108.6"/>
+  </g>
+
+  <g fill="var(--eps)" opacity=".8">
+    <circle cx="422" cy="219.7" r="3.4"/><circle cx="426" cy="159.3" r="3.4"/><circle cx="430" cy="127.6" r="3.4"/><circle cx="434" cy="191.9" r="3.4"/><circle cx="438" cy="127.6" r="3.4"/><circle cx="442" cy="172.6" r="3.4"/><circle cx="446" cy="239.7" r="3.4"/><circle cx="450" cy="128.0" r="3.4"/>
+    <circle cx="477" cy="131.2" r="3.4"/><circle cx="481" cy="149.5" r="3.4"/><circle cx="485" cy="128.8" r="3.4"/><circle cx="489" cy="165.9" r="3.4"/><circle cx="493" cy="187.3" r="3.4"/><circle cx="497" cy="139.3" r="3.4"/><circle cx="501" cy="151.7" r="3.4"/><circle cx="505" cy="137.8" r="3.4"/>
+    <circle cx="532" cy="160.7" r="3.4"/><circle cx="536" cy="139.0" r="3.4"/><circle cx="540" cy="100.8" r="3.4"/><circle cx="544" cy="152.8" r="3.4"/><circle cx="548" cy="185.9" r="3.4"/><circle cx="552" cy="69.8" r="3.4"/><circle cx="556" cy="159.4" r="3.4"/><circle cx="560" cy="226.0" r="3.4"/>
+    <circle cx="587" cy="132.5" r="3.4"/><circle cx="591" cy="90.5" r="3.4"/><circle cx="595" cy="181.0" r="3.4"/><circle cx="599" cy="191.3" r="3.4"/><circle cx="603" cy="174.3" r="3.4"/><circle cx="607" cy="124.7" r="3.4"/><circle cx="611" cy="135.7" r="3.4"/><circle cx="615" cy="156.6" r="3.4"/>
+    <circle cx="642" cy="177.4" r="3.4"/><circle cx="646" cy="141.3" r="3.4"/><circle cx="650" cy="108.9" r="3.4"/><circle cx="654" cy="143.9" r="3.4"/><circle cx="658" cy="174.7" r="3.4"/><circle cx="662" cy="133.1" r="3.4"/><circle cx="666" cy="188.5" r="3.4"/><circle cx="670" cy="135.0" r="3.4"/>
+  </g>
+  <g stroke="var(--eps)" stroke-width="2">
+    <line x1="418" y1="170.8" x2="454" y2="170.8"/><line x1="473" y1="148.9" x2="509" y2="148.9"/>
+    <line x1="528" y1="149.3" x2="564" y2="149.3"/><line x1="583" y1="148.3" x2="619" y2="148.3"/>
+    <line x1="638" y1="150.3" x2="674" y2="150.3"/>
+  </g>
+
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="195" y="290">the group averages (thick lines) are far apart,</text>
+    <text x="545" y="290">the group averages are almost identical,</text>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" font-weight="700">
+    <text x="195" y="256">and each cluster is tight</text>
+    <text x="545" y="256">and each cloud is wide</text>
+  </g>
+</svg>
+<figcaption><b>Same idea, two extremes.</b> On the left, you could guess a point's value well just from knowing its group — the clusters barely overlap. On the right, the groups sit on top of each other and knowing the group tells you almost nothing. <b>The real sires data looks much more like the right-hand panel than the left</b>, which is why the answer comes out at 18% rather than 80%.</figcaption>
+</figure>
+
+</div>
+
+<aside class="say">
+  <span class="sym">Cov</span>
+  <span class="out">"covariance"</span>
+  How much two things move together. Zero means unrelated; positive means they rise and fall together.
+</aside>
+
+<aside class="say">
+  <span class="sym">ICC</span>
+  <span class="out">"I C C"</span>
+  Intraclass correlation coefficient. The fraction of total variation that comes from the groups. Between 0 and 1.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">The calculation</span>Same table, completely different meaning</h2>
+
+<p>Here is the part that surprises people. <strong>You build the ANOVA table exactly as before.</strong> Every formula from lecture 2 is unchanged: the sums of squares, the degrees of freedom, the mean squares, the F. Nothing about the arithmetic knows or cares that τ became random.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The sires ANOVA table — built with the lecture 2 formulas</caption>
+  <thead><tr><th>Source</th><th class="num">SS</th><th class="num">df</th><th class="num">Mean square</th><th class="num">F</th><th class="num">p</th></tr></thead>
+  <tbody>
+    <tr><td>Sire</td><td class="num">1,251,009</td><td class="num">4</td><td class="num">312,752</td><td class="num">2.806</td><td class="num yes">0.0404</td></tr>
+    <tr><td>Error</td><td class="num">3,901,166</td><td class="num">35</td><td class="num">111,462</td><td class="num"></td><td class="num"></td></tr>
+    <tr class="total"><td>Total</td><td class="num">5,152,175</td><td class="num">39</td><td class="num"></td><td class="num"></td><td class="num"></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>What changes is <strong>what the F-test is asking</strong>.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th></th><th>Fixed model</th><th>Random model</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Null hypothesis</strong></td><td><span class="m">τ₁ = τ₂ = ⋯ = τ<sub>a</sub> = 0</span></td><td><span class="m"><span class="tau">σ²<sub>τ</sub></span> = 0</span></td></tr>
+    <tr><td><strong>In words</strong></td><td>"These specific groups all have the same average"</td><td>"Groups in the population do not vary at all"</td></tr>
+    <tr><td><strong>Alternative</strong></td><td>At least one τ differs — two-sided in spirit</td><td class="warn"><span class="m">σ²<sub>τ</sub> &gt; 0</span> — <strong>one-sided</strong>, because a variance cannot be negative</td></tr>
+    <tr><td><strong>Test statistic</strong></td><td colspan="2" class="yes">Identical: F = MS<sub>Tr</sub> ÷ MS<sub>E</sub>, reject if bigger than the table value</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Why the same F works for a completely different question</h3>
+
+<p>This is the mathematical heart of the lecture. It rests on two facts about what the mean squares are <em>expected</em> to equal in the long run.</p>
+
+<div class="formula">
+  <span class="maths">E(MS<sub>E</sub>) = <span class="eps">σ²</span><br>E(MS<sub>Tr</sub>) = <span class="eps">σ²</span> + n·<span class="tau">σ²<sub>τ</sub></span></span>
+  <span class="words">Said aloud: <b>"the expected mean square for error is sigma squared; the expected mean square for treatment is sigma squared plus n sigma squared tau"</b>.</span>
+</div>
+
+<div class="box why">
+  <span class="lbl">Why this makes the F-test work</span>
+  <p>Read the second line carefully. <span class="m">MS<sub>Tr</sub></span> is expected to equal the noise <strong>plus an extra bit</strong>, and that extra bit is <span class="m">n × σ²<sub>τ</sub></span> — the between-group variance, multiplied by group size.</p>
+  <p><strong>If bulls really do not vary</strong> (σ²<sub>τ</sub> = 0), the extra bit disappears and both mean squares are estimating the same thing, σ². Their ratio should sit near 1.</p>
+  <p><strong>If bulls do vary</strong> (σ²<sub>τ</sub> &gt; 0), the top of the fraction is inflated and F gets pushed up.</p>
+  <p>So a large F is evidence of between-group variance — which is precisely the new question. Same statistic, and it happens to answer both questions because both nulls make the two mean squares equal.</p>
+</div>
+
+<div class="box plain">
+  <span class="lbl">Notice the n</span>
+  <p>The extra bit is <span class="m">n × σ²<sub>τ</sub></span>, not just σ²<sub>τ</sub>. More daughters per bull <strong>multiplies</strong> your ability to see between-bull variance, because each group average becomes a sharper measurement of its own bull. This is the same "averages are more precise than individuals" idea from lecture 2, showing up again.</p>
+</div>
+
+<h3>The verdict for the sires</h3>
+
+<p>F = 2.806, and the table value for 4 and 35 degrees of freedom at 5% is <strong>2.641</strong>. Since 2.806 is bigger, reject the null: <strong>there is evidence that bulls genuinely vary in genetic quality.</strong> The p-value is 0.0404.</p>
+
+<div class="box careful">
+  <span class="lbl">Careful — this only just passes</span>
+  <p>p = 0.0404 is below 0.05, but not by much. F = 2.806 against a threshold of 2.641 clears the bar by about 6%.</p>
+  <p>Remember this when you reach the confidence intervals later on — it explains why they turn out so uninformative. <strong>A barely-significant test and a nearly-useless confidence interval are two views of the same weak evidence.</strong></p>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">E(MS)</span>
+  <span class="out">"expected mean square"</span>
+  What a mean square equals <em>on average</em> in the long run. Abbreviated <strong>EMS</strong>. Your lecturer says this is the backbone of everything from here to the end of the course.
+</aside>
+
+<aside class="say">
+  <span class="sym">H₀</span>
+  <span class="out">"H nought"</span>
+  The null hypothesis — the boring possibility you are trying to rule out.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Getting the numbers</span>Method of moments</h2>
+
+<p>You now know bulls vary. <em>By how much?</em> The trick is simple and rather elegant: take the two expected-mean-square equations, pretend the observed values equal the expected values, and solve.</p>
+
+<ol class="steps">
+  <li><strong>The error one is immediate.</strong> Since <span class="m">E(MS<sub>E</sub>) = σ²</span>, your estimate is just <span class="m">σ̂² = MS<sub>E</sub></span>. For the sires: <strong>111,462</strong>.</li>
+  <li><strong>Take the treatment equation</strong> and substitute what you just found: <span class="m">MS<sub>Tr</sub> = MS<sub>E</sub> + n·σ̂²<sub>τ</sub></span>.</li>
+  <li><strong>Rearrange for the unknown.</strong> Subtract, then divide by n.</li>
+</ol>
+
+<div class="formula">
+  <span class="maths"><span class="tau">σ̂²<sub>τ</sub></span> = <span class="frac"><span>MS<sub>Tr</sub> − MS<sub>E</sub></span><span>n</span></span></span>
+  <span class="words">In words: <b>take how much bigger the treatment mean square is than the error mean square, and divide by the group size.</b></span>
+</div>
+
+<h4>For the sires</h4>
+
+<div class="formula">
+  <span class="maths"><span class="tau">σ̂²<sub>τ</sub></span> = <span class="frac"><span>312,752 − 111,462</span><span>8</span></span> = <span class="frac"><span>201,290</span><span>8</span></span> = 25,161</span>
+  <span class="words">Between-bull variance: <b>25,161</b>. Within-bull variance: <b>111,462</b>.</span>
+</div>
+
+<h3>The ICC follows in one line</h3>
+
+<div class="formula">
+  <span class="maths">ICC = <span class="frac"><span>25,161</span><span>25,161 + 111,462</span></span> = <span class="frac"><span>25,161</span><span>136,623</span></span> = <span class="tau">0.184</span></span>
+  <span class="words"><b>18.4% of all the variation in milk yield is down to which bull the cow's father was.</b> The remaining 81.6% is environment, feed, and individual chance.</span>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 235" role="img" aria-label="A bar showing total variance of 136,623 split into a small between-sire portion of 25,161 and a large within-sire portion of 111,462">
+  <text x="30" y="26" font-size="13" fill="currentColor" font-weight="700">Total variation in milk yield = 136,623</text>
+
+  <rect x="30" y="42" width="122.5" height="52" fill="var(--tau)" opacity=".55" stroke="var(--tau)" stroke-width="1.5"/>
+  <rect x="152.5" y="42" width="542.5" height="52" fill="var(--eps)" opacity=".32" stroke="var(--eps)" stroke-width="1.5"/>
+
+  <text x="91" y="74" font-size="13" fill="currentColor" text-anchor="middle" font-weight="700">25,161</text>
+  <text x="424" y="74" font-size="13" fill="currentColor" text-anchor="middle" font-weight="700">111,462</text>
+
+  <line x1="30" y1="100" x2="30" y2="126" stroke="var(--tau)"/>
+  <line x1="152.5" y1="100" x2="152.5" y2="126" stroke="var(--tau)"/>
+  <line x1="695" y1="100" x2="695" y2="126" stroke="var(--eps)"/>
+
+  <text x="91" y="142" font-size="12.5" fill="var(--tau)" text-anchor="middle" font-weight="700">BETWEEN bulls</text>
+  <text x="91" y="158" font-size="11" fill="var(--tau)" text-anchor="middle">genetics</text>
+  <text x="91" y="174" font-size="15" fill="var(--tau)" text-anchor="middle" font-weight="700">18.4%</text>
+
+  <text x="424" y="142" font-size="12.5" fill="var(--eps)" text-anchor="middle" font-weight="700">WITHIN bulls</text>
+  <text x="424" y="158" font-size="11" fill="var(--eps)" text-anchor="middle">feed, environment, individual chance</text>
+  <text x="424" y="174" font-size="15" fill="var(--eps)" text-anchor="middle" font-weight="700">81.6%</text>
+
+  <line x1="30" y1="196" x2="695" y2="196" stroke="var(--rule)"/>
+  <text x="30" y="220" font-size="12" fill="currentColor">The green fraction of the whole bar <tspan font-weight="700">is</tspan> the ICC. That is all the ICC is.</text>
+</svg>
+<figcaption><b>The ICC is a fraction of a bar, drawn to scale.</b> Genetics accounts for the green slice. In animal breeding an 18% genetic signal is considered strong enough to act on — it means selective breeding will work, slowly, even though most of what you observe in any individual cow is not genetic at all.</figcaption>
+</figure>
+
+<h3>The flaw in this method</h3>
+
+<div class="box careful">
+  <span class="lbl">Careful — you can get a negative variance</span>
+  <p>Look at the formula again: <span class="m">(MS<sub>Tr</sub> − MS<sub>E</sub>) ÷ n</span>. Nothing stops <span class="m">MS<sub>E</sub></span> from being <em>bigger</em> than <span class="m">MS<sub>Tr</sub></span>. When that happens the formula returns a <strong>negative variance</strong> — which is impossible, since variance is an average of squared things.</p>
+  <p>This is not a mistake in your arithmetic. It happens by pure bad luck when the true between-group variance is small and your sample is small.</p>
+  <p><strong>What to do:</strong> report the estimate as zero, or switch to a method called REML, which cannot produce negative values.</p>
+  <p>The sires escaped this — 312,752 is comfortably bigger than 111,462 — but only because F came out above 1. <em>Any</em> dataset with F below 1 gives a negative estimate.</p>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">σ̂²<sub>τ</sub></span>
+  <span class="out">"sigma squared tau hat"</span>
+  The <strong>hat</strong> means "our estimate from data", as opposed to the unknown true value.
+</aside>
+
+<aside class="say">
+  <span class="sym">REML</span>
+  <span class="out">"rem-ell"</span>
+  Restricted Maximum Likelihood. A different way of estimating variances that <strong>never returns a negative number</strong>. The computer finds the answer by trial and improvement rather than a formula.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Confidence intervals</span>Three of them, and they behave very differently</h2>
+
+<h3>1 — For the population average μ, and a textbook error</h3>
+
+<p>In the random model, <span class="m">μ</span> means the true average milk yield of <strong>the entire national herd</strong>, not just your 40 cows. The best estimate is still the grand mean, 6518 litres. But the uncertainty around it is <em>not</em> what it was in the fixed model.</p>
+
+<div class="box why">
+  <span class="lbl">Why the uncertainty is bigger than you would expect</span>
+  <p>In the fixed model you had 40 independent measurements, so the wobble in the grand mean was <span class="m">σ²/40</span>.</p>
+  <p>But your 40 cows are <strong>not</strong> 40 independent pieces of information about the national herd. They come from only <strong>5 bulls</strong>. If those 5 bulls happened to be above average, all 40 cows are above average together, and no amount of measuring more daughters would reveal that.</p>
+  <p><strong>Your effective sample size for learning about the nation is closer to 5 than to 40.</strong> Adding daughters sharpens each bull's average, but it does not add new bulls.</p>
+</div>
+
+<div class="formula">
+  <span class="maths">V(<span class="mu">μ̂</span>) = <span class="frac"><span><span class="eps">σ²</span> + n·<span class="tau">σ²<sub>τ</sub></span></span><span>a·n</span></span> &nbsp;&nbsp;which we estimate as&nbsp;&nbsp; <span class="frac"><span>MS<sub>Tr</sub></span><span>a·n</span></span></span>
+  <span class="words">The top is exactly what MS<sub>Tr</sub> estimates, so the whole thing collapses to <b>MS<sub>Tr</sub> divided by the total number of observations.</b></span>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — your textbook is wrong here, and your lecturer says so</span>
+  <p>The degrees of freedom for this interval are <span class="m">a − 1 = 4</span>, <strong>not</strong> <span class="m">N − a = 35</span>.</p>
+  <p><strong>Montgomery, 10th edition, page 107, states N − a. That is an error.</strong> Your lecturer flags it explicitly on the slides, so it is fair game for an exam question.</p>
+  <p><strong>The reasoning:</strong> you built this standard error out of <span class="m">MS<sub>Tr</sub></span>, so you inherit <em>that</em> mean square's degrees of freedom — which is <span class="m">a − 1</span>. You never used <span class="m">MS<sub>E</sub></span>, so its 35 degrees of freedom are irrelevant here.</p>
+</div>
+
+<h4>The calculation, step by step</h4>
+
+<ol class="steps">
+  <li><strong>The estimate:</strong> <span class="m">ȳ<sub>··</sub> = 6518.15</span> litres.</li>
+  <li><strong>The standard error:</strong> <span class="m">√<span class="rad">312,752 ÷ 40</span> = √<span class="rad">7818.8</span> = <strong>88.42</strong></span>.</li>
+  <li><strong>The multiplier:</strong> with 4 degrees of freedom, <span class="m">t = <strong>2.776</strong></span>.</li>
+  <li><strong>Put it together:</strong> <span class="m">6518.15 ± 2.776 × 88.42 = 6518.15 ± 245.5</span>.</li>
+  <li><strong>The interval:</strong> <span class="yes">6272.6 to 6763.7 litres</span>.</li>
+</ol>
+
+<div class="tablewrap">
+<table>
+  <caption>What the textbook error would have cost you</caption>
+  <thead><tr><th>Degrees of freedom used</th><th class="num">t multiplier</th><th class="num">Interval</th><th class="num">Width</th></tr></thead>
+  <tbody>
+    <tr><td class="yes">4 — correct</td><td class="num">2.776</td><td class="num">6272.6 to 6763.7</td><td class="num">491</td></tr>
+    <tr><td class="warn">35 — Montgomery's error</td><td class="num">2.030</td><td class="num">6338.6 to 6697.7</td><td class="num">359</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The wrong version is <strong>27% narrower</strong>. The error does not just misstate a number — it makes you look more certain than the data allow, which is the dangerous direction to be wrong in.</p>
+
+<h3>2 — For the within-group variance σ², which is well behaved</h3>
+
+<p>Nothing has changed from lecture 3. The same exact interval applies:</p>
+
+<div class="formula">
+  <span class="maths">[ <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>0.975, 35</sub></span></span> , <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>0.025, 35</sub></span></span> ] = [ <span class="frac"><span>3,901,166</span><span>53.20</span></span> , <span class="frac"><span>3,901,166</span><span>20.57</span></span> ]</span>
+  <span class="words">Giving <b>73,326 to 189,659</b>. Remember: the <b>big</b> chi-square number gives the <b>small</b> end of the interval.</span>
+</div>
+
+<p>This one is exact and reliable, because it rests on 35 degrees of freedom — you have plenty of information about how much daughters of the same bull differ.</p>
+
+<h3>3 — For the between-group variance σ²<sub>τ</sub>, which is a mess</h3>
+
+<div class="box why">
+  <span class="lbl">Why this one is hard</span>
+  <p>Your estimate is <span class="m">(MS<sub>Tr</sub> − MS<sub>E</sub>) ÷ n</span> — a <em>difference of two different mean squares</em>. Each has its own known distribution, but their difference does not follow any standard, named distribution. There is no exact formula.</p>
+  <p>The workaround is <strong>Satterthwaite's approximation</strong>: pretend the difference behaves like a chi-square distribution, and work out what degrees of freedom would make that pretence fit best. The answer comes out as a fraction rather than a whole number.</p>
+</div>
+
+<p>For the sires, that effective degrees of freedom works out to <strong>ν = 1.63</strong>.</p>
+
+<div class="box careful">
+  <span class="lbl">Read that number again</span>
+  <p><strong>1.63 effective degrees of freedom.</strong> You measured 40 cows, and you have less than two degrees of freedom' worth of information about how much bulls vary.</p>
+  <p>That is the honest cost of sampling only 5 bulls. If you want to learn about bull-to-bull variation, you need <em>more bulls</em> — not more daughters.</p>
+  <p>Your lecturer says you are <strong>not required to compute this by hand</strong> in STAT210. Understanding why it is hard is the examinable part.</p>
+</div>
+
+<h3>And a confidence interval for the ICC — with a surprise</h3>
+
+<p>There is a formula for this, using two F-table values:</p>
+
+<div class="formula">
+  <span class="maths">L = <span class="frac"><span>1</span><span>n</span></span>( <span class="frac"><span>F₀</span><span>F<sub>0.025</sub></span></span> − 1 ) &nbsp;&nbsp;&nbsp; U = <span class="frac"><span>1</span><span>n</span></span>( <span class="frac"><span>F₀</span><span>F<sub>0.975</sub></span></span> − 1 )</span>
+  <span class="words">then the interval for the ICC is <b>[ L ÷ (1+L) , U ÷ (1+U) ]</b>.</span>
+</div>
+
+<p>Run it on the sires and you get <strong>−0.015 to 0.739</strong>.</p>
+
+<div class="box careful">
+  <span class="lbl">The lower end is negative — and an ICC cannot be negative</span>
+  <p>Your lecture slide prints this result without comment. It is not a mistake in the formula; it is the interval-shaped version of the negative variance problem from earlier. <strong>In practice you truncate it: report the interval as 0 to 0.74.</strong></p>
+</div>
+
+<div class="box why">
+  <span class="lbl">Why it happens — and why it does not contradict the F-test</span>
+  <p>This looks like a contradiction. The F-test <em>rejected</em> the null that σ²<sub>τ</sub> = 0, yet the confidence interval for the ICC <em>includes</em> zero. How can both be true?</p>
+  <p>Because they are not the same test. Look at which thresholds each one uses:</p>
+  <ul>
+    <li>The <strong>F-test is one-sided</strong> — a variance can only be too big, never too small. It compares F₀ = 2.806 against <strong>2.641</strong>, and 2.806 clears it.</li>
+    <li>The <strong>confidence interval is two-sided</strong>, splitting the 5% into 2.5% at each end. That effectively requires F₀ to beat <strong>3.179</strong>, and 2.806 does not.</li>
+  </ul>
+  <p>So F₀ = 2.806 sits <em>between</em> the two thresholds: enough for the one-sided test, not enough for the two-sided interval. Both results are correct, and together they tell you the truth better than either alone: <strong>there is probably some genetic variation, but you cannot pin down how much.</strong></p>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 350" role="img" aria-label="The F distribution for 4 and 35 degrees of freedom, showing the observed F of 2.806 sitting between the one-sided threshold of 2.641 and the two-sided threshold of 3.179">
+  <line x1="70" y1="300" x2="680" y2="300" stroke="currentColor"/>
+  <polygon points="329.7,300 329.7,279.2 346.7,283.4 363.6,286.8 380.6,289.5 397.5,291.6 414.4,293.3 431.4,294.7 448.3,295.7 465.2,296.6 482.2,297.3 499.1,297.8 516.0,298.2 533.0,298.6 549.9,298.8 566.9,299.1 583.8,299.2 600.7,299.4 617.7,299.5 634.6,299.6 651.5,299.7 660,299.7 660,300" fill="var(--tau)" opacity=".22"/>
+  <polyline points="70.1,298.6 82.0,173.8 93.9,107.1 105.8,77.5 117.8,70.8 129.7,77.9 141.6,92.7 153.5,111.3 165.4,131.1 177.4,150.8 189.3,169.4 201.2,186.6 213.1,202.0 225.0,215.6 236.9,227.6 248.9,238.1 260.8,247.1 272.7,254.9 284.6,261.6 296.5,267.3 308.4,272.2 320.4,276.3 332.3,279.9 344.2,282.9 356.1,285.4 368.0,287.6 379.9,289.4 391.9,291.0 403.8,292.3 415.7,293.4 427.6,294.4 439.5,295.2 451.4,295.9 463.4,296.5 475.3,297.0 487.2,297.4 499.1,297.8 511.0,298.1 523.0,298.4 534.9,298.6 546.8,298.8 558.7,299.0 570.6,299.1 582.5,299.2 594.5,299.3 606.4,299.4 618.3,299.5 630.2,299.6 642.1,299.6 654.0,299.7 660.0,299.7" fill="none" stroke="currentColor" stroke-width="1.8"/>
+
+  <line x1="329.7" y1="112" x2="329.7" y2="300" stroke="var(--tau)" stroke-width="2" stroke-dasharray="5 3"/>
+  <text x="322" y="104" font-size="11.5" fill="var(--tau)" text-anchor="end" font-weight="700">2.641</text>
+  <text x="322" y="89" font-size="10.5" fill="var(--tau)" text-anchor="end">bar for the ONE-SIDED test</text>
+
+  <line x1="382.6" y1="150" x2="382.6" y2="300" stroke="var(--eps)" stroke-width="2" stroke-dasharray="5 3"/>
+  <text x="392" y="142" font-size="11.5" fill="var(--eps)" font-weight="700">3.179</text>
+  <text x="392" y="127" font-size="10.5" fill="var(--eps)">bar for the TWO-SIDED interval</text>
+
+  <line x1="345.9" y1="196" x2="345.9" y2="300" stroke="var(--ink)" stroke-width="2.6"/>
+  <circle cx="345.9" cy="196" r="5" fill="var(--ink)"/>
+  <text x="345.9" y="188" font-size="12.5" fill="var(--ink)" text-anchor="middle" font-weight="700">F₀ = 2.806</text>
+
+  <path d="M330,325 L382,325" stroke="currentColor" stroke-width="1"/>
+  <line x1="330" y1="320" x2="330" y2="330" stroke="currentColor"/>
+  <line x1="382.6" y1="320" x2="382.6" y2="330" stroke="currentColor"/>
+  <text x="356" y="344" font-size="11" fill="currentColor" text-anchor="middle" font-weight="700">our F lands in here</text>
+
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="70" y="318">0</text><text x="266.7" y="318">2</text><text x="463.3" y="318">4</text><text x="660" y="318">6</text>
+  </g>
+</svg>
+<figcaption><b>Two different bars, and the result falls between them.</b> The one-sided test only asks whether F is unusually large, so it puts all 5% in the right-hand tail and sets the bar at 2.641. The two-sided interval reserves 2.5% for each end, pushing its bar up to 3.179. Our F of 2.806 clears the first but not the second — which is exactly why the test says "significant" while the interval still contains zero.</figcaption>
+</figure>
+
+</div>
+
+<aside class="say">
+  <span class="sym">ν</span>
+  <span class="out">"new" (Greek letter nu)</span>
+  Effective degrees of freedom from Satterthwaite's approximation. Usually a fraction, not a whole number.
+</aside>
+
+<aside class="say">
+  <span class="sym">χ²</span>
+  <span class="out">"kai squared"</span>
+  The distribution used for questions about variances. Lopsided, never negative.
+</aside>
+
+<aside class="say">
+  <span class="sym">F₀</span>
+  <span class="out">"F nought"</span>
+  The F value <strong>you calculated from your data</strong>, as opposed to the threshold from a table.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">On the computer</span>Why base R is not enough</h2>
+
+<div class="box careful">
+  <span class="lbl">The problem with the ordinary R commands</span>
+  <p>The functions you have used so far — <code>aov()</code> and <code>lm()</code> — compute the mean squares perfectly well. But they have <strong>no idea which of your factors are random</strong>. They always divide by <span class="m">MS<sub>E</sub></span> when forming an F-test.</p>
+  <p>For this one-factor design that happens to give the right answer. For the multi-factor designs coming in lecture 6, it gives <strong>the wrong F-test</strong>, silently. You need software that understands the expected-mean-square structure.</p>
+</div>
+
+<p>The course uses a package called <strong>mixlm</strong>. The one rule is: wrap any random factor in <code>r()</code>.</p>
+
+<pre><code><span class="cmt"># sire is RANDOM — note the r( ) around it</span>
+model &lt;- lm(milk ~ r(sire), data = sires)
+
+<span class="cmt"># without r( ), sire would be treated as FIXED</span>
+model &lt;- lm(milk ~ sire, data = sires)</code></pre>
+
+<div class="box plain">
+  <span class="lbl">Something to know about your own computer</span>
+  <p>I checked. <strong><code>mixlm</code> and <code>lme4</code> are not currently installed on your machine</strong> — so the R code on the lecture slides will not run as-is. To install them, open RStudio and type this into the console at the bottom left, then press enter:</p>
+  <pre><code>install.packages(c("mixlm", "lme4"))</code></pre>
+  <p>It will download from the internet and take a minute or two. You only ever need to do it once. After that, <code>library(mixlm)</code> at the top of a script makes the commands available.</p>
+</div>
+
+<h3>Getting every number without any package at all</h3>
+
+<p>You do not actually need <code>mixlm</code> to answer the exam questions on this lecture — because, as we saw, the ANOVA table is identical to the fixed-effects one. Everything else is arithmetic you can do yourself. This is exactly how I checked every figure in this document:</p>
+
+<pre><code><span class="cmt"># --- the ordinary ANOVA gives you the raw material -------------</span>
+m  &lt;- aov(milk ~ sire, data = sires)
+at &lt;- anova(m)
+
+MSTr &lt;- at["sire",      "Mean Sq"]   <span class="cmt"># 312752</span>
+MSE  &lt;- at["Residuals", "Mean Sq"]   <span class="cmt"># 111462</span>
+SSE  &lt;- at["Residuals", "Sum Sq"]    <span class="cmt"># 3901166</span>
+a &lt;- 5; n &lt;- 8; N &lt;- 40
+
+<span class="cmt"># --- the two variance components -------------------------------</span>
+sigma2     &lt;- MSE                     <span class="res"># 111462</span>
+sigma2_tau &lt;- (MSTr - MSE) / n        <span class="res"># 25161</span>
+
+<span class="cmt"># --- the ICC ---------------------------------------------------</span>
+sigma2_tau / (sigma2_tau + sigma2)    <span class="res"># 0.1842</span>
+
+<span class="cmt"># --- confidence interval for mu, with df = a-1 -----------------</span>
+ybar  &lt;- mean(sires$milk)
+se_mu &lt;- sqrt(MSTr / (a * n))
+ybar + c(-1, 1) * qt(0.975, a - 1) * se_mu    <span class="res"># 6272.6  6763.7</span>
+
+<span class="cmt"># --- confidence interval for sigma^2 ---------------------------</span>
+SSE / qchisq(c(0.975, 0.025), N - a)          <span class="res"># 73326  189659</span></code></pre>
+
+<p>Every number in this document came out of those few lines.</p>
+
+</div>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">The last idea</span>BLUPs, and why they shrink</h2>
+
+<p>One loose end. You said you did not care about the 5 specific bulls — but in real breeding work, of course you do. You want to know which bull to buy. Can you rank them?</p>
+
+<p>Yes, but not by their raw daughter averages. The proper tool is a <strong>BLUP</strong>.</p>
+
+<div class="box why">
+  <span class="lbl">Why the raw average is not the best guess</span>
+  <p>Aage's 8 daughters averaged 6689 litres — the highest of the five. But how much of that is Aage being genuinely good, and how much is that he happened to get 8 lucky daughters?</p>
+  <p>With only 8 measurements, a fair chunk is luck. So the sensible estimate is <strong>not</strong> "6689". It is something pulled <em>back toward the overall average</em>, because extreme observed results are usually partly flukes that will not repeat.</p>
+  <p>This pulling-back is called <strong>shrinkage</strong>, and how far you pull depends on how much you trust the group: <strong>lots of daughters and big genuine bull-to-bull differences → trust the average, shrink little. Few daughters and small real differences → shrink a lot.</strong></p>
+</div>
+
+<p>For the sires, the shrinkage factor works out at <strong>0.64</strong> — each bull's average gets pulled 36% of the way back to the overall mean of 6518.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>Raw averages versus BLUPs</caption>
+  <thead><tr><th>Sire</th><th class="num">Raw average</th><th class="num">BLUP</th><th class="num">Pulled by</th></tr></thead>
+  <tbody>
+    <tr><td>Aage</td><td class="num">6689</td><td class="num">6628</td><td class="num">−61</td></tr>
+    <tr><td>Boss</td><td class="num">6671</td><td class="num">6617</td><td class="num">−55</td></tr>
+    <tr><td>Gorm</td><td class="num">6623</td><td class="num">6585</td><td class="num">−37</td></tr>
+    <tr><td>Lars</td><td class="num">6326</td><td class="num">6394</td><td class="num">+69</td></tr>
+    <tr><td>Hynar</td><td class="num">6282</td><td class="num">6366</td><td class="num">+84</td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img" aria-label="Arrows showing each sire's raw average being pulled inward toward the overall mean of 6518 to produce its BLUP">
+  <line x1="80" y1="200" x2="680" y2="200" stroke="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="80" y="222">6250</text><text x="215" y="222">6375</text><text x="350" y="222">6500</text>
+    <text x="485" y="222">6625</text><text x="620" y="222">6750</text>
+    <text x="380" y="242">milk yield, litres</text>
+  </g>
+
+  <line x1="369.4" y1="40" x2="369.4" y2="208" stroke="var(--mu)" stroke-width="2" stroke-dasharray="5 3"/>
+  <text x="369.4" y="32" font-size="12" fill="var(--mu)" text-anchor="middle" font-weight="700">overall mean 6518</text>
+
+  <g font-size="11.5">
+    <text x="72" y="66" fill="currentColor" text-anchor="end">Hynar</text>
+    <circle cx="114.6" cy="62" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <line x1="122" y1="62" x2="198" y2="62" stroke="var(--tau)" stroke-width="1.6" marker-end="url(#blup)"/>
+    <circle cx="205.3" cy="62" r="5" fill="var(--tau)"/>
+
+    <text x="72" y="98" fill="currentColor" text-anchor="end">Lars</text>
+    <circle cx="162.0" cy="94" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <line x1="169" y1="94" x2="228" y2="94" stroke="var(--tau)" stroke-width="1.6" marker-end="url(#blup)"/>
+    <circle cx="235.5" cy="94" r="5" fill="var(--tau)"/>
+
+    <text x="72" y="130" fill="currentColor" text-anchor="end">Gorm</text>
+    <circle cx="482.6" cy="126" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <line x1="475" y1="126" x2="450" y2="126" stroke="var(--tau)" stroke-width="1.6" marker-end="url(#blup)"/>
+    <circle cx="442.4" cy="126" r="5" fill="var(--tau)"/>
+
+    <text x="72" y="162" fill="currentColor" text-anchor="end">Boss</text>
+    <circle cx="534.8" cy="158" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <line x1="527" y1="158" x2="483" y2="158" stroke="var(--tau)" stroke-width="1.6" marker-end="url(#blup)"/>
+    <circle cx="476.3" cy="158" r="5" fill="var(--tau)"/>
+
+    <text x="72" y="194" fill="currentColor" text-anchor="end">Aage</text>
+    <circle cx="554.3" cy="190" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+    <line x1="547" y1="190" x2="500" y2="190" stroke="var(--tau)" stroke-width="1.6" marker-end="url(#blup)"/>
+    <circle cx="493.4" cy="190" r="5" fill="var(--tau)"/>
+  </g>
+  <defs>
+    <marker id="blup" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--tau)"/></marker>
+  </defs>
+
+  <circle cx="600" cy="52" r="5" fill="none" stroke="var(--eps)" stroke-width="2"/>
+  <text x="612" y="56" font-size="11" fill="currentColor">raw average</text>
+  <circle cx="600" cy="74" r="5" fill="var(--tau)"/>
+  <text x="612" y="78" font-size="11" fill="currentColor">BLUP</text>
+</svg>
+<figcaption><b>Every bull moves toward the middle, and the extremes move furthest.</b> Hynar looked worst at 6282 and gets pulled up 84 litres; Aage looked best at 6689 and gets pulled down 61. The ranking survives, but the gaps narrow — because part of what looked like a difference between bulls was really just luck in which daughters they happened to get. This shrinkage is standard practice in modern animal breeding.</figcaption>
+</figure>
+
+<div class="box plain">
+  <span class="lbl">The name, decoded</span>
+  <p><strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>P</strong>redictor. Note <em>predictor</em>, not <em>estimator</em> — because a random effect is not a fixed unknown constant to be estimated, it is a random quantity to be predicted. That distinction is why it gets its own word.</p>
+</div>
+
+</div>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Reference</span>Everything on one page</h2>
+
+<h4>New symbols in this lecture</h4>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Symbol</th><th>Say it</th><th>Means</th><th class="num">Sires</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tau m">σ²<sub>τ</sub></span></td><td>"sigma squared tau"</td><td>Between-group variance in the population</td><td class="num">25,161</td></tr>
+    <tr><td><span class="eps m">σ²</span></td><td>"sigma squared"</td><td>Within-group variance</td><td class="num">111,462</td></tr>
+    <tr><td><span class="m">ICC</span></td><td>"I C C"</td><td>Fraction of variance due to groups</td><td class="num">0.184</td></tr>
+    <tr><td><span class="m">E(MS)</span></td><td>"expected mean square"</td><td>What a mean square equals on average</td><td class="num">—</td></tr>
+    <tr><td><span class="m">ν</span></td><td>"new"</td><td>Satterthwaite effective degrees of freedom</td><td class="num">1.63</td></tr>
+    <tr><td><span class="m">Cov</span></td><td>"covariance"</td><td>How much two things move together</td><td class="num">25,161</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>The formulas you need</h4>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>For</th><th>Formula</th><th>df</th></tr></thead>
+  <tbody>
+    <tr><td>Within-group variance</td><td><span class="m">σ̂² = MS<sub>E</sub></span></td><td><span class="m">N − a</span></td></tr>
+    <tr><td>Between-group variance</td><td><span class="m">σ̂²<sub>τ</sub> = (MS<sub>Tr</sub> − MS<sub>E</sub>) ÷ n</span></td><td>—</td></tr>
+    <tr><td>ICC</td><td><span class="m">σ̂²<sub>τ</sub> ÷ (σ̂²<sub>τ</sub> + σ̂²)</span></td><td>—</td></tr>
+    <tr><td>Test H₀: σ²<sub>τ</sub> = 0</td><td><span class="m">F = MS<sub>Tr</sub> ÷ MS<sub>E</sub></span>, one-sided</td><td><span class="m">a−1, N−a</span></td></tr>
+    <tr><td>CI for μ</td><td><span class="m">ȳ<sub>··</sub> ± t · √<span class="rad">MS<sub>Tr</sub> ÷ (a·n)</span></span></td><td class="warn"><span class="m">a − 1</span> not N−a</td></tr>
+    <tr><td>CI for σ²</td><td><span class="m">[ SS<sub>E</sub>/χ²<sub>0.975</sub> , SS<sub>E</sub>/χ²<sub>0.025</sub> ]</span></td><td><span class="m">N − a</span></td></tr>
+    <tr><td>CI for σ²<sub>τ</sub></td><td>Approximate only — Satterthwaite</td><td><span class="m">ν</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>All the sires numbers</h4>
+<div class="tablewrap">
+<table>
+  <tbody>
+    <tr><td>Design</td><td><span class="m">a = 5, n = 8, N = 40</span></td></tr>
+    <tr><td>Sums of squares</td><td><span class="m">SS<sub>Tr</sub> = 1,251,009 · SS<sub>E</sub> = 3,901,166 · SS<sub>T</sub> = 5,152,175</span></td></tr>
+    <tr><td>Mean squares</td><td><span class="m">MS<sub>Tr</sub> = 312,752 · MS<sub>E</sub> = 111,462</span></td></tr>
+    <tr><td>Test</td><td><span class="m">F = 2.806 on 4 and 35 df · p = 0.0404 · threshold 2.641</span></td></tr>
+    <tr><td>Variance components</td><td><span class="m">σ̂²<sub>τ</sub> = 25,161 · σ̂² = 111,462 · total 136,623</span></td></tr>
+    <tr><td>ICC</td><td><span class="m">0.184</span>, interval <span class="m">0 to 0.739</span> after truncation</td></tr>
+    <tr><td>Grand mean</td><td><span class="m">6518.15</span>, se <span class="m">88.42</span>, CI <span class="m">6272.6 to 6763.7</span></td></tr>
+    <tr><td>CI for σ²</td><td><span class="m">73,326 to 189,659</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Exam checklist for a random-effects question</h4>
+<ol class="steps">
+  <li><strong>Say why the factor is random.</strong> "The 5 sires were drawn at random from a large register, so we want to generalise to the whole population, not to these 5." Examiners want to see you understand <em>why</em>, not just that you spotted the word.</li>
+  <li><strong>Build the ANOVA table exactly as in lecture 2.</strong> Nothing new.</li>
+  <li><strong>State the hypotheses in the new form:</strong> <span class="m">H₀: σ²<sub>τ</sub> = 0</span> against <span class="m">H<sub>A</sub>: σ²<sub>τ</sub> &gt; 0</span>, and say it is one-sided because a variance cannot be negative.</li>
+  <li><strong>Estimate both variance components</strong> using method of moments, and check the between-group one is not negative.</li>
+  <li><strong>Compute the ICC</strong> and say what it means in the context of the question — a percentage of variation, not just a number.</li>
+  <li><strong>If asked for a CI for μ, use df = a − 1.</strong> Say why: the standard error came from MS<sub>Tr</sub>. Mentioning that the textbook gets this wrong will not hurt you.</li>
+</ol>
+
+<h2 class="sec"><span class="num">Reference</span>Where the slides and the data disagree</h2>
+
+<p>As with the earlier lectures, I re-ran everything rather than copying from the slides. Lecture 5 is in much better shape than lecture 4 — the substantive numbers all check out. Four small things:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Where</th><th>Slide</th><th>Data</th><th>Comment</th></tr></thead>
+  <tbody>
+    <tr><td>CI for the ICC</td><td class="warn">prints −0.015 to 0.739 with no comment</td><td class="yes">truncate to 0 to 0.739</td><td>The only one worth flagging. A negative ICC is impossible; the slide leaves you to notice that yourself.</td></tr>
+    <tr><td>CI for μ, by hand</td><td>6272.5 to 6763.5</td><td>6272.6 to 6763.7</td><td>Rounding only. The slide says so itself.</td></tr>
+    <tr><td>SS<sub>E</sub> in the σ² interval</td><td>3,901,170</td><td>3,901,166</td><td>The slide rebuilds SS<sub>E</sub> from a rounded MS<sub>E</sub>. Changes nothing.</td></tr>
+    <tr><td>Sire names</td><td>'Age'</td><td>'Aage'</td><td>The lecture's own R script uses <em>Aage</em>, a Danish name. Cosmetic.</td></tr>
+    <tr><td class="yes">Montgomery p.107</td><td colspan="2" class="yes">says df = N − a for the CI for μ</td><td class="yes">Genuinely wrong, and your lecturer is right to correct it to a − 1. Not his error — the textbook's.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box big">
+  <span class="lbl">If you remember nothing else from lecture 5</span>
+  <p>When groups are a random sample rather than a deliberate choice, you stop asking <em>"which group is best?"</em> and start asking <em>"how much do groups vary?"</em></p>
+  <p>The arithmetic does not change. The ANOVA table is identical. What changes is that the treatment effect is now a random variable with its own variance, so <strong>total variation splits into two components</strong> — between-group and within-group — and the ICC is simply the first as a fraction of the total.</p>
+</div>
+
+<p>Next lecture goes to two factors at once, and to interactions — where the expected mean squares from today stop being a curiosity and become the thing that tells you which mean square belongs on the bottom of each F-test.</p>
+
+</div>
+</div>
+
+<footer class="footer">
+  <p><strong>STAT210 · NMBU · Lecture 5, random effects.</strong> Third document in the plain-language set, after <em>Signal Over Noise</em> (lectures 1–4, dense) and <em>Start From Nothing</em> (lectures 1–4, plain). Built from the lecture source file; every number re-derived by running R against the real sires data rather than copied from the slides.</p>
+</footer>
+
+</div>

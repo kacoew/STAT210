@@ -1,0 +1,2100 @@
+<title>The Full Picture</title>
+
+<style>
+:root{
+  --ground:#F6F7F5; --surface:#FFFFFF; --sunk:#EDEFEB; --raise:#FAFBF9;
+  --ink:#171B18; --ink-2:#4A524C; --ink-3:#7C847E;
+  --rule:#DCE0DA; --rule-strong:#BCC2B9;
+
+  --mu:#1B5FBE;      /* baseline / grand mean */
+  --tau:#1A8C40;     /* signal / treatment effect */
+  --eps:#C13030;     /* noise / error */
+  --rand:#7040A8;    /* RANDOM factor flag */
+  --exam:#B0741A;    /* exam focus */
+
+  --mu-wash:#E9F0FC; --tau-wash:#E6F4EB; --eps-wash:#FBEAE9;
+  --rand-wash:#F1EBF9; --exam-wash:#FBF2E3;
+
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#101310; --surface:#171B18; --sunk:#1E231F; --raise:#1B201C;
+    --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+    --rule:#2A302B; --rule-strong:#3E453F;
+    --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+    --mu-wash:#14233A; --tau-wash:#122A1C; --eps-wash:#2E1917;
+    --rand-wash:#241B36; --exam-wash:#2C2415;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#101310; --surface:#171B18; --sunk:#1E231F; --raise:#1B201C;
+  --ink:#E5EAE6; --ink-2:#A6AEA8; --ink-3:#7B837D;
+  --rule:#2A302B; --rule-strong:#3E453F;
+  --mu:#78ADF2; --tau:#5FC87F; --eps:#F2786F; --rand:#B394E8; --exam:#DFA85E;
+  --mu-wash:#14233A; --tau-wash:#122A1C; --eps-wash:#2E1917;
+  --rand-wash:#241B36; --exam-wash:#2C2415;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--serif);
+     font-size:17.5px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+.shell{max-width:1220px;margin:0 auto;padding:0 24px 100px;display:grid;grid-template-columns:1fr;gap:0 44px;}
+@media(min-width:1060px){.shell{grid-template-columns:224px minmax(0,1fr);}}
+
+/* ---------- masthead ---------- */
+.masthead{grid-column:1/-1;border-bottom:3px double var(--ink);padding:54px 0 24px;margin-bottom:34px;}
+.eyebrow{font-family:var(--sans);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+         color:var(--exam);font-weight:700;margin:0 0 14px;}
+.masthead h1{font-weight:600;font-size:clamp(2.4rem,6vw,4rem);line-height:1.02;letter-spacing:-.02em;margin:0 0 16px;text-wrap:balance;}
+.standfirst{font-size:1.12rem;color:var(--ink-2);max-width:60ch;margin:0;}
+.mmeta{font-family:var(--sans);font-size:12.5px;color:var(--ink-3);margin-top:20px;display:flex;flex-wrap:wrap;gap:6px 22px;}
+
+/* ---------- rail ---------- */
+.rail{display:none;}
+@media(min-width:1060px){
+  .rail{display:block;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;
+        padding:4px 0 40px;font-family:var(--sans);font-size:12.5px;line-height:1.45;}
+}
+.rail h2{font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
+         font-weight:700;margin:20px 0 7px;}
+.rail h2:first-child{margin-top:0;}
+.rail a{display:block;color:var(--ink-2);text-decoration:none;padding:2.5px 0 2.5px 10px;
+        border-left:2px solid transparent;margin-left:-12px;}
+.rail a:hover,.rail a:focus-visible{color:var(--exam);border-left-color:var(--exam);}
+
+/* ---------- flow ---------- */
+.flow{min-width:0;}
+h2.ch{font-size:2rem;font-weight:600;letter-spacing:-.014em;line-height:1.12;margin:78px 0 6px;
+      padding-top:24px;border-top:2px solid var(--ink);text-wrap:balance;scroll-margin-top:16px;}
+h2.ch .cn{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.19em;text-transform:uppercase;
+          color:var(--exam);font-weight:700;margin-bottom:8px;}
+h3{font-size:1.26rem;font-weight:600;margin:40px 0 9px;line-height:1.26;text-wrap:balance;scroll-margin-top:16px;}
+h4{font-family:var(--sans);font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+   font-weight:700;margin:28px 0 7px;}
+p{margin:0 0 14px;}
+.lede{font-size:1.05rem;color:var(--ink-2);}
+ul,ol{margin:0 0 15px;padding-left:1.3em;}
+li{margin-bottom:6px;}
+li::marker{color:var(--ink-3);}
+a{color:var(--mu);}
+
+/* ---------- semantic colour ---------- */
+.mu{color:var(--mu);font-weight:700;}
+.tau{color:var(--tau);font-weight:700;}
+.eps{color:var(--eps);font-weight:700;}
+.rnd{color:var(--rand);font-weight:700;}
+.m{font-style:italic;white-space:nowrap;}
+
+/* ---------- formula strip ---------- */
+.f{background:var(--sunk);border-top:2px solid var(--rule-strong);border-bottom:1px solid var(--rule);
+   padding:15px 18px;margin:22px 0;}
+.f.mu-f{border-top-color:var(--mu);} .f.tau-f{border-top-color:var(--tau);}
+.f.eps-f{border-top-color:var(--eps);} .f.rnd-f{border-top-color:var(--rand);}
+.f .q{font-size:1.22rem;text-align:center;display:block;margin-bottom:10px;overflow-x:auto;line-height:1.95;}
+.f .w{font-family:var(--sans);font-size:13.5px;text-align:center;color:var(--ink-2);display:block;line-height:1.5;}
+.f .w b{color:var(--ink);}
+.frac{display:inline-flex;flex-direction:column;vertical-align:-0.5em;text-align:center;margin:0 .2em;font-size:.88em;line-height:1.22;}
+.frac>span:first-child{padding:0 .34em .05em;}
+.frac>span:last-child{border-top:1px solid currentColor;padding:.05em .34em 0;}
+.rad{border-top:1px solid currentColor;padding:0 .14em;}
+
+/* ---------- boxes ---------- */
+.b{border-left:3px solid var(--rule-strong);background:var(--surface);padding:14px 18px;margin:22px 0;font-size:.96rem;}
+.b p:last-child,.b ul:last-child,.b ol:last-child{margin-bottom:0;}
+.b .l{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:6px;}
+.b.why{border-left-color:var(--mu);background:var(--mu-wash);} .b.why .l{color:var(--mu);}
+.b.key{border-left-color:var(--tau);background:var(--tau-wash);} .b.key .l{color:var(--tau);}
+.b.trap{border-left-color:var(--eps);background:var(--eps-wash);} .b.trap .l{color:var(--eps);}
+.b.rand{border-left-color:var(--rand);background:var(--rand-wash);} .b.rand .l{color:var(--rand);}
+.b.exam{border-left-color:var(--exam);background:var(--exam-wash);} .b.exam .l{color:var(--exam);}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:22px 0;}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14px;font-variant-numeric:tabular-nums;}
+caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;
+        text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-bottom:8px;}
+th,td{text-align:left;padding:8px 14px 8px 0;border-bottom:1px solid var(--rule);vertical-align:top;}
+thead th{border-bottom:1.5px solid var(--ink-2);color:var(--ink-2);font-weight:700;font-size:12px;}
+td.n,th.n{text-align:right;padding-right:20px;}
+tr.tot td{font-weight:700;border-top:1px solid var(--rule-strong);}
+.y{color:var(--tau);font-weight:700;} .no{color:var(--ink-3);} .wr{color:var(--eps);font-weight:700;}
+.rr{color:var(--rand);font-weight:700;}
+
+/* ---------- code ---------- */
+pre{font-family:var(--mono);font-size:12.6px;line-height:1.62;background:var(--sunk);
+    border-left:2px solid var(--rule-strong);padding:14px 16px;overflow-x:auto;margin:18px 0;color:var(--ink);}
+code{font-family:var(--mono);font-size:.84em;background:var(--sunk);padding:.1em .34em;}
+pre code{background:none;padding:0;font-size:inherit;}
+.cm{color:var(--ink-3);} .rs{color:var(--tau);}
+details.opt{border-left:3px solid var(--rule-strong);background:var(--raise);padding:10px 16px;margin:20px 0;}
+details.opt summary{font-family:var(--sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+                    font-weight:700;color:var(--ink-3);cursor:pointer;}
+details.opt[open] summary{margin-bottom:8px;}
+
+/* ---------- figures ---------- */
+figure{margin:32px 0;}
+figure svg{display:block;width:100%;height:auto;color:var(--ink-2);background:var(--surface);
+           border:1px solid var(--rule);padding:8px;}
+figcaption{font-family:var(--sans);font-size:12.5px;line-height:1.5;color:var(--ink-3);margin-top:10px;}
+figcaption b{color:var(--ink-2);}
+svg text{font-family:var(--sans);}
+
+/* ---------- misc ---------- */
+.steps{counter-reset:s;list-style:none;padding-left:0;}
+.steps>li{counter-increment:s;position:relative;padding-left:40px;margin-bottom:14px;}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;font-family:var(--sans);font-size:12px;
+   font-weight:700;color:var(--exam);border:1.5px solid var(--exam);width:24px;height:24px;
+   display:flex;align-items:center;justify-content:center;}
+.grid2{display:grid;gap:18px;margin:22px 0;}
+@media(min-width:680px){.grid2{grid-template-columns:1fr 1fr;}}
+.pan{border-top:2px solid var(--rule-strong);padding-top:11px;font-size:.94rem;}
+.pan.a{border-top-color:var(--mu);} .pan.b{border-top-color:var(--tau);}
+.pan.c{border-top-color:var(--eps);} .pan.d{border-top-color:var(--rand);}
+.pan h5{font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+        font-weight:700;margin:0 0 6px;color:var(--ink-2);}
+.pan p:last-child{margin-bottom:0;}
+.foot{grid-column:1/-1;border-top:3px double var(--ink);margin-top:80px;padding-top:20px;
+      font-family:var(--sans);font-size:12.5px;color:var(--ink-3);}
+:focus-visible{outline:2px solid var(--exam);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media print{.rail{display:none;}.shell{grid-template-columns:1fr;}body{background:#fff;color:#000;font-size:10.5pt;}
+  details.opt{display:none;}}
+
+/* ---------- NOTEBOOK MARKERS ---------- */
+.nb{border:2px dashed var(--exam);background:var(--exam-wash);padding:14px 18px 12px;margin:24px 0;
+    position:relative;font-size:.96rem;}
+.nb::before{content:"WRITE THIS IN YOUR NOTEBOOK";position:absolute;top:-9px;left:14px;
+    background:var(--ground);padding:0 8px;font-family:var(--sans);font-size:10px;letter-spacing:.15em;
+    font-weight:700;color:var(--exam);}
+.nb .tag{font-family:var(--sans);font-size:11px;font-weight:700;color:var(--exam);
+    letter-spacing:.06em;display:block;margin-bottom:7px;}
+.nb p:last-child,.nb ul:last-child,.nb ol:last-child,.nb .tw:last-child{margin-bottom:0;}
+.nb .f{background:var(--surface);border-top-color:var(--exam);margin:12px 0;}
+.nb table{font-size:13.5px;}
+.nblist td:first-child{white-space:nowrap;font-weight:700;color:var(--exam);}
+.nbcount{font-family:var(--sans);font-size:12px;color:var(--exam);font-weight:700;}
+@media print{.nb{border-color:#000;background:#fff;} .nb::before{color:#000;background:#fff;}}
+</style>
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">STAT210 · Design of Experiments and Analysis of Variance · NMBU</p>
+  <h1>The Full Picture</h1>
+  <p class="standfirst">Lectures 1 to 8 in one place. Every formula is written out, then said again in ordinary words, then tied to the one question it answers. Built for an exam that is 40 multiple-choice questions in 3.5 hours.</p>
+  <div class="mmeta">
+    <span>Exam · Monday 31 August · 14:00–17:30</span>
+    <span>Every number re-derived in R from the course data</span>
+    <span>Lectures 9–11 to be added</span>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Contents">
+  <h2>Orientation</h2>
+  <a href="#how">How to use this</a>
+  <a href="#exam">The exam itself</a>
+  <a href="#map">Map of all 8 lectures</a>
+  <a href="#pick">Which test do I use?</a>
+
+  <h2>1 · Foundations</h2>
+  <a href="#c1">Distributions</a>
+  <a href="#c1-rules">Rules for combining</a>
+
+  <h2>2 · One-way ANOVA</h2>
+  <a href="#c2">The model</a>
+  <a href="#c2-ss">Sums of squares</a>
+  <a href="#c2-f">The F-test</a>
+
+  <h2>3 · Inference</h2>
+  <a href="#c3">One statistic</a>
+  <a href="#c3-ci">Confidence intervals</a>
+  <a href="#c3-err">Type I and II</a>
+
+  <h2>4 · Contrasts</h2>
+  <a href="#c4">Contrasts</a>
+  <a href="#c4-mult">Multiple testing</a>
+
+  <h2>5 · Random effects</h2>
+  <a href="#c5">Fixed vs random</a>
+  <a href="#c5-var">Variance components</a>
+  <a href="#c5-icc">The ICC</a>
+
+  <h2>6 · Checking &amp; 2 factors</h2>
+  <a href="#c6">Diagnostics</a>
+  <a href="#c6-trans">Transformations</a>
+  <a href="#c6-two">Two-factor design</a>
+  <a href="#c6-int">Interaction</a>
+
+  <h2>7 · Factorials</h2>
+  <a href="#c7">General factorial</a>
+  <a href="#c7-ss">Type I vs III</a>
+  <a href="#c7-sel">Model selection</a>
+
+  <h2>8 · Two-factor random</h2>
+  <a href="#c8">The model</a>
+  <a href="#c8-ems">Expected mean squares</a>
+  <a href="#c8-den">Which denominator</a>
+
+  <h2>Reference</h2>
+  <a href="#sheet">Formula sheet</a>
+  <a href="#rout">Reading R output</a>
+  <a href="#traps">Traps</a>
+  <a href="#strategy">Exam strategy</a>
+  <a href="#practice">40 practice questions</a>
+  <a href="#answers">Answers</a>
+</nav>
+
+<main class="flow">
+
+<h2 class="ch" id="how"><span class="cn">Before you start</span>How to use this</h2>
+
+<p class="lede">This is a reference, not a book. You are not meant to read it end to end. Find the thing you are stuck on, read that section, then go and do practice questions.</p>
+
+<h4>The colours carry meaning</h4>
+
+<div class="tw">
+<table>
+  <tbody>
+    <tr><td><span class="mu">Blue</span></td><td><strong>Baseline.</strong> The overall mean <span class="mu m">μ</span> — where everything sits before any treatment acts.</td></tr>
+    <tr><td><span class="tau">Green</span></td><td><strong>Signal.</strong> Treatment effects <span class="tau m">τ</span>, and the variance they create. What the experiment is looking for.</td></tr>
+    <tr><td><span class="eps">Red</span></td><td><strong>Noise.</strong> Error <span class="eps m">ε</span> and <span class="eps m">σ²</span>. What makes the signal hard to see.</td></tr>
+    <tr><td><span class="rnd">Violet</span></td><td><strong>Random factor.</strong> Marks anywhere the fixed/random distinction changes what you do. This is where most exam marks are lost.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>The boxes</h4>
+
+<div class="b why"><span class="l">Why it works</span><p>The reasoning behind a formula — the part the slides state without deriving.</p></div>
+<div class="b key"><span class="l">The load-bearing idea</span><p>If you remember one thing from a section, this.</p></div>
+<div class="b trap"><span class="l">Trap</span><p>A silent failure. Produces a plausible wrong answer rather than an error.</p></div>
+<div class="b rand"><span class="l">Fixed vs random</span><p>A place where the answer depends on whether a factor is fixed or random.</p></div>
+<div class="b exam"><span class="l">On the exam</span><p>Directly examined. These are worth drilling.</p></div>
+
+<h3>Your handwritten notebook</h3>
+
+<p>You cannot bring a laptop into the exam, so your notebook is what you will actually have in front of you. Throughout this document, orange dashed boxes mark <strong>exactly what to copy into it</strong>, numbered <strong>N1, N2, N3…</strong> in the order you should write them.</p>
+
+<p>Everything in those boxes, and nothing else, makes a complete exam notebook. There is a checklist of all of them at <a href="#notebook">Build your notebook</a> at the end — work through it and tick them off.</p>
+
+<div class="b exam"><span class="l">Write it out by hand — do not photocopy</span>
+<p>Copying a formula by hand forces you to read every symbol. That is most of the revision value, and it is why this is worth the hours it takes.</p>
+<p>Leave a wide left margin. When you do practice questions and get one wrong, write the reason in that margin next to the relevant rule. Those margin notes end up being the most useful thing in the book.</p>
+</div>
+
+<div class="b trap"><span class="l">Check this with your lecturer</span>
+<p>The written exam information says permitted aids are code <strong>C2: all types of calculators, all other written aids</strong>. On that wording, a <em>printed</em> copy of this document should be allowed alongside your notebook — printing is not the same as bringing a PC.</p>
+<p>Worth confirming before the day. Build the notebook either way: it is the act of writing it that teaches you the material.</p>
+</div>
+
+<p>R code that you would only ever need to <em>run</em> yourself is folded away in grey <strong>Optional R</strong> boxes — click to open. You never write code in the exam; you read output. Everything you need for the exam is outside those boxes.</p>
+
+<h2 class="ch" id="exam"><span class="cn">Orientation</span>The exam itself</h2>
+
+<div class="tw">
+<table>
+  <caption>What you are actually facing</caption>
+  <tbody>
+    <tr><td><strong>When</strong></td><td>Monday 31 August, 14:00–17:30. 3.5 hours.</td></tr>
+    <tr><td><strong>Format</strong></td><td>Digital, WISEflow. <strong>40 multiple-choice questions</strong>, 5 alternatives each.</td></tr>
+    <tr><td><strong>Marking</strong></td><td>1 point correct, <strong>0 for wrong — and 0 for blank</strong>.</td></tr>
+    <tr><td><strong>Structure</strong></td><td>Section 1: 10 independent questions. Sections 2 and 3: data-based, roughly 20 and 10 questions.</td></tr>
+    <tr><td><strong>Aids</strong></td><td>Code C2 — all calculators, <strong>all written aids</strong>. You may bring this document printed.</td></tr>
+    <tr><td><strong>Default</strong></td><td>5% significance level unless a question says otherwise.</td></tr>
+    <tr><td><strong>Advance notice</strong></td><td>The data introductions for the two big sections are published <strong>4 hours before</strong> the exam. Print them and work through them before you start.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">Three consequences you should act on</span>
+<p><strong>1. Never leave a blank.</strong> A wrong answer costs exactly the same as no answer — zero. With 5 options, a pure guess is worth 0.2 points. Guessing on all 40 would score 8.</p>
+<p><strong>2. "Closest to correct" applies.</strong> If your number is not among the options, pick the nearest one. Do not assume you made a mistake — small rounding differences are expected and the rule exists precisely for that.</p>
+<p><strong>3. About 5 minutes per question.</strong> Nothing requires a long derivation. If a question is taking more than that, mark your best guess and move on.</p>
+</div>
+
+<div class="b trap"><span class="l">One curriculum exclusion, from the timetable</span>
+<p><strong>Tukey by hand is not required.</strong> You still need to know what Tukey's test is <em>for</em> and how to read its output — but you will not have to compute an HSD from a studentised range table.</p>
+</div>
+
+<h2 class="ch" id="map"><span class="cn">Orientation</span>How the eight lectures fit together</h2>
+
+<p>Everything in this course is one idea, extended four times. The idea: <strong>split the variation you observe into a part explained by something and a part that is not, then compare the two.</strong></p>
+
+<figure>
+<svg viewBox="0 0 720 420" role="img" aria-label="Map showing lecture 1 as toolbox feeding lecture 2 one-way ANOVA, which branches into lecture 3 inference and lecture 4 contrasts, then lecture 5 random effects, lecture 6 diagnostics and two factors, lecture 7 many factors, and lecture 8 two-factor random">
+  <defs>
+    <marker id="mk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+    <marker id="mkr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--rand)"/></marker>
+  </defs>
+
+  <rect x="270" y="14" width="180" height="40" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="360" y="32" font-size="12.5" text-anchor="middle" fill="currentColor" font-weight="700">L1 · The toolbox</text>
+  <text x="360" y="47" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".75">Z, chi-square, t, F</text>
+  <line x1="360" y1="54" x2="360" y2="76" stroke="currentColor" stroke-width="1.4" marker-end="url(#mk)"/>
+
+  <rect x="250" y="78" width="220" height="46" fill="none" stroke="var(--tau)" stroke-width="2.2"/>
+  <text x="360" y="97" font-size="13" text-anchor="middle" fill="var(--tau)" font-weight="700">L2 · One-way ANOVA</text>
+  <text x="360" y="113" font-size="10.5" text-anchor="middle" fill="var(--tau)">SS_T = SS_Tr + SS_E &nbsp;·&nbsp; F = signal/noise</text>
+
+  <line x1="250" y1="101" x2="150" y2="101" stroke="currentColor" stroke-width="1.3" marker-end="url(#mk)"/>
+  <rect x="18" y="80" width="130" height="42" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="83" y="97" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">L3 · Inference</text>
+  <text x="83" y="112" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">t-tests, CIs</text>
+
+  <line x1="470" y1="101" x2="570" y2="101" stroke="currentColor" stroke-width="1.3" marker-end="url(#mk)"/>
+  <rect x="572" y="80" width="132" height="42" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="638" y="97" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">L4 · Contrasts</text>
+  <text x="638" y="112" font-size="10" text-anchor="middle" fill="currentColor" opacity=".75">which groups differ</text>
+
+  <text x="360" y="146" font-size="11" text-anchor="middle" fill="currentColor" opacity=".8">now extend it in two independent directions</text>
+
+  <line x1="300" y1="124" x2="180" y2="184" stroke="var(--rand)" stroke-width="1.8" marker-end="url(#mkr)"/>
+  <line x1="420" y1="124" x2="540" y2="184" stroke="currentColor" stroke-width="1.6" marker-end="url(#mk)"/>
+
+  <rect x="30" y="188" width="290" height="44" fill="none" stroke="var(--rand)" stroke-width="2"/>
+  <text x="175" y="206" font-size="12.5" text-anchor="middle" fill="var(--rand)" font-weight="700">DIRECTION A — L5 · Random effects</text>
+  <text x="175" y="222" font-size="10.5" text-anchor="middle" fill="var(--rand)">groups are a sample, not a choice</text>
+
+  <rect x="400" y="188" width="290" height="44" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="545" y="206" font-size="12.5" text-anchor="middle" fill="currentColor" font-weight="700">DIRECTION B — L6 · Two factors</text>
+  <text x="545" y="222" font-size="10.5" text-anchor="middle" fill="currentColor">plus model checking</text>
+
+  <line x1="545" y1="232" x2="545" y2="264" stroke="currentColor" stroke-width="1.6" marker-end="url(#mk)"/>
+  <rect x="400" y="266" width="290" height="42" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="545" y="283" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">L7 · Many factors</text>
+  <text x="545" y="298" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".8">2^k designs, model selection</text>
+
+  <line x1="175" y1="232" x2="175" y2="330" stroke="var(--rand)" stroke-width="1.8" marker-end="url(#mkr)"/>
+  <line x1="545" y1="308" x2="330" y2="336" stroke="currentColor" stroke-width="1.6" marker-end="url(#mk)"/>
+
+  <rect x="150" y="334" width="400" height="50" fill="none" stroke="var(--rand)" stroke-width="2.6"/>
+  <text x="350" y="354" font-size="13.5" text-anchor="middle" fill="var(--rand)" font-weight="700">L8 · TWO FACTORS, BOTH RANDOM</text>
+  <text x="350" y="371" font-size="11" text-anchor="middle" fill="var(--rand)">the two directions meet — and the F-test denominator changes</text>
+
+  <text x="360" y="406" font-size="11.5" text-anchor="middle" fill="currentColor" font-weight="700">L9 blocking · L10 mixed models · L11 nested — still to come</text>
+</svg>
+<figcaption><b>Two extensions of one idea, which meet at lecture 8.</b> Going down the violet path changes <em>what question you ask</em>; going down the grey path changes <em>how many things you ask about at once</em>. Lecture 8 does both at the same time, which is why it feels hard and why it is where most exam marks are lost. Everything before it is groundwork.</figcaption>
+</figure>
+
+<div class="b key"><span class="l">The load-bearing idea for the whole course</span>
+<p>Every ANOVA table you will ever see is the same four columns: a <strong>sum of squares</strong>, its <strong>degrees of freedom</strong>, their ratio the <strong>mean square</strong>, and an <strong>F</strong> formed by dividing one mean square by another.</p>
+<p>The only thing that ever changes across all eight lectures is <strong>which mean square goes on the bottom</strong>. Fixed effects: always <span class="eps m">MS<sub>E</sub></span>. Random effects with an interaction: <span class="rnd m">MS<sub>AB</sub></span>. Get that one choice right and most of the exam follows.</p>
+</div>
+
+<h2 class="ch" id="pick"><span class="cn">Orientation</span>Which test do I use? The one decision tree</h2>
+
+<p>Almost every data question on the exam is answered by walking this tree. Learn it and you will always know which mean square goes on the bottom of the F.</p>
+
+<figure>
+<svg viewBox="0 0 720 470" role="img" aria-label="Decision tree: how many factors, then are they fixed or random, then is there an interaction, leading to which mean square to use as the denominator of each F test">
+  <defs>
+    <marker id="dt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker>
+    <marker id="dtv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--rand)"/></marker>
+  </defs>
+
+  <rect x="276" y="10" width="168" height="34" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="360" y="32" font-size="12.5" text-anchor="middle" fill="currentColor" font-weight="700">How many factors?</text>
+
+  <line x1="310" y1="44" x2="150" y2="74" stroke="currentColor" stroke-width="1.3" marker-end="url(#dt)"/>
+  <text x="200" y="60" font-size="11" fill="currentColor" font-weight="700">ONE</text>
+  <line x1="410" y1="44" x2="560" y2="74" stroke="currentColor" stroke-width="1.3" marker-end="url(#dt)"/>
+  <text x="512" y="60" font-size="11" fill="currentColor" font-weight="700">TWO</text>
+
+  <rect x="42" y="78" width="216" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="150" y="99" font-size="11.5" text-anchor="middle" fill="currentColor">Fixed or random factor?</text>
+
+  <line x1="100" y1="112" x2="80" y2="140" stroke="currentColor" stroke-width="1.2" marker-end="url(#dt)"/>
+  <line x1="205" y1="112" x2="222" y2="140" stroke="var(--rand)" stroke-width="1.5" marker-end="url(#dtv)"/>
+
+  <rect x="14" y="144" width="128" height="52" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="78" y="161" font-size="11" text-anchor="middle" fill="currentColor" font-weight="700">FIXED · L2–L4</text>
+  <text x="78" y="176" font-size="10" text-anchor="middle" fill="currentColor">H₀: all τᵢ = 0</text>
+  <text x="78" y="190" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">F = MS_Tr / MS_E</text>
+
+  <rect x="158" y="144" width="128" height="52" fill="none" stroke="var(--rand)" stroke-width="1.6"/>
+  <text x="222" y="161" font-size="11" text-anchor="middle" fill="var(--rand)" font-weight="700">RANDOM · L5</text>
+  <text x="222" y="176" font-size="10" text-anchor="middle" fill="var(--rand)">H₀: σ²τ = 0</text>
+  <text x="222" y="190" font-size="10.5" text-anchor="middle" fill="var(--eps)" font-weight="700">F = MS_Tr / MS_E</text>
+
+  <text x="150" y="216" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".8">same F — different question</text>
+
+  <rect x="452" y="78" width="216" height="34" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="560" y="99" font-size="11.5" text-anchor="middle" fill="currentColor">Is the interaction significant?</text>
+
+  <line x1="500" y1="112" x2="470" y2="140" stroke="currentColor" stroke-width="1.2" marker-end="url(#dt)"/>
+  <text x="452" y="132" font-size="10" fill="currentColor" text-anchor="end">no</text>
+  <line x1="620" y1="112" x2="640" y2="140" stroke="currentColor" stroke-width="1.2" marker-end="url(#dt)"/>
+  <text x="656" y="132" font-size="10" fill="currentColor">yes</text>
+
+  <rect x="382" y="144" width="140" height="46" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="452" y="162" font-size="10.5" text-anchor="middle" fill="currentColor">drop it, pool into error</text>
+  <text x="452" y="178" font-size="10.5" text-anchor="middle" fill="currentColor">→ additive model</text>
+
+  <rect x="546" y="144" width="150" height="46" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="621" y="162" font-size="10.5" text-anchor="middle" fill="currentColor" font-weight="700">KEEP it</text>
+  <text x="621" y="178" font-size="10.5" text-anchor="middle" fill="currentColor">+ both main effects</text>
+
+  <line x1="560" y1="190" x2="560" y2="222" stroke="currentColor" stroke-width="1.3" marker-end="url(#dt)"/>
+  <rect x="418" y="226" width="284" height="34" fill="none" stroke="var(--rand)" stroke-width="1.8"/>
+  <text x="560" y="247" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">Are the factors fixed or random?</text>
+
+  <line x1="470" y1="260" x2="330" y2="292" stroke="currentColor" stroke-width="1.3" marker-end="url(#dt)"/>
+  <line x1="640" y1="260" x2="640" y2="292" stroke="var(--rand)" stroke-width="1.6" marker-end="url(#dtv)"/>
+
+  <rect x="176" y="296" width="300" height="72" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="326" y="315" font-size="12" text-anchor="middle" fill="currentColor" font-weight="700">BOTH FIXED · L6–L7</text>
+  <text x="326" y="333" font-size="11" text-anchor="middle" fill="var(--eps)" font-weight="700">everything over MS_E</text>
+  <text x="326" y="349" font-size="10.5" text-anchor="middle" fill="currentColor">F_A = MS_A/MS_E &nbsp; F_B = MS_B/MS_E</text>
+  <text x="326" y="363" font-size="10.5" text-anchor="middle" fill="currentColor">F_AB = MS_AB/MS_E</text>
+
+  <rect x="490" y="296" width="216" height="72" fill="none" stroke="var(--rand)" stroke-width="2.4"/>
+  <text x="598" y="315" font-size="12" text-anchor="middle" fill="var(--rand)" font-weight="700">BOTH RANDOM · L8</text>
+  <text x="598" y="333" font-size="11" text-anchor="middle" fill="var(--rand)" font-weight="700">main effects over MS_AB</text>
+  <text x="598" y="349" font-size="10.5" text-anchor="middle" fill="var(--rand)">F_A = MS_A/MS_AB</text>
+  <text x="598" y="363" font-size="10.5" text-anchor="middle" fill="var(--rand)">F_AB = MS_AB/MS_E</text>
+
+  <rect x="176" y="392" width="530" height="30" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="441" y="412" font-size="11" text-anchor="middle" fill="currentColor">ONE FIXED, ONE RANDOM = a <tspan font-weight="700">mixed model</tspan> — lecture 10, still to come</text>
+
+  <text x="360" y="448" font-size="11.5" text-anchor="middle" fill="var(--eps)" font-weight="700">If you drop a non-significant interaction, every F goes back to using MS_E.</text>
+  <text x="360" y="464" font-size="11" text-anchor="middle" fill="currentColor">The denominator follows the model you fitted, not the data.</text>
+</svg>
+<figcaption><b>Four questions, and the denominator falls out.</b> How many factors → fixed or random → interaction significant → fixed or random again. The violet route is the one that behaves differently, and it is the single most common place to lose marks: with two random factors and a retained interaction, main effects are tested against <b>MS_AB</b>, not MS_E.</figcaption>
+</figure>
+
+<div class="nb">
+<span class="tag">N1 · the first page of your notebook</span>
+<p>Copy the tree above as a diagram, then underneath it write this table:</p>
+<div class="tw">
+<table>
+<thead><tr><th>Model</th><th>Test of A</th><th>Test of B</th><th>Test of AB</th></tr></thead>
+<tbody>
+<tr><td>One factor, fixed</td><td>MS_Tr / MS_E</td><td>—</td><td>—</td></tr>
+<tr><td>One factor, random</td><td>MS_Tr / MS_E</td><td>—</td><td>—</td></tr>
+<tr><td>Two factors, both fixed</td><td>MS_A / MS_E</td><td>MS_B / MS_E</td><td>MS_AB / MS_E</td></tr>
+<tr><td class="rr">Two factors, both random</td><td class="rr">MS_A / MS_AB</td><td class="rr">MS_B / MS_AB</td><td>MS_AB / MS_E</td></tr>
+<tr><td>Two random, no interaction</td><td>MS_A / MS_E</td><td>MS_B / MS_E</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Underneath, write the reason:</strong> "E(MS_A) contains σ²<sub>tb</sub>, so only MS_AB has the matching expected value. Dividing by MS_E would not cancel the interaction term."</p>
+</div>
+
+<h2 class="ch" id="c1"><span class="cn">Chapter 1 · Lecture 1</span>Probability and the four distributions</h2>
+
+<p class="lede">Lecture 1 is a toolbox. Nothing in it is interesting alone; every piece is there because ANOVA needs it later. What you are examined on is <strong>recognising which distribution a quantity has</strong>, and reading values off a table.</p>
+
+<h3>What the exam actually asks from lecture 1</h3>
+
+<div class="b exam"><span class="l">On the exam — this is reliable</span>
+<p>Looking at the 2020, 2021, 2022, 2023, 2024 and 2025 papers, the opening section always contains 5–10 questions of exactly these types:</p>
+<ul>
+<li>Here is a density function — <strong>which distribution is it, with what mean and variance?</strong></li>
+<li>Z₁ and Z₂ are independent standard normals. What is the distribution of <span class="m">2Z₁ + Z₂</span>? Of <span class="m">Z₁² + Z₂²</span>?</li>
+<li>Given <span class="m">P(Z ≤ 1.96) = 0.975</span>, what is <span class="m">P(−1.96 ≤ Z ≤ 1.96)</span>?</li>
+<li>Read a critical value off a t, chi-square or F table.</li>
+<li>If <span class="m">F ~ F(10, 40)</span>, what is the distribution of <span class="m">1/F</span>?</li>
+</ul>
+<p>These are free marks if you have the relationships written down, and impossible to work out from scratch if you do not.</p>
+</div>
+
+<h3>The four distributions, and how they are built</h3>
+
+<p>Three of the four are <em>made out of</em> the normal. Knowing the construction is what lets you answer "which distribution is this?" instantly.</p>
+
+<div class="tw">
+<table>
+  <caption>The family — memorise this table</caption>
+  <thead><tr><th>Name</th><th>Built from</th><th>Mean</th><th>Variance</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">N(μ, σ²)</span> normal</td><td>—</td><td><span class="m">μ</span></td><td><span class="m">σ²</span></td><td>the errors <span class="eps m">ε</span>, and group means</td></tr>
+    <tr><td><span class="m">χ²<sub>k</sub></span> chi-square</td><td><span class="m">Z₁² + ⋯ + Z<sub>k</sub>²</span></td><td><span class="m">k</span></td><td><span class="m">2k</span></td><td>sums of squares → inference on <span class="eps m">σ²</span></td></tr>
+    <tr><td><span class="m">t<sub>k</sub></span> Student</td><td><span class="m">Z ⁄ √<span class="rad">χ²<sub>k</sub>/k</span></span></td><td>0</td><td><span class="m">k/(k−2)</span></td><td>means, when <span class="m">σ²</span> had to be estimated</td></tr>
+    <tr><td><span class="m">F<sub>u,v</sub></span> Fisher</td><td><span class="m">(χ²<sub>u</sub>/u) ⁄ (χ²<sub>v</sub>/v)</span></td><td>≈1 under H₀</td><td>right-skewed</td><td>comparing two mean squares — all of ANOVA</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="nb">
+<span class="tag">N2 · distributions</span>
+<p>Copy the table above, then these five identities underneath:</p>
+<div class="f"><span class="q">
+Z² = χ²₁ &nbsp;·&nbsp; t²<sub>k</sub> = F<sub>1,k</sub> &nbsp;·&nbsp; t<sub>∞</sub> = N(0,1)<br>
+if F ~ F<sub>u,v</sub> then 1/F ~ F<sub>v,u</sub> &nbsp;·&nbsp; χ²<sub>u</sub> + χ²<sub>v</sub> = χ²<sub>u+v</sub>
+</span></div>
+<p>The <strong>1/F flips the degrees of freedom</strong> one has appeared on multiple past papers. So has <span class="m">t² = F</span>.</p>
+</div>
+
+<div class="b why"><span class="l">Why t has fatter tails than the normal</span>
+<p>In <span class="m">Z = (ȳ − μ) ⁄ (σ/√<span class="rad">n</span>)</span> the bottom is a fixed constant. In <span class="m">T = (ȳ − μ) ⁄ (s/√<span class="rad">n</span>)</span> the bottom is <em>itself estimated from the data</em>, so it wobbles too.</p>
+<p>Two sources of wobble instead of one means extreme values happen more often — fatter tails, so bigger critical values. With few degrees of freedom the estimate of σ is poor and the tails are very fat (<span class="m">t<sub>0.025,3</sub> = 3.18</span>); with many it is almost the normal (<span class="m">t<sub>0.025,36</sub> = 2.03</span> against <span class="m">z = 1.96</span>).</p>
+</div>
+
+<h3 id="c1-rules">Rules for combining random variables</h3>
+
+<p>These four lines look trivial. <strong>Every standard error in the entire course is derived from them.</strong></p>
+
+<div class="f mu-f">
+  <span class="q">
+    E(cY) = c·E(Y) &nbsp;&nbsp;&nbsp; Var(cY) = c²·Var(Y) &nbsp;&nbsp;&nbsp; Var(c) = 0<br>
+    E(Σ c<sub>i</sub>Y<sub>i</sub>) = Σ c<sub>i</sub>μ<sub>i</sub> &nbsp;&nbsp;&nbsp; Var(Σ c<sub>i</sub>Y<sub>i</sub>) = Σ c<sub>i</sub>²σ<sub>i</sub>² &nbsp;<span style="color:var(--ink-3);font-size:.8em">(independent Y)</span>
+  </span>
+  <span class="w">Means scale with <b>c</b>. Variances scale with <b>c squared</b>. Double a variable and its variance quadruples.</span>
+</div>
+
+<div class="b key"><span class="l">The consequence that drives everything</span>
+<p>Apply those rules to an average, where every <span class="m">c<sub>i</sub> = 1/n</span>:</p>
+<div class="f eps-f" style="margin:10px 0"><span class="q">Var(Ȳ) = <span class="frac"><span><span class="eps">σ²</span></span><span>n</span></span></span></div>
+<p>Individual measurements never get less variable — σ² is a fact about the population. But <strong>the average of n of them is n times less variable</strong>. This single fact is behind: why more data gives more power, why confidence intervals shrink, why balance is optimal, and why the <span class="m">n</span> appears in every expected mean square in lectures 5 and 8.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N3 · combining rules</span>
+<p>Write the four rules above, then this line and box it:</p>
+<div class="f"><span class="q">Var(ȳ) = σ² ⁄ n</span></div>
+<p>Then one worked line: <em>"2Z₁ + Z₂ where Z are iid N(0,1) → mean 0, variance 2²(1) + 1²(1) = 5, so N(0, 5)."</em> That exact question is on the 2025 paper.</p>
+</div>
+
+<h2 class="ch" id="c2"><span class="cn">Chapter 2 · Lecture 2</span>One-way ANOVA</h2>
+
+<p class="lede">The core machinery of the whole course. A single factor with <span class="m">a</span> levels, <span class="m">n</span> observations in each, assigned at random.</p>
+
+<h3>The model</h3>
+
+<div class="f">
+  <span class="q">
+    y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span>,
+    &nbsp;&nbsp; Σ<span class="tau">τ<sub>i</sub></span> = 0,
+    &nbsp;&nbsp; <span class="eps">ε<sub>it</sub></span> ~ iid N(0, <span class="eps">σ²</span>)
+  </span>
+  <span class="w">Any measurement = <b>the overall mean</b> + <b>the effect of its group</b> + <b>that individual's own randomness</b>.<br>
+  <span class="m">i = 1…a</span> counts groups, <span class="m">t = 1…n</span> counts replicates within a group.</span>
+</div>
+
+<div class="b exam"><span class="l">On the exam — a guaranteed question type</span>
+<p>You will be shown a model equation with the index ranges attached and asked which is correct, for example:</p>
+<p><em>"Three brands, 8 observations each"</em> → the right answer is <span class="m">y<sub>it</sub> = μ + τ<sub>i</sub> + e<sub>it</sub>, i = 1,2,3; t = 1,…,8</span>. The wrong options swap <span class="m">i</span> and <span class="m">t</span>, or drop the error term, or put <span class="m">μ</span> on the left.</p>
+<p><strong>Rule: <span class="m">i</span> always indexes the GROUP, <span class="m">t</span> always indexes the REPLICATE.</strong> Check the ranges match the number of groups, not the sample size.</p>
+</div>
+
+<div class="b why"><span class="l">Why the constraint Σ τᵢ = 0 is needed</span>
+<p>Count parameters: you have <span class="m">a</span> group means to describe, but the model has <span class="m">1 + a</span> parameters. One too many. Add 5 to <span class="m">μ</span> and subtract 5 from every <span class="m">τ<sub>i</sub></span> and every fitted value is identical — the data can never distinguish them.</p>
+<p>A constraint picks one solution. Sum-to-zero is the choice that makes <span class="mu m">μ</span> mean "the overall level" and each <span class="tau m">τ<sub>i</sub></span> mean "how far this group sits from that level".</p>
+</div>
+
+<h4>The estimates</h4>
+
+<div class="f">
+  <span class="q">
+    <span class="mu">μ̂</span> = ȳ<sub>··</sub> &nbsp;&nbsp;&nbsp;
+    <span class="tau">τ̂<sub>i</sub></span> = ȳ<sub>i·</sub> − ȳ<sub>··</sub> &nbsp;&nbsp;&nbsp;
+    <span class="eps">e<sub>it</sub></span> = y<sub>it</sub> − ȳ<sub>i·</sub> &nbsp;&nbsp;&nbsp;
+    <span class="eps">σ̂²</span> = MS<sub>E</sub>
+  </span>
+  <span class="w">Grand mean · group mean minus grand mean · observation minus its own group mean · the error mean square.</span>
+</div>
+
+<h3 id="c2-ss">Splitting the variation</h3>
+
+<div class="f tau-f">
+  <span class="q">SS<sub>T</sub> = <span class="tau">SS<sub>Tr</sub></span> + <span class="eps">SS<sub>E</sub></span></span>
+  <span class="w">Total variation = <b>variation the groups explain</b> + <b>variation left over</b>. Nothing lost, nothing double-counted.</span>
+</div>
+
+<div class="tw">
+<table>
+  <caption>The three sums of squares</caption>
+  <thead><tr><th>Name</th><th>Formula</th><th>In words</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">SS<sub>T</sub></span></td><td><span class="m">Σ<sub>i,t</sub>(y<sub>it</sub> − ȳ<sub>··</sub>)²</span></td><td>every point's distance from the overall mean, squared and added</td></tr>
+    <tr><td><span class="tau m">SS<sub>Tr</sub></span></td><td><span class="m"><strong>n</strong>·Σ<sub>i</sub>(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)²</span></td><td>each group mean's distance from the overall mean, squared, <strong>times n</strong></td></tr>
+    <tr><td><span class="eps m">SS<sub>E</sub></span></td><td><span class="m">Σ<sub>i,t</sub>(y<sub>it</sub> − ȳ<sub>i·</sub>)²</span></td><td>every point's distance from <em>its own</em> group mean, squared and added</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b trap"><span class="l">Trap — the missing n</span>
+<p><span class="m">SS<sub>Tr</sub></span> has an <span class="m">n</span> in front. Each group's squared deviation is counted <strong>once for every observation in that group</strong>, not once per group. Forget it and your answer is out by a factor of n — and the wrong value will usually be one of the five options.</p>
+</div>
+
+<div class="b why"><span class="l">Why squaring, and why the split is exact</span>
+<p><strong>Squaring:</strong> some deviations are positive and some negative. Added raw they cancel to zero. Squaring makes everything positive so you measure distance regardless of direction.</p>
+<p><strong>Why it splits exactly:</strong> write <span class="m">(y<sub>it</sub> − ȳ<sub>··</sub>) = (ȳ<sub>i·</sub> − ȳ<sub>··</sub>) + (y<sub>it</sub> − ȳ<sub>i·</sub>)</span>. Squaring normally leaves a cross-term, but summing it within a group gives <span class="m">Σ<sub>t</sub>(y<sub>it</sub> − ȳ<sub>i·</sub>)</span> — deviations from their own mean, which is <strong>zero by construction</strong>. The cross-term dies for every group, so the identity is exact.</p>
+</div>
+
+<h3 id="c2-f">Degrees of freedom, mean squares, F</h3>
+
+<div class="b why"><span class="l">Why you cannot compare SS directly</span>
+<p><span class="m">SS<sub>E</sub></span> is built from more numbers than <span class="m">SS<sub>Tr</sub></span>, so it would win on volume alone. Dividing each by its degrees of freedom turns a total into an average, and averages are comparable. Same reason you compare shopping bags by price per item, not total price.</p>
+</div>
+
+<div class="tw">
+<table>
+  <caption>Degrees of freedom — count of values genuinely free to vary</caption>
+  <thead><tr><th>Source</th><th>df</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Treatment</td><td><span class="m">a − 1</span></td><td><span class="m">a</span> effects, forced to sum to zero, so one is determined by the rest</td></tr>
+    <tr><td>Error</td><td><span class="m">N − a</span></td><td><span class="m">N</span> observations, minus the <span class="m">a</span> group means you estimated from them</td></tr>
+    <tr class="tot"><td>Total</td><td><span class="m">N − 1</span></td><td><span class="m">N</span> observations, minus the one grand mean</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="f tau-f">
+  <span class="q">
+    MS<sub>Tr</sub> = <span class="frac"><span>SS<sub>Tr</sub></span><span>a−1</span></span> &nbsp;&nbsp;
+    MS<sub>E</sub> = <span class="frac"><span>SS<sub>E</sub></span><span>N−a</span></span> &nbsp;&nbsp;
+    F = <span class="frac"><span><span class="tau">MS<sub>Tr</sub></span></span><span><span class="eps">MS<sub>E</sub></span></span></span>
+  </span>
+  <span class="w"><b>F is signal divided by noise.</b> Near 1 = nothing there. Much bigger than 1 = something real. Less than 1 = definitely nothing.</span>
+</div>
+
+<div class="b why"><span class="l">Why F sits near 1 when nothing is happening</span>
+<p><span class="m">MS<sub>E</sub></span> always estimates <span class="m">σ²</span>. When H₀ is true, <span class="m">MS<sub>Tr</sub></span> <em>also</em> estimates <span class="m">σ²</span>, because then the group means differ only by sampling noise. A ratio of two estimates of the same thing sits near 1.</p>
+<p>When treatments really differ, <span class="m">MS<sub>Tr</sub></span> picks up the genuine spread <em>on top of</em> the noise, so it inflates and F grows. This is also why <strong>the test is upper-tailed only</strong>: real effects can only push F up.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N4 · the ANOVA table skeleton</span>
+<p>Draw this as an empty table you can fill in during the exam. Most data questions are "fill in the missing cell".</p>
+<div class="tw">
+<table>
+<thead><tr><th>Source</th><th>df</th><th>SS</th><th>MS</th><th>F</th></tr></thead>
+<tbody>
+<tr><td>Treatment</td><td>a − 1</td><td>n·Σ(ȳᵢ. − ȳ..)²</td><td>SS_Tr/(a−1)</td><td>MS_Tr/MS_E</td></tr>
+<tr><td>Error</td><td>N − a</td><td>Σ(yᵢₜ − ȳᵢ.)²</td><td>SS_E/(N−a) = σ̂²</td><td></td></tr>
+<tr class="tot"><td>Total</td><td>N − 1</td><td>Σ(yᵢₜ − ȳ..)²</td><td></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Also write:</strong> "SS and df both add up. If they don't, I made an arithmetic error." And: "<span class="m">σ̂ = √<span class="rad">MS<sub>E</sub></span></span> — the question often asks for σ, not σ²."</p>
+</div>
+
+<div class="b exam"><span class="l">On the exam — the missing-cell question</span>
+<p>You are given a partial table and asked for a missing number. The whole thing is recoverable because everything is linked:</p>
+<ul>
+<li>Given SS and df in a row → MS = SS/df</li>
+<li>Given two of the three df → the third, since they add</li>
+<li>Given F and one MS → the other MS</li>
+<li>Given <span class="m">a</span> and <span class="m">N</span> → all three df immediately</li>
+</ul>
+<p><strong>Worked example from the 2025 paper.</strong> Three brands, 8 observations each, so <span class="m">a = 3, N = 24</span>. Table shows <span class="m">SS<sub>Tr</sub> = 33.403</span> on 2 df and <span class="m">SS<sub>E</sub> = 55.727</span> on 21 df. Asked for the estimate of <span class="eps m">σ</span>:</p>
+<p style="text-align:center"><span class="m">MS<sub>E</sub> = 55.727 ⁄ 21 = 2.654</span>, so <span class="m">σ̂ = √<span class="rad">2.654</span> = <strong>1.629</strong></span></p>
+<p>The distractors are 2.654 (forgot the square root) and 16.702 (used <span class="m">MS<sub>Tr</sub></span>). Both are what you get from a single slip.</p>
+</div>
+
+<h3>Assumptions</h3>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Assumption</th><th>Means</th><th>Checked by</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Independence</strong></td><td>One observation tells you nothing about another</td><td><em>Not testable afterwards.</em> Bought at design time by randomisation</td></tr>
+    <tr><td><strong>Normality</strong></td><td>The errors follow a bell curve</td><td>Q-Q plot of residuals</td></tr>
+    <tr><td><strong>Constant variance</strong></td><td>Every group has the same spread</td><td>Residuals vs fitted — look for a funnel</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b trap"><span class="l">Trap — normality is about the residuals</span>
+<p>Not the raw data. If the treatments work, the raw data is a mixture of several means and will look multi-humped — which is fine and expected. Always diagnose using <strong>residuals</strong>.</p>
+</div>
+
+<details class="opt"><summary>Optional R — the whole one-way analysis</summary>
+<pre><code><span class="cm"># the course convention — put this at the top of every script</span>
+options(contrasts = c("contr.sum", "contr.poly"))
+
+d &lt;- read.csv2("Trout-1.csv")          <span class="cm"># csv2: European ; and ,</span>
+d$Sulfamerazine &lt;- as.factor(d$Sulfamerazine)   <span class="cm"># or R fits a regression</span>
+
+m &lt;- aov(Hemo ~ Sulfamerazine, data = d)
+summary(m)                              <span class="cm"># the ANOVA table</span>
+par(mfrow = c(1,2)); plot(m, which = 1:2)   <span class="cm"># diagnostics</span></code></pre>
+</details>
+
+<h2 class="ch" id="c3"><span class="cn">Chapter 3 · Lecture 3</span>Inference — testing and confidence intervals</h2>
+
+<p class="lede">Lecture 3 appears to introduce many tests. It introduces <strong>one</strong>, applied to different quantities. Learn the one formula plus the table of standard errors and you have the whole lecture.</p>
+
+<div class="f mu-f">
+  <span class="q">T = <span class="frac"><span>estimate − hypothesised value</span><span>standard error of the estimate</span></span> &nbsp;&nbsp;&nbsp;<span style="color:var(--ink-3);font-size:.8em">with df = N − a</span></span>
+  <span class="w">Top: how big is the effect. Bottom: how much would this estimate bounce around if you repeated the study.<br>
+  <b>A 1 kg difference is huge if you measure to 0.1 kg, and nothing if you wobble by 5 kg. T is that comparison as one number.</b></span>
+</div>
+
+<div class="b key"><span class="l">The load-bearing idea</span>
+<p><strong>Every test in lectures 3 and 4 changes only the numerator.</strong> A group mean, the grand mean, a difference of two means, a contrast — same formula, same pooled <span class="eps m">MS<sub>E</sub></span>, same <span class="m">df = N − a</span>.</p>
+</div>
+
+<div class="tw">
+<table>
+  <caption>Every standard error in the course — all use pooled MS_E, all with df = N − a</caption>
+  <thead><tr><th>What you want to say something about</th><th>Estimate</th><th>Standard error</th></tr></thead>
+  <tbody>
+    <tr><td>One treatment mean <span class="m">μ<sub>i</sub></span></td><td><span class="m">ȳ<sub>i·</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub> / n</span></span></td></tr>
+    <tr><td>The grand mean <span class="m">μ</span></td><td><span class="m">ȳ<sub>··</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub> / N</span></span></td></tr>
+    <tr><td>A difference <span class="m">μ<sub>i</sub> − μ<sub>j</sub></span></td><td><span class="m">ȳ<sub>i·</sub> − ȳ<sub>j·</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub>(1/n<sub>i</sub> + 1/n<sub>j</sub>)</span></span></td></tr>
+    <tr><td>A contrast <span class="m">Γ = Σc<sub>i</sub>μ<sub>i</sub></span></td><td><span class="m">Σc<sub>i</sub>ȳ<sub>i·</sub></span></td><td><span class="m">√<span class="rad">(MS<sub>E</sub>/n)·Σc<sub>i</sub>²</span></span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b why"><span class="l">Why pooled MS_E rather than one group's own variance</span>
+<p>You already <em>assumed</em> all groups share the same <span class="m">σ²</span>. Under that assumption every group's variance is an independent estimate of the same number, so averaging them all is far more stable than using one.</p>
+<p>Concretely: one group of 2 piglets gives <span class="m">s² = 8</span> on 1 df, critical value 12.71. Pooling all three gives <span class="m">MS<sub>E</sub> = 6</span> on 3 df, critical value 3.18. <strong>Pooling buys precision; the equal-variance assumption is the price.</strong></p>
+</div>
+
+<h3 id="c3-ci">Confidence intervals</h3>
+
+<div class="f">
+  <span class="q">CI = estimate ± t<sub>α/2, N−a</sub> · se(estimate)</span>
+  <span class="w">The range of values that would <b>not</b> be rejected by a test at level α.</span>
+</div>
+
+<div class="b key"><span class="l">Duality — the fastest shortcut in the course</span>
+<p>A two-sided test at level α and a <span class="m">(1−α)</span> confidence interval are <strong>the same procedure wearing different clothes</strong>. Reject <span class="m">H₀: θ = θ₀</span> if and only if <span class="m">θ₀</span> lies <em>outside</em> the interval.</p>
+<p>So if a question gives you an interval and asks whether some value is significantly different, you do not compute anything — you just look.</p>
+</div>
+
+<h4>The interval for σ² — the one that behaves differently</h4>
+
+<div class="f eps-f">
+  <span class="q">
+    <span class="frac"><span>SS<sub>E</sub></span><span><span class="eps">σ²</span></span></span> ~ χ²<sub>N−a</sub>
+    &nbsp;&nbsp;⟹&nbsp;&nbsp;
+    CI = [ <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>1−α/2, N−a</sub></span></span> , <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>α/2, N−a</sub></span></span> ]
+  </span>
+  <span class="w">Asymmetric, because the chi-square distribution is lopsided.<br>
+  <b>The BIG chi-square value gives the SMALL end of the interval</b> — because you are dividing by it.</span>
+</div>
+
+<div class="b exam"><span class="l">On the exam — this appears almost every year</span>
+<p>From the 2025 paper: <span class="m">SS<sub>E</sub> = 55.727</span>, <span class="m">df = 21</span>, and you are <em>given</em> <span class="m">χ²<sub>0.975,21</sub> = 35.48</span> and <span class="m">χ²<sub>0.025,21</sub> = 10.28</span>. Find a 95% CI for <span class="eps m">σ</span> — note, sigma, not sigma squared.</p>
+<div class="f" style="margin:10px 0"><span class="q">
+[ 55.727⁄35.48 , 55.727⁄10.28 ] = [1.571 , 5.421] &nbsp;→&nbsp; take square roots &nbsp;→&nbsp; <strong>[1.25 , 2.33]</strong>
+</span></div>
+<p>Two traps built into the options: forgetting the square root (gives 1.63 to 5.81), and dividing by the wrong quantile first (bounds come out reversed).</p>
+</div>
+
+<div class="nb">
+<span class="tag">N5 · the inference page</span>
+<p>Write the universal T formula, the four standard errors as a table, then:</p>
+<div class="f"><span class="q">
+CI = estimate ± t<sub>α/2, N−a</sub> · se<br>
+CI for σ² = [ SS<sub>E</sub> ⁄ χ²<sub>0.975</sub> , SS<sub>E</sub> ⁄ χ²<sub>0.025</sub> ]
+</span></div>
+<p><strong>Then write these three reminders in capitals:</strong></p>
+<ul>
+<li>BIG CHI-SQUARE → SMALL END</li>
+<li>ASKED FOR σ NOT σ²? TAKE THE SQUARE ROOT</li>
+<li>VALUE OUTSIDE THE CI ⟺ REJECT</li>
+</ul>
+</div>
+
+<h3 id="c3-err">The two errors, and power</h3>
+
+<div class="tw">
+<table>
+  <thead><tr><th></th><th>H₀ true (no real effect)</th><th>H₀ false (real effect)</th></tr></thead>
+  <tbody>
+    <tr><th>You reject</th><td class="wr"><strong>Type I error</strong> — probability <span class="m">α</span>. A false alarm.</td><td class="y"><strong>Correct.</strong> Probability <span class="m">1 − β</span> = <strong>power</strong></td></tr>
+    <tr><th>You do not reject</th><td class="y"><strong>Correct.</strong> Probability <span class="m">1 − α</span></td><td class="wr"><strong>Type II error</strong> — probability <span class="m">β</span>. A missed effect.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>α is chosen by you</strong>, before the data. <strong>β is a consequence</strong> — of your α, your sample size, the true effect size and σ². You never observe β, which is why a non-significant result is so easy to over-read.</p>
+
+<p><strong>Power rises with:</strong> larger <span class="m">n</span> (because <span class="m">Var(ȳ) = σ²/n</span>), larger true effect, smaller <span class="m">σ²</span>. Tightening α <em>lowers</em> power. Only more data improves both errors at once.</p>
+
+<div class="b exam"><span class="l">On the exam — the sentence that scores</span>
+<p>Never write "there is no effect" after a non-significant result. The defensible statement is <strong>"no significant evidence of an effect"</strong>, and if <span class="m">n</span> is small, add that power is low so a real effect could have been missed.</p>
+<p>Multiple-choice options are frequently built around exactly this distinction: one option says "we conclude there is no difference" and another says "we cannot conclude there is a difference". <strong>The second is always the correct one.</strong></p>
+</div>
+
+<h3>Reading R's coefficients under contr.sum</h3>
+
+<p>This is the most confusing practical detail in the course and it is examined nearly every year.</p>
+
+<pre><code>options(contrasts = c("contr.sum", "contr.poly"))
+r1 &lt;- lm(temperature ~ brand, data = freeze23)
+round(coef(r1), 2)
+<span class="rs">(Intercept)      brand1      brand2
+     -14.76       -1.64        1.08</span></code></pre>
+
+<div class="tw">
+<table>
+  <thead><tr><th>R prints</th><th>Which means</th><th>Here</th></tr></thead>
+  <tbody>
+    <tr><td><code>(Intercept)</code></td><td><span class="mu m">μ̂</span> — the grand mean</td><td class="n">−14.76</td></tr>
+    <tr><td><code>brand1</code></td><td><span class="tau m">τ̂₁</span> — how far group 1 sits from the grand mean</td><td class="n">−1.64</td></tr>
+    <tr><td><code>brand2</code></td><td><span class="tau m">τ̂₂</span></td><td class="n">+1.08</td></tr>
+    <tr><td><em>not printed</em></td><td><span class="tau m">τ̂₃</span> = −(τ̂₁ + τ̂₂), because they must sum to zero</td><td class="n">+0.56</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">On the exam — the two questions that always follow</span>
+<p><strong>"Estimate <span class="m">τ₃</span>"</strong> → the last level is never printed. Add up what is shown and negate: <span class="m">−(−1.64 + 1.08) = +0.56</span>.</p>
+<p><strong>"Estimate <span class="m">μ + τ₁</span>"</strong> → that is group 1's mean: <span class="m">−14.76 + (−1.64) = −16.40</span>.</p>
+</div>
+
+<div class="b trap"><span class="l">Trap — R's factory default is NOT contr.sum</span>
+<p>R defaults to <code>contr.treatment</code>, where the intercept is the <em>first group's mean</em> and each coefficient is a <em>difference from that group</em>. The ANOVA table, F and p are <strong>identical</strong> either way — only the coefficients change meaning. So this fails silently.</p>
+<p>On the exam, look for <code>contr.sum</code> in the printed code. If it is there, intercept = grand mean. If not, intercept = first group's mean.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N6 · reading coefficients</span>
+<p>Copy the small table above, then these two lines:</p>
+<ul>
+<li><strong>contr.sum</strong> → Intercept = <strong>grand mean</strong>; coefficients = deviations; <strong>last level omitted, recover as minus the sum of the others</strong>; levels numbered <strong>alphabetically</strong>.</li>
+<li><strong>contr.treatment</strong> (R's default) → Intercept = <strong>first group's mean</strong>; coefficients = differences from it.</li>
+</ul>
+<p>And: <em>"group i's mean = Intercept + coefficient i"</em>.</p>
+</div>
+
+<h2 class="ch" id="c4"><span class="cn">Chapter 4 · Lecture 4</span>Contrasts and post-hoc comparisons</h2>
+
+<p class="lede">The F-test says something is going on but not what. Lecture 4 is the toolkit for locating the effect without cheating.</p>
+
+<h3>Contrasts</h3>
+
+<div class="f tau-f">
+  <span class="q">Γ = Σ<sub>i</sub> c<sub>i</sub> μ<sub>i</sub> &nbsp;&nbsp;subject to&nbsp;&nbsp; Σ<sub>i</sub> c<sub>i</sub> = 0</span>
+  <span class="w">A specific comparison, written as a set of weights on the group means.</span>
+</div>
+
+<div class="b why"><span class="l">Why the weights must add to zero</span>
+<p>Substitute <span class="m">μ<sub>i</sub> = μ + τ<sub>i</sub></span>:&nbsp; <span class="m">Γ = μ·Σc<sub>i</sub> + Σc<sub>i</sub>τ<sub>i</sub></span>. When <span class="m">Σc<sub>i</sub> = 0</span> the first term vanishes and <strong>the grand mean drops out algebraically</strong>.</p>
+<p>Practical meaning: add 100 to every group and the contrast is unchanged. That is what makes it a <em>comparison</em> rather than a <em>level</em>.</p>
+</div>
+
+<div class="tw">
+<table>
+  <caption>Writing weights for common questions, a = 4</caption>
+  <thead><tr><th>Question</th><th>Weights</th><th class="n">Σcᵢ</th><th class="n">Σcᵢ²</th></tr></thead>
+  <tbody>
+    <tr><td>Group 1 vs group 2</td><td><span class="m">(1, −1, 0, 0)</span></td><td class="n y">0</td><td class="n">2</td></tr>
+    <tr><td>Group 3 vs group 4</td><td><span class="m">(0, 0, 1, −1)</span></td><td class="n y">0</td><td class="n">2</td></tr>
+    <tr><td>First two vs last two</td><td><span class="m">(1, 1, −1, −1)</span></td><td class="n y">0</td><td class="n">4</td></tr>
+    <tr><td>Control vs mean of the other three</td><td><span class="m">(1, −⅓, −⅓, −⅓)</span></td><td class="n y">0</td><td class="n">1.333</td></tr>
+    <tr><td class="no">Average of all groups — <em>not a contrast</em></td><td class="no"><span class="m">(¼, ¼, ¼, ¼)</span></td><td class="n wr">1</td><td class="n no">—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="f">
+  <span class="q">
+    T₀ = <span class="frac"><span>Γ̂</span><span>se(Γ̂)</span></span> &nbsp;&nbsp;
+    SS<sub>C</sub> = <span class="frac"><span>(Σc<sub>i</sub>ȳ<sub>i·</sub>)²</span><span>(1/n)·Σc<sub>i</sub>²</span></span> &nbsp;&nbsp;
+    df<sub>C</sub> = 1 &nbsp;&nbsp;
+    F₀ = <span class="frac"><span>SS<sub>C</sub></span><span>MS<sub>E</sub></span></span> = T₀²
+  </span>
+  <span class="w">A contrast asks exactly one question, so it always has <b>one</b> degree of freedom.</span>
+</div>
+
+<h4>Orthogonality</h4>
+
+<p>Two contrasts are <strong>orthogonal</strong> — carrying non-overlapping information — when <span class="m">Σ<sub>i</sub> c<sub>1i</sub>c<sub>2i</sub> = 0</span> (multiply element by element, add, get zero).</p>
+
+<div class="b key"><span class="l">The partition theorem</span>
+<p>With <span class="m">a</span> groups you can build exactly <span class="m">a − 1</span> mutually orthogonal contrasts — matching <span class="m">df<sub>Tr</sub> = a − 1</span>, which is not a coincidence. When you do, <strong>their sums of squares add up to <span class="m">SS<sub>Tr</sub></span> exactly</strong>. The omnibus test is dissected into <span class="m">a−1</span> independent one-df questions with nothing left over.</p>
+</div>
+
+<div class="b trap"><span class="l">Trap — rescaling</span>
+<p>Multiplying a contrast by any constant changes <span class="m">Γ̂</span> and <span class="m">se(Γ̂)</span>, but <strong>never</strong> changes <span class="m">T₀</span>, the p-value, or <span class="m">SS<sub>C</sub></span>. So <span class="m">(1, −1, 0, 0)</span> and <span class="m">(2, −2, 0, 0)</span> and <span class="m">(½, −½, 0, 0)</span> all give the same test.</p>
+</div>
+
+<h3 id="c4-mult">Multiple testing</h3>
+
+<div class="f eps-f">
+  <span class="q">m = <span class="frac"><span>a(a−1)</span><span>2</span></span> &nbsp;&nbsp;&nbsp; FWER = 1 − (1 − α)<sup>m</sup></span>
+  <span class="w">With m comparisons each at 5%, the chance of <b>at least one</b> false alarm is much more than 5%.</span>
+</div>
+
+<div class="tw">
+<table>
+  <thead><tr><th class="n">Groups a</th><th class="n">Pairs m</th><th class="n">FWER at α = 0.05</th></tr></thead>
+  <tbody>
+    <tr><td class="n">3</td><td class="n">3</td><td class="n">14.3%</td></tr>
+    <tr><td class="n">4</td><td class="n">6</td><td class="n">26.5%</td></tr>
+    <tr><td class="n">5</td><td class="n">10</td><td class="n">40.1%</td></tr>
+    <tr><td class="n">10</td><td class="n">45</td><td class="n wr">90.1%</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tw">
+<table>
+  <caption>The three corrections — they differ in WHAT they protect</caption>
+  <thead><tr><th>Method</th><th>Rule</th><th>Protects</th><th>Use when</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Bonferroni</strong></td><td>test each at <span class="m">α/m</span></td><td>any <span class="m">m</span> comparisons named in advance</td><td>few, pre-planned comparisons</td></tr>
+    <tr><td class="y"><strong>Tukey HSD</strong></td><td><span class="m">|ȳ<sub>i</sub>−ȳ<sub>j</sub>| &gt; q<sub>α,a,N−a</sub>·√<span class="rad">MS<sub>E</sub>/n</span></span></td><td>exactly all <span class="m">a(a−1)/2</span> pairs</td><td class="y">you want all pairwise — the default choice</td></tr>
+    <tr><td><strong>Scheffé</strong></td><td><span class="m">|T₀| &gt; √<span class="rad">(a−1)·F<sub>α,a−1,N−a</sub></span></span></td><td><em>every possible</em> contrast, including ones invented after seeing the data</td><td>you went looking for patterns</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b why"><span class="l">Why Tukey beats Bonferroni for pairwise work</span>
+<p>Bonferroni treats the <span class="m">m</span> comparisons as <span class="m">m</span> unrelated problems and charges full price for each. Tukey knows something Bonferroni ignores: <strong>if the largest gap between any two means is not significant, no smaller gap can be either.</strong> So it only has to control that single largest gap. Solving the real problem instead of the worst imaginable one is what buys back the power.</p>
+<p>On the trout data (<span class="m">a = 4, N = 40</span>) the thresholds on the <span class="m">|T|</span> scale come out: no correction <strong>2.03</strong> &lt; Tukey <strong>2.69</strong> &lt; Bonferroni <strong>2.79</strong> &lt; Scheffé <strong>2.93</strong>.</p>
+</div>
+
+<div class="b exam"><span class="l">On the exam</span>
+<p>The timetable states <strong>Tukey by hand is not required</strong>. What <em>is</em> required: knowing which correction suits which situation, that all three raise the bar, that Tukey is the least conservative of the three for pairwise comparisons, and being able to read a <code>TukeyHSD</code> output — <strong>if the confidence interval for a pair contains zero, that pair is not significantly different.</strong></p>
+</div>
+
+<div class="nb">
+<span class="tag">N7 · contrasts and corrections</span>
+<p>Write the contrast definition with the <span class="m">Σc<sub>i</sub> = 0</span> condition, the se formula, <span class="m">SS<sub>C</sub></span>, and <span class="m">F₀ = T₀²</span>. Then the orthogonality check.</p>
+<p>Then copy the three-corrections table. Then this decision line:</p>
+<ul>
+<li>planned, few → <strong>Bonferroni</strong></li>
+<li>all pairs → <strong>Tukey</strong></li>
+<li>found by snooping → <strong>Scheffé</strong></li>
+</ul>
+<p>And the rule: <strong>omnibus F first, always. Then a correction. Never pairwise tests before F rejects.</strong></p>
+</div>
+
+<h2 class="ch" id="c5"><span class="cn">Chapter 5 · Lecture 5</span>Random effects — one factor</h2>
+
+<p class="lede">The maths does not change. The <em>question</em> changes. This is where the violet colour starts, and where exam marks start being lost.</p>
+
+<h3>Fixed or random — how to tell</h3>
+
+<div class="tw">
+<table>
+  <thead><tr><th></th><th>Fixed (L2–L4)</th><th class="rr">Random (L5)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>The levels are</strong></td><td>chosen deliberately by you</td><td class="rr">a random sample from a big population</td></tr>
+    <tr><td><strong>Repeat the study</strong></td><td>same levels again</td><td class="rr">a completely new set of levels</td></tr>
+    <tr><td><strong>Question</strong></td><td>"are <em>these</em> levels different?"</td><td class="rr">"do levels <em>in general</em> vary?"</td></tr>
+    <tr><td><strong>Conclusion applies to</strong></td><td>only the levels tested</td><td class="rr">the whole population sampled from</td></tr>
+    <tr><td><strong><span class="tau m">τ<sub>i</sub></span> is</strong></td><td>a fixed unknown constant</td><td class="rr">a random variable, <span class="m">~ N(0, σ²<sub>τ</sub>)</span></td></tr>
+    <tr><td><strong>H₀</strong></td><td><span class="m">τ₁ = ⋯ = τ<sub>a</sub> = 0</span></td><td class="rr"><span class="m">σ²<sub>τ</sub> = 0</span></td></tr>
+    <tr><td><strong>You estimate</strong></td><td>group means</td><td class="rr">variances</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">On the exam — the giveaway phrases</span>
+<p>Read the question stem for these words: <strong>"a random sample of"</strong>, <strong>"randomly selected"</strong>, <strong>"randomly picked"</strong>, <strong>"drawn from the population of"</strong>. Any of these means <strong>random factor</strong>.</p>
+<p>Real examples: <em>"He took a random sample of 6 boars and a random sample of 4 swine farms"</em> → both random. <em>"The 6 rivers are randomly sampled from the population of Norwegian rivers"</em> → river is random. <em>"four different doses: 0, 5, 10, 15 g"</em> → fixed, they were chosen.</p>
+<p>In R output, look for <code>r()</code> around the variable name: <code>lm(Size ~ r(Boar) + r(Farm))</code> means both are random.</p>
+</div>
+
+<h3>The model and what follows from it</h3>
+
+<div class="f rnd-f">
+  <span class="q">y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">t<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span>,
+  &nbsp;&nbsp; <span class="tau">t<sub>i</sub></span> ~ N(0, <span class="tau">σ²<sub>τ</sub></span>),
+  &nbsp;&nbsp; <span class="eps">ε<sub>it</sub></span> ~ N(0, <span class="eps">σ²</span>),
+  &nbsp;&nbsp; independent</span>
+  <span class="w">Identical to the fixed model except <b>the group effect is now itself a random draw</b>.</span>
+</div>
+
+<div class="tw">
+<table>
+  <caption>Three consequences — all examined</caption>
+  <thead><tr><th>Quantity</th><th>Fixed model</th><th class="rr">Random model</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">E(y<sub>it</sub>)</span></td><td><span class="m">μ + τ<sub>i</sub></span> — differs by group</td><td class="rr"><span class="m">μ</span> — the same for every group</td></tr>
+    <tr><td><span class="m">V(y<sub>it</sub>)</span></td><td><span class="m">σ²</span> — one source</td><td class="rr"><span class="m">σ²<sub>τ</sub> + σ²</span> — <strong>two components</strong></td></tr>
+    <tr><td><span class="m">Cov(y<sub>it</sub>, y<sub>ik</sub>)</span> same group</td><td>0 — independent</td><td class="rr"><span class="m">σ²<sub>τ</sub></span> — <strong>correlated</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b why"><span class="l">Why two variance components appear</span>
+<p>In the fixed model <span class="m">τ<sub>i</sub></span> is a constant, and constants have no variance. Now it is a random variable, so it contributes its own variance.</p>
+<p>Pick a cow at random from the country: <strong>two</strong> independent random things happened to her — her father was drawn from the bull population (contributing <span class="tau m">σ²<sub>τ</sub></span>), and she turned out however she turned out (contributing <span class="eps m">σ²</span>). Both add to how unpredictable she is.</p>
+<p>And two daughters of the <em>same</em> bull share his draw, which is exactly why they are correlated, with covariance <span class="tau m">σ²<sub>τ</sub></span>.</p>
+</div>
+
+<h3 id="c5-var">Expected mean squares and the estimates</h3>
+
+<div class="f rnd-f">
+  <span class="q">
+    E(MS<sub>E</sub>) = <span class="eps">σ²</span> &nbsp;&nbsp;&nbsp;&nbsp;
+    E(MS<sub>Tr</sub>) = <span class="eps">σ²</span> + n·<span class="tau">σ²<sub>τ</sub></span>
+  </span>
+  <span class="w">MS_Tr is expected to be the noise <b>plus an extra bit</b>. If groups do not vary, the extra bit is zero and both estimate the same thing — so F sits near 1.</span>
+</div>
+
+<p>Setting the observed mean squares equal to their expected values and solving gives the <strong>method of moments</strong> estimators:</p>
+
+<div class="f rnd-f">
+  <span class="q">
+    <span class="eps">σ̂²</span> = MS<sub>E</sub> &nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="tau">σ̂²<sub>τ</sub></span> = <span class="frac"><span>MS<sub>Tr</sub> − MS<sub>E</sub></span><span>n</span></span>
+  </span>
+  <span class="w">Take how much bigger MS_Tr is than MS_E, and divide by the group size.</span>
+</div>
+
+<div class="b trap"><span class="l">Trap — negative variance</span>
+<p>Nothing stops <span class="m">MS<sub>E</sub></span> being bigger than <span class="m">MS<sub>Tr</sub></span>, which returns a <strong>negative</strong> variance — impossible. It happens by bad luck when the true <span class="m">σ²<sub>τ</sub></span> is small. Report it as zero, or use REML, which cannot go negative. Any dataset with <span class="m">F &lt; 1</span> gives a negative estimate.</p>
+</div>
+
+<h3 id="c5-icc">The ICC</h3>
+
+<div class="f rnd-f">
+  <span class="q">ICC = <span class="frac"><span><span class="tau">σ²<sub>τ</sub></span></span><span><span class="tau">σ²<sub>τ</sub></span> + <span class="eps">σ²</span></span></span></span>
+  <span class="w">Of all the variation, what fraction is due to the group? Always between 0 and 1.<br>
+  It is also literally <b>the correlation between two observations from the same group</b>.</span>
+</div>
+
+<div class="b exam"><span class="l">On the exam — worked, from the 2025 paper</span>
+<p>ANOVA table: <span class="m">Boar</span> 5 df, MS = 10.17; <span class="m">Residuals</span> 42 df, MS = 2.17. There are 6 boars with 8 matings each, so <span class="m">n = 8</span>.</p>
+<div class="f" style="margin:10px 0"><span class="q">
+<span class="eps">σ̂²</span> = 2.17 &nbsp;&nbsp;·&nbsp;&nbsp; <span class="tau">σ̂²<sub>τ</sub></span> = <span class="frac"><span>10.17 − 2.17</span><span>8</span></span> = 1.00<br>
+ICC = <span class="frac"><span>1.00</span><span>1.00 + 2.17</span></span> = <strong>0.32</strong>
+</span></div>
+<p>The question was phrased as <em>"the estimated correlation coefficient for observations from the same Boar"</em> — that is the ICC. Recognising the phrasing is half the question.</p>
+</div>
+
+<h3>The confidence interval for μ — and a textbook error</h3>
+
+<div class="f rnd-f">
+  <span class="q">V(<span class="mu">μ̂</span>) = <span class="frac"><span><span class="eps">σ²</span> + n<span class="tau">σ²<sub>τ</sub></span></span><span>a·n</span></span> = <span class="frac"><span>MS<sub>Tr</sub></span><span>a·n</span></span>
+  &nbsp;&nbsp;⟹&nbsp;&nbsp; CI = ȳ<sub>··</sub> ± t<sub>α/2, <span class="rnd">a−1</span></sub>·√<span class="rad">MS<sub>Tr</sub>/(an)</span></span>
+  <span class="w">Note the degrees of freedom: <b>a − 1</b>, not N − a.</span>
+</div>
+
+<div class="b rand"><span class="l">Fixed vs random — why df = a − 1 here</span>
+<p>You built this standard error out of <span class="m">MS<sub>Tr</sub></span>, so you inherit <em>that</em> mean square's degrees of freedom, <span class="m">a − 1</span>. You never used <span class="m">MS<sub>E</sub></span>, so its df are irrelevant.</p>
+<p><strong>Montgomery 10th edition, page 107, says <span class="m">N − a</span>. That is wrong</strong>, and your lecturer flags it on the slides — which makes it fair game for an exam question. Using the wrong df gives an interval about 25% too narrow.</p>
+<p>The deeper reason: your 40 cows are not 40 independent pieces of information about the nation. They come from only 5 bulls. <strong>Your effective sample size is closer to 5 than to 40</strong>, and <span class="m">a − 1</span> reflects that.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N8 · random effects, one factor</span>
+<p>This whole page should be in violet ink or boxed, so you can find it fast.</p>
+<div class="f"><span class="q">
+E(MS<sub>E</sub>) = σ² &nbsp;&nbsp; E(MS<sub>Tr</sub>) = σ² + n·σ²<sub>τ</sub><br><br>
+σ̂² = MS<sub>E</sub> &nbsp;&nbsp;&nbsp; σ̂²<sub>τ</sub> = (MS<sub>Tr</sub> − MS<sub>E</sub>) ⁄ n<br><br>
+ICC = σ²<sub>τ</sub> ⁄ (σ²<sub>τ</sub> + σ²) &nbsp;&nbsp;&nbsp; V(y) = σ²<sub>τ</sub> + σ²<br><br>
+CI for μ = ȳ.. ± t<sub>α/2, <b>a−1</b></sub>·√(MS<sub>Tr</sub>/(a·n))
+</span></div>
+<p><strong>Add these three notes:</strong></p>
+<ul>
+<li>H₀ is <strong>σ²<sub>τ</sub> = 0</strong>, one-sided, and the F is still MS_Tr/MS_E</li>
+<li>ICC = the correlation between two observations in the same group</li>
+<li>CI for μ uses <strong>a−1</strong> df — the textbook is wrong about this</li>
+</ul>
+</div>
+
+<h2 class="ch" id="c6"><span class="cn">Chapter 6 · Lecture 6</span>Model checking, and two factors</h2>
+
+<p class="lede">Two separate topics in one lecture. Part one: checking the assumptions you have been making since lecture 2. Part two: the jump to two factors, and the single most important new concept in the course — <strong>interaction</strong>.</p>
+
+<h3>Part 1 — diagnostics</h3>
+
+<div class="b key"><span class="l">Error vs residual — an examined distinction</span>
+<p><strong>Error <span class="eps m">ε<sub>it</sub> = y<sub>it</sub> − (μ + τ<sub>i</sub>)</span></strong> uses the <em>true</em> parameters. It can never be observed.</p>
+<p><strong>Residual <span class="m">ε̂<sub>it</sub> = y<sub>it</sub> − ȳ<sub>i·</sub></span></strong> uses the <em>estimated</em> group mean. This you can compute.</p>
+<p>You diagnose the unobservable errors using the observable residuals as stand-ins. Residuals within each group always sum to exactly zero by construction — which is why you lose one df per group, giving <span class="m">N − a</span>.</p>
+</div>
+
+<div class="f eps-f">
+  <span class="q">d<sub>it</sub> = <span class="frac"><span>ε̂<sub>it</sub></span><span>√<span class="rad">MS<sub>E</sub></span></span></span> &nbsp;&nbsp;&nbsp;&nbsp; flag an outlier if &nbsp; |d<sub>it</sub>| &gt; 3</span>
+  <span class="w"><b>Standardized residuals.</b> Dividing by the estimated standard deviation puts them on a common scale, so they behave roughly like N(0,1) whatever the units.</span>
+</div>
+
+<div class="tw">
+<table>
+  <caption>The three checks</caption>
+  <thead><tr><th>Assumption</th><th>Plot</th><th>Good looks like</th><th>Bad looks like</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Constant variance</strong></td><td>Residuals vs Fitted</td><td>random shotgun blast, equal vertical spread everywhere</td><td class="wr"><strong>funnel / megaphone</strong> — spread grows with the fitted value</td></tr>
+    <tr><td><strong>Normality</strong></td><td>Normal Q-Q</td><td>points on the diagonal; small tail drift is fine</td><td class="wr">systematic curve, especially a sweeping right tail = right skew</td></tr>
+    <tr><td><strong>Independence</strong></td><td><em>none</em></td><td colspan="2">Cannot be diagnosed from a plot. Judge it from how the data was collected: repeated measures on one individual, shared tank or barn, or a time/space ordering all break it.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b trap"><span class="l">Trap — why the lecture prefers plots to formal tests</span>
+<p>Shapiro–Wilk <strong>lacks power on small samples</strong> (misses real problems) and is <strong>hypersensitive on large ones</strong> (flags irrelevant deviations). The lecture explicitly says visual inspection is superior. If a question offers "the Shapiro test was not significant so normality holds" as an option, be suspicious.</p>
+</div>
+
+<div class="b exam"><span class="l">On the exam — outliers</span>
+<p><strong>Never blindly delete an outlier.</strong> The examinable position is: investigate first. Was it a recording error? Or is it a real phenomenon — possibly the finding itself? If you remove one, report which, why, and what the analysis looks like both with and without it.</p>
+<p>Options that say "remove the outlier and re-run" without justification are wrong answers.</p>
+</div>
+
+<h3 id="c6-trans">Transformations</h3>
+
+<div class="b why"><span class="l">Why a log transform fixes a funnel</span>
+<p>A funnel — spread growing with the mean — says the underlying process is <strong>multiplicative</strong>, not additive: effects <em>scale</em> things rather than <em>add</em> to them.</p>
+<p>Taking logs turns multiplication into addition. It compresses large values much more than small ones, so the wide right-hand end of the funnel is pulled in. This very often fixes <strong>both</strong> the variance problem and the skewness at once, because they had the same cause.</p>
+</div>
+
+<div class="tw">
+<table>
+  <caption>The transformation toolkit</caption>
+  <thead><tr><th>Problem</th><th>Transform</th><th>Typical data</th></tr></thead>
+  <tbody>
+    <tr><td>Right skew, variance ∝ mean</td><td><span class="m">ln(y)</span></td><td>counts, concentrations</td></tr>
+    <tr><td>Right skew, variance ∝ mean²</td><td><span class="m">√<span class="rad">y</span></span></td><td>counts, Poisson-like</td></tr>
+    <tr><td>Proportions between 0 and 1</td><td><span class="m">arcsin(√<span class="rad">p</span>)</span></td><td>percentages, fractions</td></tr>
+    <tr><td>Left skew, large range</td><td><span class="m">y²</span> or <span class="m">y³</span></td><td>rare</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b key"><span class="l">What changes when you take logs — this is examined</span>
+<p>Fitting <span class="m">ln(y<sub>it</sub>) = μ + τ<sub>i</sub> + ε<sub>it</sub></span> is the same as saying the original data follow <span class="m">y<sub>it</sub> = e<sup>μ</sup>·e<sup>τ<sub>i</sub></sup>·e<sup>ε<sub>it</sub></sup></span> — a multiplicative model.</p>
+<p>So on the original scale:</p>
+<ul>
+<li>Back-transforming a mean gives a <strong>geometric</strong> mean, not an arithmetic one.</li>
+<li><strong>Differences on the log scale become ratios on the original scale.</strong> A log-scale difference of 1.269 means a ratio of <span class="m">e<sup>1.269</sup> = 3.56</span> — group 3 has 3.56 <em>times</em> group 1, not 1.269 units more.</li>
+<li>A CI <span class="m">[L, U]</span> on the log scale becomes <span class="m">[e<sup>L</sup>, e<sup>U</sup>]</span>, a CI for the <em>ratio</em>.</li>
+</ul>
+<p>Always state which scale you are reporting on.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N9 · diagnostics and transformations</span>
+<p>Write the standardized residual formula and the <span class="m">|d| &gt; 3</span> rule. Then a small three-row table: <strong>assumption → plot → what bad looks like</strong>.</p>
+<p>Then the transformation table. Then box these two lines:</p>
+<div class="f"><span class="q">
+funnel shape → try ln(y)<br>
+difference on log scale = <strong>ratio</strong> on original scale: e<sup>diff</sup>
+</span></div>
+<p>And: <em>"error = uses true parameters, unobservable. residual = uses estimated group mean, observable."</em></p>
+</div>
+
+<h3 id="c6-two">Part 2 — the two-factor factorial design</h3>
+
+<p>Factor A has <span class="m">a</span> levels, factor B has <span class="m">b</span> levels. <strong>Crossed</strong> means every level of A appears with every level of B, giving <span class="m">a×b</span> cells, with <span class="m">n</span> replicates in each. Total <span class="m">N = a·b·n</span>.</p>
+
+<div class="f">
+  <span class="q">y<sub>ijt</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="tau">β<sub>j</sub></span> + <span class="tau">(τβ)<sub>ij</sub></span> + <span class="eps">ε<sub>ijt</sub></span></span>
+  <span class="w">overall mean + <b>main effect of A</b> + <b>main effect of B</b> + <b>interaction</b> + noise<br>
+  <span class="m">i = 1…a</span> · <span class="m">j = 1…b</span> · <span class="m">t = 1…n</span></span>
+</div>
+
+<p>All the constraints are sum-to-zero: <span class="m">Στ<sub>i</sub> = 0</span>, <span class="m">Σβ<sub>j</sub> = 0</span>, and the interaction sums to zero <em>across every row and every column</em>.</p>
+
+<div class="f">
+  <span class="q">
+    <span class="mu">μ̂</span> = ȳ<sub>···</sub> &nbsp;·&nbsp;
+    <span class="tau">τ̂<sub>i</sub></span> = ȳ<sub>i··</sub> − ȳ<sub>···</sub> &nbsp;·&nbsp;
+    <span class="tau">β̂<sub>j</sub></span> = ȳ<sub>·j·</sub> − ȳ<sub>···</sub><br>
+    <span class="tau">(τβ)<sub>ij</sub></span>&#770; = ȳ<sub>ij·</sub> − ȳ<sub>i··</sub> − ȳ<sub>·j·</sub> + ȳ<sub>···</sub>
+  </span>
+  <span class="w">The interaction estimate is <b>the cell mean, minus what the two main effects alone would have predicted</b>.</span>
+</div>
+
+<div class="b trap"><span class="l">Trap — you need replication</span>
+<p>With <span class="m">n = 1</span> (one observation per cell) you <strong>cannot estimate the interaction at all</strong> — there is nothing left over to estimate <span class="m">σ²</span> with. The error df, <span class="m">ab(n−1)</span>, becomes zero.</p>
+</div>
+
+<h3 id="c6-int">Interaction — the most important new concept</h3>
+
+<div class="b key"><span class="l">What interaction means</span>
+<p><strong>The effect of factor A depends on which level of B you are in</strong> (and vice versa). "It depends on…" is the everyday phrase for it.</p>
+<p>Without interaction, effects simply stack: if Clay is worth +2 and Fert2 is worth +3, then Clay-with-Fert2 is worth +5. With interaction, that combination is worth <span class="m">+5 + (τβ)<sub>12</sub></span> — possibly much more (synergy) or much less (antagonism).</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img" aria-label="Two interaction plots side by side: parallel lines meaning no interaction, and crossing lines meaning interaction present, drawn on the real barley cell means">
+  <text x="180" y="22" font-size="13" text-anchor="middle" fill="var(--tau)" font-weight="700">NO interaction — lines parallel</text>
+  <text x="540" y="22" font-size="13" text-anchor="middle" fill="var(--eps)" font-weight="700">INTERACTION — lines not parallel</text>
+  <line x1="360" y1="34" x2="360" y2="272" stroke="var(--rule-strong)" stroke-dasharray="4 4"/>
+
+  <line x1="70" y1="240" x2="300" y2="240" stroke="currentColor"/>
+  <line x1="70" y1="50" x2="70" y2="240" stroke="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="120" y="258">Clay</text><text x="250" y="258">Sand</text>
+  </g>
+  <line x1="120" y1="120" x2="250" y2="150" stroke="var(--mu)" stroke-width="2.4"/>
+  <line x1="120" y1="175" x2="250" y2="205" stroke="var(--tau)" stroke-width="2.4"/>
+  <circle cx="120" cy="120" r="4.5" fill="var(--mu)"/><circle cx="250" cy="150" r="4.5" fill="var(--mu)"/>
+  <circle cx="120" cy="175" r="4.5" fill="var(--tau)"/><circle cx="250" cy="205" r="4.5" fill="var(--tau)"/>
+  <text x="262" y="148" font-size="10.5" fill="var(--mu)" font-weight="700">Fert2</text>
+  <text x="262" y="203" font-size="10.5" fill="var(--tau)" font-weight="700">Fert1</text>
+  <text x="185" y="284" font-size="11" fill="currentColor" text-anchor="middle">the gap is the same everywhere → effects just add</text>
+
+  <line x1="430" y1="240" x2="660" y2="240" stroke="currentColor"/>
+  <line x1="430" y1="50" x2="430" y2="240" stroke="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="480" y="258">Clay</text><text x="610" y="258">Sand</text>
+  </g>
+  <line x1="480" y1="72" x2="610" y2="212" stroke="var(--mu)" stroke-width="2.4"/>
+  <line x1="480" y1="184" x2="610" y2="178" stroke="var(--tau)" stroke-width="2.4"/>
+  <circle cx="480" cy="72" r="4.5" fill="var(--mu)"/><circle cx="610" cy="212" r="4.5" fill="var(--mu)"/>
+  <circle cx="480" cy="184" r="4.5" fill="var(--tau)"/><circle cx="610" cy="178" r="4.5" fill="var(--tau)"/>
+  <text x="622" y="210" font-size="10.5" fill="var(--mu)" font-weight="700">Fert2</text>
+  <text x="622" y="176" font-size="10.5" fill="var(--tau)" font-weight="700">Fert1</text>
+  <g font-size="10" fill="currentColor">
+    <text x="466" y="68" text-anchor="end">469</text><text x="466" y="188" text-anchor="end">358</text>
+    <text x="624" y="222" >321</text><text x="624" y="166">362</text>
+  </g>
+  <text x="545" y="284" font-size="11" fill="currentColor" text-anchor="middle">Fert2 is best on clay, worst on sand → "it depends"</text>
+</svg>
+<figcaption><b>The right-hand panel is the real barley data.</b> Fertilizer 2 raises yield by 111 units on clay but <em>lowers</em> it by 41 on sand. There is no single honest answer to "is Fert2 better?" — which is exactly what a significant interaction means. Reporting only the main effect of fertilizer here would be actively misleading.</figcaption>
+</figure>
+
+<div class="tw">
+<table>
+  <caption>The two-factor ANOVA table, both factors fixed</caption>
+  <thead><tr><th>Source</th><th>df</th><th>F</th></tr></thead>
+  <tbody>
+    <tr><td>Factor A</td><td><span class="m">a − 1</span></td><td><span class="m">MS<sub>A</sub> / MS<sub>E</sub></span></td></tr>
+    <tr><td>Factor B</td><td><span class="m">b − 1</span></td><td><span class="m">MS<sub>B</sub> / MS<sub>E</sub></span></td></tr>
+    <tr><td>A × B</td><td><span class="m">(a−1)(b−1)</span></td><td><span class="m">MS<sub>AB</sub> / MS<sub>E</sub></span></td></tr>
+    <tr><td>Error</td><td><span class="m">ab(n−1)</span></td><td></td></tr>
+    <tr class="tot"><td>Total</td><td><span class="m">N − 1</span></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b key"><span class="l">Test the interaction FIRST — always</span>
+<p>Never look at the main-effect p-values before you know whether the interaction is significant. The interaction determines how the main effects may be interpreted.</p>
+<p><strong>If significant:</strong> keep it, and keep <em>both</em> main effects even if their p-values are huge. This is the <strong>principle of marginality</strong>. Report the cell means, because the main effects alone are misleading.</p>
+<p><strong>If not significant:</strong> you may drop it and fit the additive model <span class="m">y = μ + τ<sub>i</sub> + β<sub>j</sub> + ε</span>. Its <span class="m">(a−1)(b−1)</span> df are pooled into the error, giving more error df, a smaller critical value, and <strong>more power</strong> for the main effects.</p>
+</div>
+
+<div class="b exam"><span class="l">On the exam — reading a two-factor table</span>
+<p>The order to read it in is fixed and worth writing on your hand:</p>
+<ol>
+<li>Find the <strong>interaction row</strong> (the one with a colon in the name, like <code>Soil:Fertilizer</code>).</li>
+<li>Look at its p-value <strong>first</strong>.</li>
+<li>Significant → keep everything, interpret cell means, be careful with main effects.</li>
+<li>Not significant → main effects can be read straight off, and you may refit without it.</li>
+</ol>
+</div>
+
+<div class="nb">
+<span class="tag">N10 · two factors</span>
+<p>Write the model equation with all four terms and the index ranges. Then the estimate formulas — especially the interaction one, which is the one people forget:</p>
+<div class="f"><span class="q">(τβ)&#770;<sub>ij</sub> = ȳ<sub>ij·</sub> − ȳ<sub>i··</sub> − ȳ<sub>·j·</sub> + ȳ<sub>···</sub></span></div>
+<p>Then the ANOVA table with the df column: <strong>a−1, b−1, (a−1)(b−1), ab(n−1), N−1</strong>.</p>
+<p>Then draw the two little interaction plots — <strong>parallel = no interaction, crossing = interaction</strong> — because a picture is faster to recall under pressure than a sentence.</p>
+<p>Then the rule: <strong>TEST INTERACTION FIRST. If significant, keep both main effects regardless of their p-values.</strong></p>
+</div>
+
+<h2 class="ch" id="c7"><span class="cn">Chapter 7 · Lecture 7</span>Many factors, and choosing a model</h2>
+
+<p class="lede">Two factors becomes three, four, <span class="m">k</span>. The model equation grows fast, and the new problem is not fitting it but <strong>deciding which terms to keep</strong>.</p>
+
+<h3 id="c7-gen">The general factorial design</h3>
+
+<p>With <span class="m">k</span> factors each at 2 levels you have a <strong><span class="m">2<sup>k</sup></span> factorial design</strong>. The 2022 exam used a <span class="m">2⁴</span> — four factors, two levels each, 32 observations.</p>
+
+<div class="tw">
+<table>
+  <caption>How the term count explodes — the curse of dimensionality</caption>
+  <thead><tr><th class="n">Factors</th><th class="n">Cells (2ᵏ)</th><th>Terms in the full model</th><th class="n">Total terms</th></tr></thead>
+  <tbody>
+    <tr><td class="n">2</td><td class="n">4</td><td>2 main + 1 two-way</td><td class="n">3</td></tr>
+    <tr><td class="n">3</td><td class="n">8</td><td>3 main + 3 two-way + 1 three-way</td><td class="n">7</td></tr>
+    <tr><td class="n">4</td><td class="n">16</td><td>4 main + 6 two-way + 4 three-way + 1 four-way</td><td class="n wr">15</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">On the exam — counting terms and df</span>
+<p>For a <span class="m">2⁴</span> with <span class="m">n = 2</span>: every term has <strong>1 df</strong> (since each factor has 2 levels, <span class="m">a−1 = 1</span>, and products of 1s are 1). There are 15 model terms, so 15 df used, plus 1 for the grand mean = 16. With <span class="m">N = 32</span> that leaves <strong>16 error df</strong> — exactly what the 2022 exam table shows.</p>
+<p>General rule: the df for any interaction is the <strong>product</strong> of the df of the factors in it. <span class="m">A×B×C</span> has <span class="m">(a−1)(b−1)(c−1)</span>.</p>
+</div>
+
+<div class="b key"><span class="l">What a three-way interaction means</span>
+<p>A two-way interaction says "the effect of A depends on B". A <strong>three-way</strong> interaction says "<strong>the way A and B interact is itself different at different levels of C</strong>."</p>
+<p>Practically: draw the A×B interaction plot separately for each level of C. If those plots look the same, there is no three-way interaction. If the pattern of crossing changes from one panel to the next, there is.</p>
+</div>
+
+<h3 id="c7-ss">Type I versus Type III sums of squares</h3>
+
+<div class="b trap"><span class="l">Trap — R's anova() is order-dependent</span>
+<p><code>anova()</code> gives <strong>Type I (sequential)</strong> sums of squares: each term is tested <em>in the order you typed it</em>, adjusted only for terms before it.</p>
+<p><strong>On unbalanced data, changing the order of your formula changes the p-values.</strong> That is clearly unacceptable.</p>
+<p><strong>Type III (marginal)</strong> tests each term as if it were added <em>last</em>, so order stops mattering. In R: <code>drop1(model, test="F")</code>, and it requires <code>options(contrasts = c("contr.sum", …))</code> first or the results are nonsense.</p>
+</div>
+
+<div class="b key"><span class="l">The saving grace</span>
+<p><strong>On balanced data, Type I and Type III give identical answers.</strong> The design is orthogonal, so there is nothing for the ordering to change.</p>
+<p>Most exam data is balanced, so in practice you can read <code>anova()</code> output directly — but you need to know <em>why</em> that is safe, and that it stops being safe the moment the design is unbalanced.</p>
+</div>
+
+<h3 id="c7-sel">Model selection</h3>
+
+<h4>The principle of marginality, restated</h4>
+
+<div class="b key"><span class="l">Prune from the top down</span>
+<p>If you keep a higher-order interaction, you must keep <strong>every lower-order term inside it</strong>. Keep <span class="m">A×B×C</span> and you cannot delete <span class="m">A×B</span>, even with a p-value of 0.99.</p>
+<p>So model reduction always starts with the highest-order term and works downwards. You may never remove a main effect while an interaction containing it remains.</p>
+</div>
+
+<h4>The partial F-test</h4>
+
+<p>How do you decide objectively whether a whole <em>block</em> of terms can go? You compare the full model with the reduced one.</p>
+
+<div class="f">
+  <span class="q">F₀ = <span class="frac"><span>(SS<sub>E,reduced</sub> − SS<sub>E,full</sub>) / (df<sub>E,reduced</sub> − df<sub>E,full</sub>)</span><span>SS<sub>E,full</sub> / df<sub>E,full</sub></span></span></span>
+  <span class="w">Top: the extra error you took on by simplifying, per degree of freedom you gave back.<br>
+  Bottom: the error mean square of the big safe model. <b>If the deleted terms were really zero, top ≈ bottom and F ≈ 1.</b></span>
+</div>
+
+<div class="b exam"><span class="l">On the exam — worked, from the barley data</span>
+<p>Full model <span class="m">SS<sub>E</sub> = 10522</span> on 16 df. Reduced (Site dropped entirely) <span class="m">SS<sub>E</sub> = 17179</span> on 24 df.</p>
+<div class="f" style="margin:10px 0"><span class="q">
+F₀ = <span class="frac"><span>(17179 − 10522) / (24 − 16)</span><span>10522 / 16</span></span> = <span class="frac"><span>6657 / 8</span><span>657.6</span></span> = <strong>1.265</strong>
+</span></div>
+<p>Compare with <span class="m">F<sub>0.05, 8, 16</sub> = 2.59</span>. Since 1.265 &lt; 2.59, <strong>fail to reject</strong> — the Site terms are noise and can be dropped.</p>
+<p><strong>Degrees of freedom for the test:</strong> numerator = df you gave back (8), denominator = df of the <em>full</em> model (16). Getting these the wrong way round is the built-in trap.</p>
+</div>
+
+<h4>AIC and BIC</h4>
+
+<div class="f">
+  <span class="q">AIC = −2·ln(L) + 2k &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BIC = −2·ln(L) + ln(N)·k</span>
+  <span class="w">Fit, plus a penalty for how many parameters you used. <b>Lower is better, for both.</b><br>
+  <span class="m">L</span> = likelihood (how well it fits) · <span class="m">k</span> = number of parameters · <span class="m">N</span> = sample size.</span>
+</div>
+
+<div class="b key"><span class="l">AIC vs BIC — the difference that gets asked</span>
+<p>The penalty per parameter is <strong>2</strong> for AIC, <strong>ln(N)</strong> for BIC. Once <span class="m">N &gt; 8</span>, <span class="m">ln(N) &gt; 2</span>, so <strong>BIC penalises complexity more harshly and selects smaller models.</strong></p>
+<p>BIC is "consistent" — with enough data it finds the true model if it is among the candidates. AIC aims at best prediction and tends to keep a few extra terms.</p>
+<p>In R, <code>step()</code> automates the search, dropping terms one at a time while respecting marginality, until AIC stops improving.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N11 · factorials and model selection</span>
+<p>Write:</p>
+<div class="f"><span class="q">
+df for any interaction = <strong>product</strong> of the factors' df<br>
+2<sup>k</sup> design: every term has 1 df; 2<sup>k</sup>−1 terms in total<br><br>
+partial F = [(SSE<sub>R</sub> − SSE<sub>F</sub>)/(df<sub>R</sub> − df<sub>F</sub>)] ⁄ [SSE<sub>F</sub>/df<sub>F</sub>]<br>
+df of the test = (df<sub>R</sub> − df<sub>F</sub>) and df<sub>F</sub><br><br>
+AIC = −2lnL + 2k &nbsp;&nbsp; BIC = −2lnL + ln(N)k &nbsp;&nbsp; <strong>lower = better</strong>
+</span></div>
+<p>And these three rules:</p>
+<ul>
+<li><strong>Marginality:</strong> keep an interaction → keep everything inside it. Prune top down.</li>
+<li><strong>Type I = Type III when balanced.</strong> They differ only on unbalanced data.</li>
+<li><strong>BIC punishes size harder than AIC</strong> whenever N &gt; 8, so it picks smaller models.</li>
+</ul>
+</div>
+
+<h2 class="ch" id="c8"><span class="cn">Chapter 8 · Lecture 8</span>Two factors, both random</h2>
+
+<p class="lede">Where the two halves of the course meet. This chapter contains <strong>the single highest-value fact in the whole compendium</strong> — read the denominator section twice.</p>
+
+<h3>The model</h3>
+
+<div class="f rnd-f">
+  <span class="q">y<sub>ijt</sub> = <span class="mu">μ</span> + <span class="tau">t<sub>i</sub></span> + <span class="tau">b<sub>j</sub></span> + <span class="tau">(tb)<sub>ij</sub></span> + <span class="eps">ε<sub>ijt</sub></span></span>
+  <span class="w">Structurally identical to the fixed two-factor model, but <b>every effect is now a random variable</b>:<br>
+  <span class="m">t<sub>i</sub> ~ N(0, σ²<sub>t</sub>)</span> · <span class="m">b<sub>j</sub> ~ N(0, σ²<sub>b</sub>)</span> · <span class="m">(tb)<sub>ij</sub> ~ N(0, σ²<sub>tb</sub>)</span> · <span class="m">ε ~ N(0, σ²)</span>, all independent.</span>
+</div>
+
+<div class="b rand"><span class="l">Notation convention — worth knowing for the exam</span>
+<p>The lecture, and the exam papers, use <strong>Greek letters for fixed effects</strong> (<span class="m">τ, β</span>) and <strong>Latin letters for random effects</strong> (<span class="m">t, b</span>). So <span class="m">(τβ)<sub>ij</sub></span> is a fixed interaction and <span class="m">(tb)<sub>ij</sub></span> is a random one.</p>
+<p>An exam question may hand you a list of symbols and ask which model equation is right — the letter case tells you which effects are random.</p>
+</div>
+
+<div class="f rnd-f">
+  <span class="q">V(y<sub>ijt</sub>) = <span class="tau">σ²<sub>t</sub></span> + <span class="tau">σ²<sub>b</sub></span> + <span class="tau">σ²<sub>tb</sub></span> + <span class="eps">σ²</span></span>
+  <span class="w">Four variance components now, instead of two. Each random term adds its own.</span>
+</div>
+
+<h3 id="c8-ems">Expected mean squares — the whole lecture in four lines</h3>
+
+<div class="f rnd-f">
+  <span class="q">
+    E(MS<sub>A</sub>) = <span class="eps">σ²</span> + n<span class="tau">σ²<sub>tb</sub></span> + bn<span class="tau">σ²<sub>t</sub></span><br>
+    E(MS<sub>B</sub>) = <span class="eps">σ²</span> + n<span class="tau">σ²<sub>tb</sub></span> + an<span class="tau">σ²<sub>b</sub></span><br>
+    E(MS<sub>AB</sub>) = <span class="eps">σ²</span> + n<span class="tau">σ²<sub>tb</sub></span><br>
+    E(MS<sub>E</sub>) = <span class="eps">σ²</span>
+  </span>
+  <span class="w">Look at the first line. <b>E(MS_A) contains the interaction variance σ²<sub>tb</sub>.</b> That one fact drives everything below.</span>
+</div>
+
+<h3 id="c8-den">Why the denominator changes — the key idea</h3>
+
+<div class="b rand"><span class="l">The reasoning, step by step</span>
+<p>An F-test works by finding two mean squares whose expected values are <strong>identical under H₀ and differ only by the thing you are testing</strong>. Then the ratio is 1 under H₀ and bigger otherwise.</p>
+<p>You want to test <span class="m">H₀: σ²<sub>t</sub> = 0</span>. Look for a denominator whose expectation matches the numerator with only <span class="m">bnσ²<sub>t</sub></span> removed:</p>
+<div class="f" style="margin:12px 0"><span class="q">
+<span class="frac"><span>E(MS<sub>A</sub>)</span><span>E(MS<sub>AB</sub>)</span></span> = <span class="frac"><span>σ² + nσ²<sub>tb</sub> + bnσ²<sub>t</sub></span><span>σ² + nσ²<sub>tb</sub></span></span> &nbsp;→&nbsp; equals 1 exactly when σ²<sub>t</sub> = 0 &nbsp;<span style="color:var(--tau)">✓</span>
+</span></div>
+<p>Whereas dividing by <span class="m">MS<sub>E</sub></span> would give <span class="m">(σ² + nσ²<sub>tb</sub> + bnσ²<sub>t</sub>) ⁄ σ²</span>, which is <strong>bigger than 1 even when σ²<sub>t</sub> is zero</strong>, as long as there is any interaction. You could not tell a real main effect from a strong interaction.</p>
+</div>
+
+<div class="tw">
+<table>
+  <caption>THE TABLE — two factors, both random, interaction retained</caption>
+  <thead><tr><th>Source</th><th>E(MS)</th><th>F₀</th><th>df of the F</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A</strong></td><td><span class="m">σ² + nσ²<sub>tb</sub> + bnσ²<sub>t</sub></span></td><td class="rr"><span class="m">MS<sub>A</sub> / MS<sub>AB</sub></span></td><td><span class="m">a−1, (a−1)(b−1)</span></td></tr>
+    <tr><td><strong>B</strong></td><td><span class="m">σ² + nσ²<sub>tb</sub> + anσ²<sub>b</sub></span></td><td class="rr"><span class="m">MS<sub>B</sub> / MS<sub>AB</sub></span></td><td><span class="m">b−1, (a−1)(b−1)</span></td></tr>
+    <tr><td><strong>A×B</strong></td><td><span class="m">σ² + nσ²<sub>tb</sub></span></td><td><span class="m">MS<sub>AB</sub> / MS<sub>E</sub></span></td><td><span class="m">(a−1)(b−1), ab(n−1)</span></td></tr>
+    <tr><td>Error</td><td><span class="m">σ²</span></td><td>—</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b trap"><span class="l">Trap — and it is THE trap</span>
+<p>R's plain <code>anova()</code> does not know which factors are random. <strong>It always divides by MS<sub>E</sub>.</strong> For a random model, the main-effect F values it prints are simply wrong.</p>
+<p>Real numbers from the gauge study in the lecture:</p>
+<div class="tw"><table>
+<thead><tr><th>Effect</th><th class="n">What plain anova() prints</th><th class="n">The correct value</th></tr></thead>
+<tbody>
+<tr><td>Parts</td><td class="n wr">62.92</td><td class="n rr">87.65</td></tr>
+<tr><td>Operator</td><td class="n wr">1.32</td><td class="n rr">1.84</td></tr>
+</tbody></table></div>
+<p>Both numbers appear as multiple-choice options. The <code>mixlm</code> package with <code>r()</code> gets it right automatically — which is why the course uses it.</p>
+</div>
+
+<h3>Worked example — the gauge study (Montgomery 13.1)</h3>
+
+<p>20 parts chosen at random, 3 operators chosen at random, each operator measures each part twice. So <span class="m">a = 20, b = 3, n = 2, N = 120</span>. Both factors random.</p>
+
+<div class="tw">
+<table>
+  <caption>Full model — correct random-effects F values</caption>
+  <thead><tr><th>Source</th><th class="n">df</th><th class="n">SS</th><th class="n">MS</th><th class="n">F₀</th><th class="n">Critical</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>Parts (A)</td><td class="n">19</td><td class="n">1185.42</td><td class="n">62.39</td><td class="n rr">62.39/0.71 = 87.65</td><td class="n">1.87</td><td class="y">reject</td></tr>
+    <tr><td>Operator (B)</td><td class="n">2</td><td class="n">2.62</td><td class="n">1.31</td><td class="n rr">1.31/0.71 = 1.84</td><td class="n">3.24</td><td class="no">not significant</td></tr>
+    <tr><td>Part×Operator</td><td class="n">38</td><td class="n">27.05</td><td class="n">0.71</td><td class="n">0.71/0.99 = 0.72</td><td class="n">1.60</td><td class="no">not significant</td></tr>
+    <tr><td>Error</td><td class="n">60</td><td class="n">59.50</td><td class="n">0.99</td><td class="n"></td><td class="n"></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The interaction is not significant, so <strong>drop it and refit</strong>. Its SS and df pool into the error, and — crucially — <strong>the denominators go back to MS<sub>E</sub></strong>.</p>
+
+<div class="f rnd-f">
+  <span class="q">
+    Additive random model: &nbsp; E(MS<sub>A</sub>) = <span class="eps">σ²</span> + bn<span class="tau">σ²<sub>t</sub></span> &nbsp;·&nbsp; E(MS<sub>B</sub>) = <span class="eps">σ²</span> + an<span class="tau">σ²<sub>b</sub></span><br>
+    ⟹ &nbsp; F<sub>A</sub> = MS<sub>A</sub>/MS<sub>E</sub> &nbsp;&nbsp; F<sub>B</sub> = MS<sub>B</sub>/MS<sub>E</sub>
+  </span>
+  <span class="w">With σ²<sub>tb</sub> assumed zero, the interaction term vanishes from the expectations, so MS_E becomes the right denominator again.</span>
+</div>
+
+<div class="b key"><span class="l">The denominator follows the model, not the data</span>
+<p>This is the sentence to hold on to. The rule is not "random factors always use MS<sub>AB</sub>". The rule is: <strong>look at the expected mean squares of the model you actually fitted, and pick the denominator whose expectation differs from the numerator only by the term you are testing.</strong> Drop the interaction and the answer changes.</p>
+</div>
+
+<h4>Estimating the variance components</h4>
+
+<div class="f rnd-f">
+  <span class="q">
+    <span class="tau">σ̂²<sub>t</sub></span> = <span class="frac"><span>MS<sub>A</sub> − MS<sub>AB</sub></span><span>bn</span></span> &nbsp;&nbsp;
+    <span class="tau">σ̂²<sub>b</sub></span> = <span class="frac"><span>MS<sub>B</sub> − MS<sub>AB</sub></span><span>an</span></span> &nbsp;&nbsp;
+    <span class="tau">σ̂²<sub>tb</sub></span> = <span class="frac"><span>MS<sub>AB</sub> − MS<sub>E</sub></span><span>n</span></span> &nbsp;&nbsp;
+    <span class="eps">σ̂²</span> = MS<sub>E</sub>
+  </span>
+  <span class="w">Same recipe as lecture 5: subtract the mean square directly below it in the EMS table, divide by whatever multiplies the component.<br>
+  <b>In the additive model, subtract MS_E instead and the divisors stay bn and an.</b></span>
+</div>
+
+<div class="b exam"><span class="l">On the exam — the gauge numbers, from the reduced model</span>
+<p><span class="m">MS<sub>A</sub> = 62.39</span>, <span class="m">MS<sub>B</sub> = 1.31</span>, <span class="m">MS<sub>E</sub> = 0.88</span>, with <span class="m">a = 20, b = 3, n = 2</span>:</p>
+<div class="f" style="margin:10px 0"><span class="q">
+<span class="tau">σ̂²<sub>t</sub></span> = (62.39 − 0.88)/(3·2) = <strong>10.25</strong> &nbsp;&nbsp;
+<span class="tau">σ̂²<sub>b</sub></span> = (1.31 − 0.88)/(20·2) = <strong>0.01</strong> &nbsp;&nbsp;
+<span class="eps">σ̂²</span> = <strong>0.88</strong><br>
+ICC<sub>parts</sub> = <span class="frac"><span>10.25</span><span>10.25 + 0.01 + 0.88</span></span> = <span class="frac"><span>10.25</span><span>11.14</span></span> = <strong>0.92</strong>
+</span></div>
+<p><strong>92% of all measurement variation comes from genuine differences between parts</strong>, only 8% from operators and instrument noise. That is a highly capable measuring system — which was the engineering question being asked.</p>
+<p>Note the divisor: <span class="m">bn</span> for factor A, <span class="m">an</span> for factor B. Swapping them is a built-in distractor.</p>
+</div>
+
+<div class="nb">
+<span class="tag">N12 · TWO-FACTOR RANDOM — the most important page</span>
+<p>Give this its own page. Write the four EMS lines first:</p>
+<div class="f"><span class="q">
+E(MS<sub>A</sub>) = σ² + nσ²<sub>tb</sub> + bnσ²<sub>t</sub><br>
+E(MS<sub>B</sub>) = σ² + nσ²<sub>tb</sub> + anσ²<sub>b</sub><br>
+E(MS<sub>AB</sub>) = σ² + nσ²<sub>tb</sub><br>
+E(MS<sub>E</sub>) = σ²
+</span></div>
+<p>Then the F table, boxed:</p>
+<div class="f"><span class="q">
+F<sub>A</sub> = MS<sub>A</sub>/MS<sub>AB</sub> &nbsp;·&nbsp; F<sub>B</sub> = MS<sub>B</sub>/MS<sub>AB</sub> &nbsp;·&nbsp; F<sub>AB</sub> = MS<sub>AB</sub>/MS<sub>E</sub><br>
+<strong>but if you drop the interaction → everything over MS<sub>E</sub></strong>
+</span></div>
+<p>Then the estimators:</p>
+<div class="f"><span class="q">
+σ̂²<sub>t</sub> = (MS<sub>A</sub> − MS<sub>AB</sub>)/<strong>bn</strong> &nbsp;&nbsp; σ̂²<sub>b</sub> = (MS<sub>B</sub> − MS<sub>AB</sub>)/<strong>an</strong><br>
+σ̂²<sub>tb</sub> = (MS<sub>AB</sub> − MS<sub>E</sub>)/n &nbsp;&nbsp; σ̂² = MS<sub>E</sub><br>
+ICC<sub>A</sub> = σ²<sub>t</sub> ⁄ (σ²<sub>t</sub> + σ²<sub>b</sub> + σ²)
+</span></div>
+<p><strong>Then write, in capitals, the one-line reason:</strong> "E(MS_A) CONTAINS σ²<sub>tb</sub>, SO ONLY MS_AB CANCELS IT."</p>
+<p>And the warning: "plain anova() in R always divides by MS_E — for a random model those main-effect F values are WRONG."</p>
+</div>
+
+<h4>REML, and why it exists</h4>
+
+<div class="b key"><span class="l">Method of moments vs REML</span>
+<p><strong>Method of moments</strong> — the subtractions above. Simple, unbiased, works by hand. <strong>Can produce negative variances</strong>, which are impossible.</p>
+<p><strong>REML</strong> (restricted maximum likelihood) — the computer searches iteratively for the variance values that make the observed data most likely. <strong>Always non-negative.</strong> Slightly biased but consistent. Used by <code>lme4</code> and by <code>mixlm</code> with <code>REML = TRUE</code>.</p>
+<p><strong>On balanced data with positive estimates, the two methods agree.</strong> REML matters for unbalanced designs and weak effects.</p>
+</div>
+
+<details class="opt"><summary>Optional R — fitting random models</summary>
+<pre><code><span class="cm"># mixlm: wrap random factors in r()</span>
+library(mixlm)
+mod_full &lt;- lm(Dimention ~ r(PartNumber) * r(Operator), data = Ex13_1)
+anova(mod_full)     <span class="cm"># builds the CORRECT F-ratios automatically</span>
+
+mod_add  &lt;- lm(Dimention ~ r(PartNumber) + r(Operator), data = Ex13_1)
+
+<span class="cm"># lme4: the industry standard, always REML</span>
+library(lme4)
+m &lt;- lmer(Dimention ~ 1 + (1|PartNumber) + (1|Operator), data = Ex13_1)
+summary(m)
+confint(m)</code></pre>
+<p style="font-size:.92rem;margin-top:8px"><strong>Neither package is installed on your machine.</strong> To install, open RStudio and type <code>install.packages(c("mixlm","lme4"))</code> into the console. You do not need them for the exam — every number above is obtainable from a plain <code>aov()</code> table plus the formulas in N12.</p>
+</details>
+
+<h2 class="ch" id="sheet"><span class="cn">Reference</span>The whole formula sheet</h2>
+
+<h4>Notation</h4>
+<div class="tw">
+<table>
+<tbody>
+<tr><td><span class="m">a, b</span></td><td>levels of factor A, factor B</td><td><span class="m">ȳ<sub>i·</sub></span></td><td>mean of group <span class="m">i</span></td></tr>
+<tr><td><span class="m">n</span></td><td>replicates per cell</td><td><span class="m">ȳ<sub>··</sub></span></td><td>grand mean</td></tr>
+<tr><td><span class="m">N</span></td><td>total observations</td><td><span class="m">ȳ<sub>ij·</sub></span></td><td>mean of cell <span class="m">(i,j)</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>One factor</h4>
+<div class="f"><span class="q">
+y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span> &nbsp;·&nbsp; Στ<sub>i</sub> = 0 &nbsp;·&nbsp; <span class="mu">μ̂</span> = ȳ<sub>··</sub> &nbsp;·&nbsp; <span class="tau">τ̂<sub>i</sub></span> = ȳ<sub>i·</sub> − ȳ<sub>··</sub><br>
+SS<sub>Tr</sub> = n·Σ(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)² &nbsp;·&nbsp; SS<sub>E</sub> = Σ(y<sub>it</sub> − ȳ<sub>i·</sub>)² &nbsp;·&nbsp; SS<sub>T</sub> = SS<sub>Tr</sub> + SS<sub>E</sub><br>
+df: a−1, N−a, N−1 &nbsp;·&nbsp; F = MS<sub>Tr</sub>/MS<sub>E</sub> &nbsp;·&nbsp; σ̂² = MS<sub>E</sub>
+</span></div>
+
+<h4>Inference — df = N − a</h4>
+<div class="f"><span class="q">
+T = (estimate − hypothesised) ⁄ se &nbsp;·&nbsp; CI = estimate ± t<sub>α/2,N−a</sub>·se<br>
+se(ȳ<sub>i·</sub>) = √<span class="rad">MS<sub>E</sub>/n</span> &nbsp;·&nbsp; se(ȳ<sub>··</sub>) = √<span class="rad">MS<sub>E</sub>/N</span> &nbsp;·&nbsp; se(ȳ<sub>i·</sub>−ȳ<sub>j·</sub>) = √<span class="rad">MS<sub>E</sub>(1/n<sub>i</sub>+1/n<sub>j</sub>)</span><br>
+CI for σ² = [ SS<sub>E</sub>/χ²<sub>1−α/2,N−a</sub> , SS<sub>E</sub>/χ²<sub>α/2,N−a</sub> ]
+</span></div>
+
+<h4>Contrasts</h4>
+<div class="f tau-f"><span class="q">
+Γ = Σc<sub>i</sub>μ<sub>i</sub>, Σc<sub>i</sub> = 0 &nbsp;·&nbsp; se(Γ̂) = √<span class="rad">(MS<sub>E</sub>/n)Σc<sub>i</sub>²</span> &nbsp;·&nbsp; T₀ = Γ̂/se(Γ̂)<br>
+SS<sub>C</sub> = (Σc<sub>i</sub>ȳ<sub>i·</sub>)² ⁄ ((1/n)Σc<sub>i</sub>²) &nbsp;·&nbsp; df<sub>C</sub> = 1 &nbsp;·&nbsp; F₀ = SS<sub>C</sub>/MS<sub>E</sub> = T₀²<br>
+orthogonal ⟺ Σc<sub>1i</sub>c<sub>2i</sub> = 0 &nbsp;·&nbsp; a−1 of them ⟹ SS<sub>Tr</sub> = ΣSS<sub>C</sub><br>
+m = a(a−1)/2 &nbsp;·&nbsp; FWER = 1 − (1−α)<sup>m</sup>
+</span></div>
+
+<h4>One factor, random</h4>
+<div class="f rnd-f"><span class="q">
+τ<sub>i</sub> ~ N(0,σ²<sub>τ</sub>) &nbsp;·&nbsp; V(y) = σ²<sub>τ</sub> + σ² &nbsp;·&nbsp; Cov(same group) = σ²<sub>τ</sub><br>
+E(MS<sub>Tr</sub>) = σ² + nσ²<sub>τ</sub> &nbsp;·&nbsp; E(MS<sub>E</sub>) = σ²<br>
+σ̂²<sub>τ</sub> = (MS<sub>Tr</sub> − MS<sub>E</sub>)/n &nbsp;·&nbsp; σ̂² = MS<sub>E</sub> &nbsp;·&nbsp; ICC = σ²<sub>τ</sub>/(σ²<sub>τ</sub> + σ²)<br>
+H₀: σ²<sub>τ</sub> = 0, one-sided &nbsp;·&nbsp; F = MS<sub>Tr</sub>/MS<sub>E</sub><br>
+CI for μ = ȳ<sub>··</sub> ± t<sub>α/2,<b>a−1</b></sub>·√<span class="rad">MS<sub>Tr</sub>/(an)</span>
+</span></div>
+
+<h4>Two factors, fixed</h4>
+<div class="f"><span class="q">
+y<sub>ijt</sub> = μ + τ<sub>i</sub> + β<sub>j</sub> + (τβ)<sub>ij</sub> + ε<sub>ijt</sub><br>
+(τβ)&#770;<sub>ij</sub> = ȳ<sub>ij·</sub> − ȳ<sub>i··</sub> − ȳ<sub>·j·</sub> + ȳ<sub>···</sub><br>
+df: a−1 · b−1 · (a−1)(b−1) · ab(n−1) · N−1<br>
+all three F use MS<sub>E</sub> on the bottom
+</span></div>
+
+<h4>Two factors, random</h4>
+<div class="f rnd-f"><span class="q">
+E(MS<sub>A</sub>) = σ² + nσ²<sub>tb</sub> + bnσ²<sub>t</sub> &nbsp;·&nbsp; E(MS<sub>B</sub>) = σ² + nσ²<sub>tb</sub> + anσ²<sub>b</sub><br>
+E(MS<sub>AB</sub>) = σ² + nσ²<sub>tb</sub> &nbsp;·&nbsp; E(MS<sub>E</sub>) = σ²<br>
+<b>F<sub>A</sub> = MS<sub>A</sub>/MS<sub>AB</sub> · F<sub>B</sub> = MS<sub>B</sub>/MS<sub>AB</sub> · F<sub>AB</sub> = MS<sub>AB</sub>/MS<sub>E</sub></b><br>
+σ̂²<sub>t</sub> = (MS<sub>A</sub>−MS<sub>AB</sub>)/bn &nbsp;·&nbsp; σ̂²<sub>b</sub> = (MS<sub>B</sub>−MS<sub>AB</sub>)/an &nbsp;·&nbsp; σ̂²<sub>tb</sub> = (MS<sub>AB</sub>−MS<sub>E</sub>)/n<br>
+drop the interaction ⟹ all F over MS<sub>E</sub>, and subtract MS<sub>E</sub> in the estimators
+</span></div>
+
+<h4>Model selection</h4>
+<div class="f"><span class="q">
+partial F = [(SSE<sub>R</sub>−SSE<sub>F</sub>)/(df<sub>R</sub>−df<sub>F</sub>)] ⁄ [SSE<sub>F</sub>/df<sub>F</sub>] &nbsp;on&nbsp; (df<sub>R</sub>−df<sub>F</sub>, df<sub>F</sub>)<br>
+AIC = −2lnL + 2k &nbsp;·&nbsp; BIC = −2lnL + ln(N)·k &nbsp;·&nbsp; lower is better
+</span></div>
+
+<h2 class="ch" id="rout"><span class="cn">Reference</span>Reading R output under pressure</h2>
+
+<p>In the exam you never write code — output is handed to you. These are the four things to look for, in order.</p>
+
+<div class="tw">
+<table>
+  <caption>Decoding any ANOVA table you are shown</caption>
+  <thead><tr><th>Look for</th><th>Tells you</th></tr></thead>
+  <tbody>
+    <tr><td><code>r(</code>something<code>)</code> in the formula</td><td class="rr"><strong>That factor is RANDOM.</strong> Denominator rules from chapter 8 apply.</td></tr>
+    <tr><td>A row name with a <strong>colon</strong>, e.g. <code>Soil:Fertilizer</code></td><td>That is the <strong>interaction</strong>. Read its p-value first.</td></tr>
+    <tr><td><code>contr.sum</code> in the code</td><td>Intercept = grand mean, coefficients = deviations, last level omitted.</td></tr>
+    <tr><td><code>Residuals</code> row</td><td>Its Mean Sq is <span class="m">MS<sub>E</sub> = σ̂²</span>, and its Df is <span class="m">N − a</span> (or <span class="m">ab(n−1)</span>).</td></tr>
+    <tr><td><code>*</code> vs <code>+</code> in the formula</td><td><code>A*B</code> means <em>with</em> interaction. <code>A+B</code> means additive, <em>no</em> interaction.</td></tr>
+    <tr><td>Two models passed to <code>anova()</code></td><td>That is a <strong>partial F-test</strong> comparing them.</td></tr>
+    <tr><td><code>lmer</code> or <code>(1|Group)</code></td><td>An <code>lme4</code> random-effects fit, using REML.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">On the exam — recovering missing table entries</span>
+<p>A favourite question type gives you a table with letters in it. Everything is recoverable because the table is over-determined:</p>
+<ul>
+<li><strong>MS = SS ⁄ df</strong> in every row</li>
+<li><strong>df add up</strong> — treatment + error = total</li>
+<li><strong>SS add up</strong> — same</li>
+<li><strong>F = MS<sub>row</sub> ⁄ MS<sub>denominator</sub></strong>, so any two give the third</li>
+<li>Design facts give df instantly: <span class="m">a−1</span>, <span class="m">N−a</span>, <span class="m">(a−1)(b−1)</span>, <span class="m">ab(n−1)</span></li>
+</ul>
+<p><strong>Worked, from the 2025 paper.</strong> Boar has 6 levels so <span class="m">x = 6−1 = 5</span>. Farm's F is 6.94 with MS 10.58, so <span class="m">MS<sub>E</sub> = 10.58/6.94 = 1.52 = z</span>. Then <span class="m">y = 3 × 10.58 = 31.74</span>. Answer: 5, 31.74, 1.52.</p>
+</div>
+
+<h2 class="ch" id="traps"><span class="cn">Reference</span>The traps, collected</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th class="n">#</th><th>Trap</th><th>What goes wrong</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="rr">Using MS<sub>E</sub> as denominator in a two-factor <em>random</em> model</td><td class="rr"><strong>The big one.</strong> Main effects must go over MS<sub>AB</sub>. Both the right and wrong values appear as options.</td></tr>
+<tr><td class="n">2</td><td>Forgetting the <span class="m">n</span> in <span class="m">SS<sub>Tr</sub> = n·Σ(ȳ<sub>i·</sub>−ȳ<sub>··</sub>)²</span></td><td>Answer out by a factor of n.</td></tr>
+<tr><td class="n">3</td><td>Asked for <span class="m">σ</span>, computing <span class="m">σ²</span></td><td>Forgetting the square root. A standard distractor.</td></tr>
+<tr><td class="n">4</td><td>Swapping the χ² quantiles in the CI for σ²</td><td>The <strong>big</strong> quantile gives the <strong>lower</strong> bound.</td></tr>
+<tr><td class="n">5</td><td>Reading coefficients without checking <code>contr.sum</code></td><td>Intercept means grand mean vs first group's mean. Silent.</td></tr>
+<tr><td class="n">6</td><td>Forgetting the last level's effect is not printed</td><td>Recover as minus the sum of the others.</td></tr>
+<tr><td class="n">7</td><td>Reading main effects before checking the interaction</td><td>With a strong interaction the main effects can be meaningless.</td></tr>
+<tr><td class="n">8</td><td>Removing a main effect but keeping its interaction</td><td>Violates marginality. Never allowed.</td></tr>
+<tr><td class="n">9</td><td>"Not significant" read as "no effect"</td><td>It means no evidence. With small n, usually low power.</td></tr>
+<tr><td class="n">10</td><td>Swapping df in the partial F-test</td><td>Numerator = df given back; denominator = df of the <em>full</em> model.</td></tr>
+<tr><td class="n">11</td><td>Swapping <span class="m">bn</span> and <span class="m">an</span> in variance components</td><td>Factor A uses <span class="m">bn</span>; factor B uses <span class="m">an</span>. Easy to reverse.</td></tr>
+<tr><td class="n">12</td><td>CI for μ in a random model using <span class="m">N−a</span> df</td><td>It is <span class="m">a−1</span>. The textbook itself gets this wrong.</td></tr>
+<tr><td class="n">13</td><td>Checking normality on the raw data</td><td>The assumption is about the <strong>residuals</strong>.</td></tr>
+<tr><td class="n">14</td><td>Treating a log-scale difference as a difference</td><td>On the original scale it is a <strong>ratio</strong>: <span class="m">e<sup>diff</sup></span>.</td></tr>
+<tr><td class="n">15</td><td>Leaving a question blank</td><td>Costs exactly as much as a wrong answer. Always guess.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 class="ch" id="strategy"><span class="cn">Reference</span>Exam strategy</h2>
+
+<h4>The four hours before</h4>
+<p>The data introductions for sections 2 and 3 are released at <strong>10:00</strong>. Print them. Then, before you even see the questions:</p>
+<ol class="steps">
+<li><strong>Write down <span class="m">a</span>, <span class="m">b</span>, <span class="m">n</span>, <span class="m">N</span></strong> for each dataset. Almost every df question falls straight out of these.</li>
+<li><strong>Decide for every factor: fixed or random?</strong> Hunt for "randomly selected" or <code>r()</code>. Write FIXED or RANDOM next to each name in capitals.</li>
+<li><strong>Write out the model equation</strong> with correct index ranges.</li>
+<li><strong>Fill in the df column</strong> of the ANOVA table from the design alone.</li>
+<li><strong>Decide the denominator for each F</strong> using N1. Write it next to each row.</li>
+<li><strong>Complete any partly-given table</strong> — MS, F, and missing SS.</li>
+</ol>
+<p>Do that and a large part of both data sections is already answered before the exam starts.</p>
+
+<h4>During</h4>
+<div class="b exam"><span class="l">Three rules</span>
+<p><strong>Two passes.</strong> First pass: answer everything you can do in under two minutes, and <em>mark a guess on everything else as you go</em>. Second pass: return to the marked ones. You are then never at risk of running out of time with blanks.</p>
+<p><strong>Sanity-check every F.</strong> An F below 1 is never significant — you can answer immediately without a table. An F in the tens is almost always significant.</p>
+<p><strong>When two options differ only by a square root, or by a factor of n</strong>, that is a signal you are being tested on exactly that step. Slow down for ten seconds.</p>
+</div>
+
+<h4>Answering interpretation questions</h4>
+<p>For the wordy options, the correct answer is nearly always the <strong>most cautious correctly-hedged one</strong>:</p>
+<div class="tw">
+<table>
+<thead><tr><th class="no">Usually wrong</th><th class="y">Usually right</th></tr></thead>
+<tbody>
+<tr><td class="no">"We conclude there is no difference"</td><td class="y">"We cannot conclude that there is a difference"</td></tr>
+<tr><td class="no">"This proves the treatment works"</td><td class="y">"There is significant evidence of an effect"</td></tr>
+<tr><td class="no">"Delete the outlier and re-run"</td><td class="y">"Investigate the outlier; report with and without"</td></tr>
+<tr><td class="no">"H₀ is true"</td><td class="y">"We fail to reject H₀"</td></tr>
+</tbody>
+</table>
+</div>
+
+<style>
+.qsec{border-left:3px solid var(--exam);background:var(--exam-wash);padding:14px 18px;margin:30px 0 22px;}
+.qsec h4{margin:0 0 6px;color:var(--exam);}
+.qsec p:last-child{margin-bottom:0;}
+.q{margin:20px 0;padding-bottom:4px;}
+.q .num{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--exam);letter-spacing:.06em;}
+.q .stem{margin:3px 0 8px;}
+.q ol{list-style:upper-alpha;margin:0 0 0 1.4em;padding:0;font-family:var(--sans);font-size:14.5px;}
+.q ol li{margin-bottom:2px;}
+.ansgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px;margin:20px 0;}
+.ans{border-left:3px solid var(--tau);background:var(--surface);padding:8px 12px;font-family:var(--sans);font-size:13px;line-height:1.45;}
+.ans b{color:var(--tau);font-size:14px;}
+</style>
+
+<h2 class="ch" id="practice"><span class="cn">Practice</span>40 exam-style questions</h2>
+
+<p class="lede">Same format as the real thing: 5 alternatives, one best answer, "closest to correct" applies. All numbers come from the real course datasets. Answers with worked reasoning are in the <a href="#answers">next section</a> — do a whole block before checking.</p>
+
+<div class="b exam"><span class="l">How to use these</span>
+<p>Time yourself: <strong>5 minutes per question</strong> is the real pace. Do Section A in one sitting, mark it, then write the reason for any you got wrong in your notebook margin next to the relevant rule. That margin note is worth more than redoing the question.</p>
+</div>
+
+<div class="qsec">
+<h4>Section A · 10 general questions</h4>
+<p>Independent of any dataset — the same shape as the opening section of the real paper.</p>
+</div>
+
+<div class="q"><span class="num">A1</span>
+<p class="stem">A random variable <span class="m">Y</span> has density <span class="m">f(y) = (1/√<span class="rad">2π</span>)·exp{−½(y − 3)²}</span>. Then <span class="m">Y</span> has the following distribution:</p>
+<ol><li>Normal with expectation 0 and variance 3.</li><li>Normal with expectation 3 and variance 1.</li><li>Normal with expectation 3 and variance 3.</li><li>Normal with expectation 1 and variance 3.</li><li>Chi-square with 3 degrees of freedom.</li></ol></div>
+
+<div class="q"><span class="num">A2</span>
+<p class="stem"><span class="m">Z₁</span> and <span class="m">Z₂</span> are iid <span class="m">N(0,1)</span>. Then <span class="m">X = 3Z₁ − Z₂</span> has distribution:</p>
+<ol><li><span class="m">N(0, 2)</span></li><li><span class="m">N(2, 8)</span></li><li><span class="m">N(0, 10)</span></li><li><span class="m">N(0, 4)</span></li><li><span class="m">N(3, 10)</span></li></ol></div>
+
+<div class="q"><span class="num">A3</span>
+<p class="stem"><span class="m">Z₁, Z₂, Z₃</span> are iid <span class="m">N(0,1)</span>. Then <span class="m">X = Z₁² + Z₂² + Z₃²</span> has expectation and variance:</p>
+<ol><li>3 and 3</li><li>0 and 1</li><li>3 and √<span class="rad">6</span></li><li>3 and 6</li><li>0 and 6</li></ol></div>
+
+<div class="q"><span class="num">A4</span>
+<p class="stem"><span class="m">F</span> has a Fisher distribution with 6 and 20 degrees of freedom. Then <span class="m">1/F</span> has distribution:</p>
+<ol><li>Fisher with 6 and 20 degrees of freedom.</li><li>Fisher with 20 and 6 degrees of freedom.</li><li>Fisher with 26 degrees of freedom.</li><li>Student-t with 20 degrees of freedom.</li><li>Chi-square with 6 degrees of freedom.</li></ol></div>
+
+<div class="q"><span class="num">A5</span>
+<p class="stem"><span class="m">X₁,…,X₅</span> are iid <span class="m">N(μ, σ²)</span>. Let <span class="m">X̄</span> be the sample mean and <span class="m">S²</span> the sample variance with divisor 4. Then <span class="m">T = (X̄ − μ)/(S/√<span class="rad">5</span>)</span> has distribution:</p>
+<ol><li>Student-t with 5 degrees of freedom.</li><li>Student-t with 4 degrees of freedom.</li><li>Normal <span class="m">N(0,1)</span>.</li><li>F with 1 and 5 degrees of freedom.</li><li>Chi-square with 4 degrees of freedom.</li></ol></div>
+
+<div class="q"><span class="num">A6</span>
+<p class="stem">Observations have variance <span class="m">σ² = 36</span>. The variance of the mean of 9 independent such observations is:</p>
+<ol><li>36</li><li>324</li><li>4</li><li>2</li><li>6</li></ol></div>
+
+<div class="q"><span class="num">A7</span>
+<p class="stem">A t-distributed variable with <span class="m">k</span> degrees of freedom is squared. The result has distribution:</p>
+<ol><li><span class="m">χ²<sub>k</sub></span></li><li><span class="m">F</span> with <span class="m">k</span> and 1 degrees of freedom.</li><li><span class="m">F</span> with 1 and <span class="m">k</span> degrees of freedom.</li><li><span class="m">N(0,1)</span></li><li><span class="m">χ²₁</span></li></ol></div>
+
+<div class="q"><span class="num">A8</span>
+<p class="stem">Given <span class="m">P(Z ≤ 1.645) = 0.95</span> for <span class="m">Z ~ N(0,1)</span>, the value of <span class="m">P(−1.645 ≤ Z ≤ 1.645)</span> is:</p>
+<ol><li>0.95</li><li>0.90</li><li>0.99</li><li>0.05</li><li>0.475</li></ol></div>
+
+<div class="q"><span class="num">A9</span>
+<p class="stem">In a one-way design with <span class="m">a = 4</span> groups, which of the following coefficient vectors is a valid contrast?</p>
+<ol><li><span class="m">(1, 1, 1, 1)</span></li><li><span class="m">(2, −1, −1, 1)</span></li><li><span class="m">(1, 1, −1, −1)</span></li><li><span class="m">(¼, ¼, ¼, ¼)</span></li><li><span class="m">(1, 0, 0, 0)</span></li></ol></div>
+
+<div class="q"><span class="num">A10</span>
+<p class="stem">An experiment with 3 groups and 2 replicates per group gives <span class="m">F = 0.33</span>, <span class="m">p = 0.74</span>. The best conclusion is:</p>
+<ol><li>The treatments have no effect.</li><li>The null hypothesis is true.</li><li>There is no significant evidence of a treatment effect; with <span class="m">n = 2</span> power is low, so a real effect may have been missed.</li><li>The treatments have a significant effect.</li><li>The experiment is invalid.</li></ol></div>
+
+<div class="qsec">
+<h4>Section B · 15 questions · one-way data</h4>
+<p><strong>Freezing temperatures.</strong> A laboratory measured the freezing temperature (°C) of three brands of a liquid. There are 8 observations of each brand, <span class="m">N = 24</span>. The overall mean is <strong>−14.76</strong>. Excerpts from the analysis:</p>
+<pre style="margin-top:10px"><code>          Df Sum Sq
+brand      2 33.403
+Residuals 21 55.727
+
+&gt; options(contrasts = c("contr.sum", "contr.poly"))
+&gt; r1 &lt;- lm(temperature ~ brand, data = freeze)
+&gt; round(coef(r1), 2)
+<span class="rs">(Intercept)      brand1      brand2
+     -14.76       -1.64        1.08</span></code></pre>
+<p style="margin-top:8px">You may use: <span class="m">χ²<sub>0.975,21</sub> = 35.48</span>, <span class="m">χ²<sub>0.025,21</sub> = 10.28</span>, <span class="m">t<sub>0.025,21</sub> = 2.080</span>, <span class="m">F<sub>0.05,2,21</sub> = 3.47</span>, <span class="m">t<sub>0.025,2</sub> = 4.303</span>.</p>
+</div>
+
+<div class="q"><span class="num">B1</span>
+<p class="stem">The model equation used to test for a difference between brands is:</p>
+<ol><li><span class="m">y<sub>it</sub> = μ + τ<sub>i</sub> + e<sub>it</sub></span>, <span class="m">i = 1,…,8; t = 1,2,3</span></li><li><span class="m">y<sub>it</sub> = μ + τ<sub>i</sub> + e<sub>it</sub></span>, <span class="m">i = 1,2,3; t = 1,…,8</span></li><li><span class="m">y<sub>it</sub> = μ + e<sub>it</sub></span>, <span class="m">i = 1,2,3; t = 1,…,8</span></li><li><span class="m">y<sub>it</sub> = μ + τ<sub>i</sub></span>, <span class="m">i = 1,2,3; t = 1,…,8</span></li><li><span class="m">μ = τ<sub>i</sub> + e<sub>it</sub></span>, <span class="m">i = 1,2,3; t = 1,…,8</span></li></ol></div>
+
+<div class="q"><span class="num">B2</span>
+<p class="stem">The estimate of <span class="m">σ²</span> is:</p>
+<ol><li>2.654</li><li>16.702</li><li>1.629</li><li>55.727</li><li>2.323</li></ol></div>
+
+<div class="q"><span class="num">B3</span>
+<p class="stem">The estimate of <span class="m">σ</span> is:</p>
+<ol><li>2.654</li><li>1.629</li><li>16.702</li><li>4.087</li><li>0.614</li></ol></div>
+
+<div class="q"><span class="num">B4</span>
+<p class="stem">The F-value for testing whether brands differ is:</p>
+<ol><li>0.60</li><li>1.67</li><li>6.29</li><li>3.47</li><li>0.16</li></ol></div>
+
+<div class="q"><span class="num">B5</span>
+<p class="stem">The conclusion of the F-test at the 5% level is:</p>
+<ol><li>Do not reject <span class="m">H₀</span>; brands do not differ significantly.</li><li>Reject <span class="m">H₀</span>; there is significant evidence that brands differ.</li><li>Reject <span class="m">H₀</span>; all three brands differ from each other.</li><li>The test cannot be carried out with these data.</li><li>Do not reject <span class="m">H₀</span>; the brands are identical.</li></ol></div>
+
+<div class="q"><span class="num">B6</span>
+<p class="stem">A 95% confidence interval for <span class="m">σ²</span> is approximately:</p>
+<ol><li>(1.57, 5.42)</li><li>(1.25, 2.33)</li><li>(5.42, 1.57)</li><li>(1.63, 5.81)</li><li>(0.94, 3.25)</li></ol></div>
+
+<div class="q"><span class="num">B7</span>
+<p class="stem">A 95% confidence interval for <span class="m">σ</span> is approximately:</p>
+<ol><li>(1.57, 5.42)</li><li>(2.47, 29.4)</li><li>(1.25, 2.33)</li><li>(1.29, 2.41)</li><li>(0.63, 1.16)</li></ol></div>
+
+<div class="q"><span class="num">B8</span>
+<p class="stem">Based on the coefficient output, <span class="m">τ̂₃</span> is estimated to be:</p>
+<ol><li>−0.56</li><li>0.56</li><li>0</li><li>−2.72</li><li>1.08</li></ol></div>
+
+<div class="q"><span class="num">B9</span>
+<p class="stem">Based on the coefficient output, <span class="m">μ + τ₁</span> is estimated to be:</p>
+<ol><li>−1.64</li><li>−14.76</li><li>−16.40</li><li>−13.12</li><li>−13.68</li></ol></div>
+
+<div class="q"><span class="num">B10</span>
+<p class="stem">The standard error of an estimated brand mean is:</p>
+<ol><li>1.629</li><li>0.576</li><li>0.333</li><li>2.654</li><li>0.108</li></ol></div>
+
+<div class="q"><span class="num">B11</span>
+<p class="stem">A 95% confidence interval for the mean of brand 1 is approximately:</p>
+<ol><li>(−17.60, −15.20)</li><li>(−18.03, −14.77)</li><li>(−16.98, −15.82)</li><li>(−19.66, −13.14)</li><li>(−15.96, −13.56)</li></ol></div>
+
+<div class="q"><span class="num">B12</span>
+<p class="stem">Suppose instead that the three brands had been <em>randomly selected</em> from a large number of available brands. The null hypothesis of interest would then be:</p>
+<ol><li><span class="m">H₀: τ₁ = τ₂ = τ₃ = 0</span></li><li><span class="m">H₀: σ² = 0</span></li><li><span class="m">H₀: σ²<sub>τ</sub> = 0</span></li><li><span class="m">H₀: μ = 0</span></li><li><span class="m">H₀: ICC = 1</span></li></ol></div>
+
+<div class="q"><span class="num">B13</span>
+<p class="stem">Under that random-effects model, the estimate of <span class="m">σ²<sub>τ</sub></span> is:</p>
+<ol><li>16.702</li><li>2.654</li><li>1.756</li><li>14.048</li><li>0.220</li></ol></div>
+
+<div class="q"><span class="num">B14</span>
+<p class="stem">Under that random-effects model, the estimated correlation between two observations of the same brand is:</p>
+<ol><li>0.398</li><li>0.602</li><li>0.662</li><li>0.159</li><li>1.756</li></ol></div>
+
+<div class="q"><span class="num">B15</span>
+<p class="stem">Under that random-effects model, a 95% confidence interval for <span class="m">μ</span> uses which degrees of freedom, and which mean square in the standard error?</p>
+<ol><li>21 df, using <span class="m">MS<sub>E</sub></span></li><li>2 df, using <span class="m">MS<sub>Tr</sub></span></li><li>23 df, using <span class="m">MS<sub>T</sub></span></li><li>2 df, using <span class="m">MS<sub>E</sub></span></li><li>21 df, using <span class="m">MS<sub>Tr</sub></span></li></ol></div>
+
+<div class="qsec">
+<h4>Section C · 15 questions · factorial and random designs</h4>
+<p><strong>Part 1 — a measurement system study.</strong> An engineering team selects <strong>20 parts at random</strong> from a production line and <strong>3 operators at random</strong> from the workforce. Each operator measures each part twice. <span class="m">N = 120</span>. Both factors are random. Output from <code>mixlm</code>:</p>
+<pre style="margin-top:10px"><code>                    Df  Sum Sq Mean Sq
+PartNumber          19 1185.42   62.39
+Operator             2    2.62    1.31
+PartNumber:Operator 38   27.05    0.71
+Residuals           60   59.50    0.99</code></pre>
+<p style="margin-top:8px">You may use: <span class="m">F<sub>0.05,19,38</sub> = 1.87</span>, <span class="m">F<sub>0.05,2,38</sub> = 3.24</span>, <span class="m">F<sub>0.05,38,60</sub> = 1.60</span>.</p>
+</div>
+
+<div class="q"><span class="num">C1</span>
+<p class="stem">The correct model equation for this experiment is:</p>
+<ol><li><span class="m">y<sub>ijt</sub> = μ + τ<sub>i</sub> + β<sub>j</sub> + (τβ)<sub>ij</sub> + ε<sub>ijt</sub></span>, all effects fixed.</li><li><span class="m">y<sub>ijt</sub> = μ + t<sub>i</sub> + b<sub>j</sub> + (tb)<sub>ij</sub> + ε<sub>ijt</sub></span>, with <span class="m">t<sub>i</sub>, b<sub>j</sub>, (tb)<sub>ij</sub></span> all random.</li><li><span class="m">y<sub>ijt</sub> = μ + t<sub>i</sub> + ε<sub>ijt</sub></span></li><li><span class="m">y<sub>ijt</sub> = μ + τ<sub>i</sub> + b<sub>j</sub> + ε<sub>ijt</sub></span>, a mixed model.</li><li><span class="m">y<sub>ij</sub> = μ + t<sub>i</sub> + b<sub>j</sub></span>, no error term needed.</li></ol></div>
+
+<div class="q"><span class="num">C2</span>
+<p class="stem">The degrees of freedom for the interaction, and for the error, are respectively:</p>
+<ol><li>38 and 60</li><li>57 and 60</li><li>38 and 59</li><li>60 and 38</li><li>19 and 100</li></ol></div>
+
+<div class="q"><span class="num">C3</span>
+<p class="stem">To test whether there is a significant Part effect, the correct F-statistic is:</p>
+<ol><li><span class="m">MS<sub>Part</sub> / MS<sub>E</sub></span></li><li><span class="m">MS<sub>Part</sub> / MS<sub>Part:Operator</sub></span></li><li><span class="m">MS<sub>Part:Operator</sub> / MS<sub>Part</sub></span></li><li><span class="m">MS<sub>Part</sub> / MS<sub>Operator</sub></span></li><li><span class="m">MS<sub>E</sub> / MS<sub>Part</sub></span></li></ol></div>
+
+<div class="q"><span class="num">C4</span>
+<p class="stem">The numerical value of the correct F-statistic for Operator is closest to:</p>
+<ol><li>1.32</li><li>1.85</li><li>0.72</li><li>87.9</li><li>4.76</li></ol></div>
+
+<div class="q"><span class="num">C5</span>
+<p class="stem">Testing the Operator effect at the 5% level, the conclusion is:</p>
+<ol><li>Reject <span class="m">H₀</span>; operators differ significantly.</li><li>Do not reject <span class="m">H₀: σ²<sub>b</sub> = 0</span>; no significant operator variance.</li><li>Reject <span class="m">H₀: σ²<sub>b</sub> = 0</span>; operator variance is large.</li><li>The test cannot be performed without <code>lme4</code>.</li><li>Do not reject; therefore <span class="m">σ²<sub>b</sub></span> is exactly zero.</li></ol></div>
+
+<div class="q"><span class="num">C6</span>
+<p class="stem">The F-statistic for the interaction, and the conclusion, are:</p>
+<ol><li>0.72; interaction not significant.</li><li>1.39; interaction not significant.</li><li>0.72; interaction significant.</li><li>27.05; interaction significant.</li><li>1.60; interaction significant.</li></ol></div>
+
+<div class="q"><span class="num">C7</span>
+<p class="stem">Using the full model above, the method-of-moments estimate of the interaction variance component <span class="m">σ²<sub>tb</sub></span> is:</p>
+<ol><li>0.71</li><li>0.14</li><li>−0.14, which is impossible, so it is reported as 0.</li><li>1.70</li><li>0.36</li></ol></div>
+
+<div class="q"><span class="num">C8</span>
+<p class="stem">The interaction is dropped and the additive model refitted, giving <span class="m">MS<sub>E</sub> = 0.88</span> on 98 df. The estimate of the Part variance component <span class="m">σ²<sub>t</sub></span> is:</p>
+<ol><li>62.39</li><li>30.76</li><li>10.25</li><li>3.08</li><li>1.54</li></ol></div>
+
+<div class="q"><span class="num">C9</span>
+<p class="stem">With <span class="m">σ̂²<sub>t</sub> = 10.25</span>, <span class="m">σ̂²<sub>b</sub> = 0.01</span> and <span class="m">σ̂² = 0.88</span>, the proportion of total variance attributable to Parts is:</p>
+<ol><li>0.08</li><li>0.92</li><li>0.99</li><li>0.52</li><li>0.16</li></ol></div>
+
+<div class="q"><span class="num">C10</span>
+<p class="stem">The engineering interpretation of that value is:</p>
+<ol><li>The measurement instrument is unreliable; most variation is gauge error.</li><li>Operators disagree strongly with one another.</li><li>Almost all observed variation reflects genuine differences between parts, so the measurement system is highly capable.</li><li>The parts are all essentially identical.</li><li>The experiment should be repeated with more operators.</li></ol></div>
+
+<div class="qsec" style="margin-top:34px">
+<p><strong>Part 2 — a barley field trial.</strong> Two factors, both fixed: Soil (Clay, Sand) and Fertilizer (Fert1, Fert2), with 8 replicates per cell, <span class="m">N = 32</span>. Cell means for yield (kg/plot):</p>
+<div class="tw" style="margin:10px 0"><table><thead><tr><th></th><th class="n">Fert1</th><th class="n">Fert2</th></tr></thead>
+<tbody><tr><td><strong>Clay</strong></td><td class="n">358.0</td><td class="n">469.3</td></tr>
+<tr><td><strong>Sand</strong></td><td class="n">361.7</td><td class="n">320.6</td></tr></tbody></table></div>
+<pre><code>                Df    Sum Sq   Mean Sq  F value    Pr(&gt;F)
+Soil             1 42070.946 42070.946   28.520 0.0000109
+Fertilizer       1  9846.133  9846.133    6.675 0.0152916
+Soil:Fertilizer  1 46396.404 46396.404   31.452 0.0000053
+Residuals       28 41303.820  1475.136</code></pre>
+</div>
+
+<div class="q"><span class="num">C11</span>
+<p class="stem">Which row of this table should be interpreted first, and why?</p>
+<ol><li>Soil, because it has the largest F.</li><li>Residuals, to check the error.</li><li><code>Soil:Fertilizer</code>, because whether the interaction is significant determines how the main effects may be interpreted.</li><li>Fertilizer, because it has the smallest F.</li><li>The order does not matter for balanced data.</li></ol></div>
+
+<div class="q"><span class="num">C12</span>
+<p class="stem">Given the output, the most appropriate conclusion about the effect of Fertilizer is:</p>
+<ol><li>Fert2 increases yield by about 35 kg/plot on average, regardless of soil.</li><li>Fertilizer has no effect.</li><li>The effect of Fertilizer depends on soil type: it raises yield on clay but lowers it on sand.</li><li>Fertilizer should be dropped from the model since <span class="m">p &gt; 0.01</span>.</li><li>Fert1 is better than Fert2 in all conditions.</li></ol></div>
+
+<div class="q"><span class="num">C13</span>
+<p class="stem">The estimated interaction effect for the (Clay, Fert2) cell is:</p>
+<ol><li>111.3</li><li>38.1</li><li>91.9</li><li>17.6</li><li>−38.1</li></ol></div>
+
+<div class="q"><span class="num">C14</span>
+<p class="stem">Since the interaction is highly significant, the correct action is:</p>
+<ol><li>Remove Fertilizer, since its p-value is the largest of the three.</li><li>Remove both main effects and keep only the interaction.</li><li>Keep the interaction and both main effects, and interpret the cell means.</li><li>Refit as a one-way ANOVA on Soil alone.</li><li>Transform the response with a logarithm.</li></ol></div>
+
+<div class="q"><span class="num">C15</span>
+<p class="stem">In a larger version of this trial, a full model has <span class="m">SS<sub>E</sub> = 10522</span> on 16 df; dropping the Site factor and all its interactions gives <span class="m">SS<sub>E</sub> = 17179</span> on 24 df. The partial F-statistic, and the conclusion at 5% (given <span class="m">F<sub>0.05,8,16</sub> = 2.59</span>), are:</p>
+<ol><li><span class="m">F₀ = 1.27</span>; the Site terms can safely be dropped.</li><li><span class="m">F₀ = 1.27</span>; the Site terms must be kept.</li><li><span class="m">F₀ = 6.33</span>; the Site terms must be kept.</li><li><span class="m">F₀ = 0.79</span>; the Site terms can safely be dropped.</li><li><span class="m">F₀ = 2.59</span>; the test is inconclusive.</li></ol></div>
+
+<h2 class="ch" id="answers"><span class="cn">Practice</span>Answers, with the reasoning</h2>
+
+<p class="lede">Mark a whole section before reading these. For anything you got wrong, write the <em>reason</em> in your notebook margin next to the relevant rule — not the answer.</p>
+
+<h4>Section A</h4>
+<div class="tw">
+<table>
+<thead><tr><th class="n">Q</th><th class="n">Ans</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td class="n">A1</td><td class="n y">B</td><td>The exponent is <span class="m">−½(y−3)²</span> with no divisor, so <span class="m">σ² = 1</span> and <span class="m">μ = 3</span>. The <span class="m">1/√<span class="rad">2π</span></span> out front confirms <span class="m">σ = 1</span>.</td></tr>
+<tr><td class="n">A2</td><td class="n y">C</td><td><span class="m">Var(3Z₁ − Z₂) = 3²·1 + (−1)²·1 = 10</span>. Variance scales with <strong>c squared</strong>, and the minus sign disappears when squared. Mean is 0.</td></tr>
+<tr><td class="n">A3</td><td class="n y">D</td><td>Sum of 3 squared standard normals is <span class="m">χ²₃</span>, which has mean <span class="m">k = 3</span> and variance <span class="m">2k = 6</span>.</td></tr>
+<tr><td class="n">A4</td><td class="n y">B</td><td>Taking the reciprocal of an F <strong>swaps the degrees of freedom</strong>. <span class="m">F(6,20) → F(20,6)</span>.</td></tr>
+<tr><td class="n">A5</td><td class="n y">B</td><td>Estimating <span class="m">σ</span> from <span class="m">n = 5</span> costs one df, so <span class="m">t</span> with <span class="m">n − 1 = 4</span>.</td></tr>
+<tr><td class="n">A6</td><td class="n y">C</td><td><span class="m">Var(ȳ) = σ²/n = 36/9 = 4</span>.</td></tr>
+<tr><td class="n">A7</td><td class="n y">C</td><td><span class="m">t²<sub>k</sub> = F<sub>1,k</sub></span>. The <strong>1 goes first</strong> — option B has them the wrong way round.</td></tr>
+<tr><td class="n">A8</td><td class="n y">B</td><td>By symmetry, <span class="m">P(−c ≤ Z ≤ c) = 2P(Z ≤ c) − 1 = 2(0.95) − 1 = 0.90</span>.</td></tr>
+<tr><td class="n">A9</td><td class="n y">C</td><td>Only <span class="m">(1,1,−1,−1)</span> sums to zero. A sums to 4, B to 1, D to 1, E to 1.</td></tr>
+<tr><td class="n">A10</td><td class="n y">C</td><td>A and B overstate — failing to reject is not proof of no effect. C is the correctly hedged statement, and mentions power, which is the point with <span class="m">n = 2</span>.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>Section B</h4>
+<div class="tw">
+<table>
+<thead><tr><th class="n">Q</th><th class="n">Ans</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td class="n">B1</td><td class="n y">B</td><td><span class="m">i</span> indexes the <strong>group</strong> (3 brands), <span class="m">t</span> the <strong>replicate</strong> (8 each). A swaps them; C has no treatment term; D has no error term; E is nonsense.</td></tr>
+<tr><td class="n">B2</td><td class="n y">A</td><td><span class="m">MS<sub>E</sub> = 55.727/21 = 2.654</span>.</td></tr>
+<tr><td class="n">B3</td><td class="n y">B</td><td><span class="m">σ̂ = √<span class="rad">2.654</span> = 1.629</span>. Option A is the trap — that is <span class="m">σ²</span>.</td></tr>
+<tr><td class="n">B4</td><td class="n y">C</td><td><span class="m">MS<sub>Tr</sub> = 33.403/2 = 16.702</span>; <span class="m">F = 16.702/2.654 = 6.29</span>.</td></tr>
+<tr><td class="n">B5</td><td class="n y">B</td><td><span class="m">6.29 &gt; 3.47</span>, so reject. C overstates — the F-test does not tell you <em>which</em> brands differ. E overstates in the other direction.</td></tr>
+<tr><td class="n">B6</td><td class="n y">A</td><td><span class="m">[55.727/35.48 , 55.727/10.28] = [1.571 , 5.419]</span>. The <strong>big</strong> chi-square gives the <strong>lower</strong> bound. C has them reversed; B is the interval for <span class="m">σ</span>.</td></tr>
+<tr><td class="n">B7</td><td class="n y">C</td><td>Square-root the ends of B6: <span class="m">[√<span class="rad">1.571</span> , √<span class="rad">5.419</span>] = [1.253 , 2.328]</span>.</td></tr>
+<tr><td class="n">B8</td><td class="n y">B</td><td>The last level is never printed. Effects must sum to zero, so <span class="m">τ̂₃ = −(−1.64 + 1.08) = +0.56</span>.</td></tr>
+<tr><td class="n">B9</td><td class="n y">C</td><td>Under <code>contr.sum</code> the intercept is the grand mean, so group 1's mean is <span class="m">−14.76 + (−1.64) = −16.40</span>.</td></tr>
+<tr><td class="n">B10</td><td class="n y">B</td><td><span class="m">se(ȳ<sub>i·</sub>) = √<span class="rad">MS<sub>E</sub>/n</span> = √<span class="rad">2.654/8</span> = 0.576</span>.</td></tr>
+<tr><td class="n">B11</td><td class="n y">A</td><td><span class="m">−16.40 ± 2.080 × 0.576 = −16.40 ± 1.198</span>. Note it uses <span class="m">N − a = 21</span> df, because this is a <em>fixed</em> model.</td></tr>
+<tr><td class="n">B12</td><td class="n y">C</td><td>With randomly chosen levels the question becomes whether the population of brands varies at all: <span class="m">H₀: σ²<sub>τ</sub> = 0</span>.</td></tr>
+<tr><td class="n">B13</td><td class="n y">C</td><td><span class="m">σ̂²<sub>τ</sub> = (MS<sub>Tr</sub> − MS<sub>E</sub>)/n = (16.702 − 2.654)/8 = 1.756</span>. Option D forgets to divide by <span class="m">n</span>.</td></tr>
+<tr><td class="n">B14</td><td class="n y">A</td><td>That correlation <em>is</em> the ICC: <span class="m">1.756/(1.756 + 2.654) = 0.398</span>. Option B is its complement.</td></tr>
+<tr><td class="n">B15</td><td class="n y">B</td><td><span class="m">V(μ̂) = MS<sub>Tr</sub>/(an)</span>, so you inherit <span class="m">MS<sub>Tr</sub></span>'s df, <span class="m">a − 1 = 2</span>. This is the one the textbook gets wrong.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>Section C</h4>
+<div class="tw">
+<table>
+<thead><tr><th class="n">Q</th><th class="n">Ans</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td class="n">C1</td><td class="n y">B</td><td>"Selected at random" for <em>both</em> factors → both random, so Latin letters and a random interaction. D would be a mixed model (one of each).</td></tr>
+<tr><td class="n">C2</td><td class="n y">A</td><td><span class="m">(a−1)(b−1) = 19 × 2 = 38</span>; <span class="m">ab(n−1) = 20 × 3 × 1 = 60</span>.</td></tr>
+<tr><td class="n">C3</td><td class="n y">B</td><td class="rr">Both factors random with the interaction retained → main effects are tested against <strong><span class="m">MS<sub>AB</sub></span></strong>, because <span class="m">E(MS<sub>A</sub>)</span> contains <span class="m">nσ²<sub>tb</sub></span> and only <span class="m">MS<sub>AB</sub></span> cancels it.</td></tr>
+<tr><td class="n">C4</td><td class="n y">B</td><td><span class="m">1.31/0.71 = 1.85</span>. <strong>Option A (1.32) is what you get from the wrong denominator</strong> <span class="m">MS<sub>E</sub></span> — it is deliberately there, and it is what plain <code>anova()</code> would print.</td></tr>
+<tr><td class="n">C5</td><td class="n y">B</td><td><span class="m">1.85 &lt; 3.24</span>, so do not reject. E is wrong because failing to reject never proves a parameter is exactly zero.</td></tr>
+<tr><td class="n">C6</td><td class="n y">A</td><td>The interaction <em>is</em> tested against <span class="m">MS<sub>E</sub></span>: <span class="m">0.71/0.99 = 0.72 &lt; 1.60</span>. And an F below 1 can never be significant.</td></tr>
+<tr><td class="n">C7</td><td class="n y">C</td><td><span class="m">(MS<sub>AB</sub> − MS<sub>E</sub>)/n = (0.71 − 0.99)/2 = −0.14</span>. Negative variances are impossible — report 0, or use REML. This is the method-of-moments flaw, on real data.</td></tr>
+<tr><td class="n">C8</td><td class="n y">C</td><td><span class="m">(MS<sub>A</sub> − MS<sub>E</sub>)/(bn) = (62.39 − 0.88)/(3 × 2) = 61.51/6 = 10.25</span>. Note the divisor is <span class="m">bn</span> for factor A. Option B used <span class="m">n</span>·something wrong; D and E use the wrong divisor.</td></tr>
+<tr><td class="n">C9</td><td class="n y">B</td><td><span class="m">10.25/(10.25 + 0.01 + 0.88) = 10.25/11.14 = 0.92</span>.</td></tr>
+<tr><td class="n">C10</td><td class="n y">C</td><td>92% of variation is genuine part-to-part difference, only 8% is operator plus gauge error. That is the definition of a capable measurement system.</td></tr>
+<tr><td class="n">C11</td><td class="n y">C</td><td>Always the interaction first. It governs whether the main effects can be read at face value.</td></tr>
+<tr><td class="n">C12</td><td class="n y">C</td><td>The cell means show Fert2 gains <span class="m">469.3 − 358.0 = +111.3</span> on clay but loses <span class="m">320.6 − 361.7 = −41.1</span> on sand. Option A quotes the main effect, which here is genuinely misleading.</td></tr>
+<tr><td class="n">C13</td><td class="n y">B</td><td>Row mean Clay = 413.65, column mean Fert2 = 394.95, grand mean = 377.4. So <span class="m">469.3 − 413.65 − 394.95 + 377.4 = 38.1</span>.</td></tr>
+<tr><td class="n">C14</td><td class="n y">C</td><td>Principle of marginality: keep the interaction, and keep both main effects regardless of their p-values.</td></tr>
+<tr><td class="n">C15</td><td class="n y">A</td><td><span class="m">F₀ = [(17179 − 10522)/8] ⁄ [10522/16] = 832.1/657.6 = 1.27</span>. Since <span class="m">1.27 &lt; 2.59</span>, fail to reject — the Site terms are noise and can go.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="b exam"><span class="l">Score yourself</span>
+<p><strong>32+ out of 40</strong> — you are in good shape. Drill the specific ones you missed.<br>
+<strong>24–31</strong> — solid foundation; concentrate on whichever section was weakest.<br>
+<strong>Under 24</strong> — work through the chapters for the section you struggled with, then retry that block.</p>
+<p>On the real paper, remember that a blank costs the same as a wrong answer. Score yourself the same way: no credit, but no penalty either, so <em>always</em> put something down.</p>
+</div>
+
+<h2 class="ch" id="notebook"><span class="cn">Reference</span>Build your notebook</h2>
+
+<p class="lede">Every orange box in this document, in order. Work down the list and tick them off. This is the book you take into the exam.</p>
+
+<div class="tw">
+<table class="nblist">
+<thead><tr><th>Page</th><th>What to write</th><th>Where it is</th></tr></thead>
+<tbody>
+<tr><td>N1</td><td><strong>The decision tree and denominator table.</strong> Which mean square goes on the bottom, for all five model types.</td><td><a href="#pick">Which test do I use</a></td></tr>
+<tr><td>N2</td><td><strong>The four distributions</strong> and the five identities, including <span class="m">1/F</span> flipping the df.</td><td><a href="#c1">Chapter 1</a></td></tr>
+<tr><td>N3</td><td><strong>Rules for combining random variables</strong>, and <span class="m">Var(ȳ) = σ²/n</span> boxed.</td><td><a href="#c1-rules">Chapter 1</a></td></tr>
+<tr><td>N4</td><td><strong>The ANOVA table skeleton</strong> with all df formulas, plus <span class="m">σ̂ = √<span class="rad">MS<sub>E</sub></span></span>.</td><td><a href="#c2-f">Chapter 2</a></td></tr>
+<tr><td>N5</td><td><strong>The inference page</strong> — universal T, the four standard errors, both CI formulas, and the three capital-letter reminders.</td><td><a href="#c3-ci">Chapter 3</a></td></tr>
+<tr><td>N6</td><td><strong>Reading coefficients</strong> under contr.sum versus contr.treatment.</td><td><a href="#c3">Chapter 3</a></td></tr>
+<tr><td>N7</td><td><strong>Contrasts and the three corrections</strong>, with the which-one-when decision line.</td><td><a href="#c4-mult">Chapter 4</a></td></tr>
+<tr><td>N8</td><td><strong>Random effects, one factor</strong> — EMS, method of moments, ICC, and the <span class="m">a−1</span> df warning. In violet.</td><td><a href="#c5-icc">Chapter 5</a></td></tr>
+<tr><td>N9</td><td><strong>Diagnostics and transformations</strong> — the <span class="m">|d| &gt; 3</span> rule, the plot table, log → ratio.</td><td><a href="#c6-trans">Chapter 6</a></td></tr>
+<tr><td>N10</td><td><strong>Two factors</strong> — the model, the interaction estimate, the df column, and the two little interaction plots drawn out.</td><td><a href="#c6-int">Chapter 6</a></td></tr>
+<tr><td>N11</td><td><strong>Factorials and model selection</strong> — interaction df, partial F, AIC/BIC, marginality.</td><td><a href="#c7-sel">Chapter 7</a></td></tr>
+<tr><td class="rr">N12</td><td class="rr"><strong>Two-factor random — give this its own page.</strong> The four EMS lines, the F table boxed, the estimators with <span class="m">bn</span> and <span class="m">an</span>, and the one-line reason in capitals.</td><td><a href="#c8-den">Chapter 8</a></td></tr>
+<tr><td>N13</td><td><strong>The exam procedure</strong> — see the box directly below.</td><td>here</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="nb">
+<span class="tag">N13 · the last page — your procedure</span>
+<p>Write this as a numbered list on the final page, so you can turn to it when you freeze:</p>
+<ol style="margin-bottom:10px">
+<li>Write down <strong>a, b, n, N</strong>.</li>
+<li>For every factor write <strong>FIXED</strong> or <strong>RANDOM</strong>. Look for "randomly selected" or <code>r()</code>.</li>
+<li>Write the <strong>model equation</strong> with index ranges.</li>
+<li>Fill the <strong>df column</strong> from the design alone: <span class="m">a−1</span>, <span class="m">b−1</span>, <span class="m">(a−1)(b−1)</span>, <span class="m">ab(n−1)</span>, <span class="m">N−1</span>.</li>
+<li>Look at the <strong>interaction p-value first</strong>.</li>
+<li>Choose the <strong>denominator</strong> for each F from page N1.</li>
+<li>Compute, then <strong>sanity check</strong>: F &lt; 1 is never significant.</li>
+<li>Asked for <strong>σ or σ²</strong>? Check which.</li>
+<li><strong>Never leave a blank.</strong></li>
+</ol>
+<p style="margin-bottom:0"><strong>Also copy the critical values you keep needing</strong>, so you are not hunting through tables: <span class="m">t<sub>0.025,∞</sub> = 1.96</span> · <span class="m">t<sub>0.025,10</sub> = 2.228</span> · <span class="m">t<sub>0.025,21</sub> = 2.080</span> · <span class="m">t<sub>0.025,36</sub> = 2.028</span> · <span class="m">t<sub>0.025,2</sub> = 4.303</span> · <span class="m">t<sub>0.025,4</sub> = 2.776</span>.</p>
+</div>
+
+<div class="b key"><span class="l">A realistic plan for the days you have</span>
+<p><strong>Days 1–2.</strong> Write pages N1 to N7 (lectures 1–4 — your strongest material, so this goes fast and builds the habit). Then do Sections A and B of the practice.</p>
+<p><strong>Days 3–4.</strong> Write N8 to N12 (lectures 5–8 — the harder half). Do Section C. Expect this to be slower.</p>
+<p><strong>Day 5.</strong> Lectures 9–11 arrive. Add those pages.</p>
+<p><strong>Remaining days.</strong> Past papers, timed, using only your notebook. Every mistake becomes a margin note. Re-do the questions you got wrong two days later, not immediately.</p>
+</div>
+
+<h2 class="ch" id="todo"><span class="cn">Status</span>What is not in here yet</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Lecture</th><th>When</th><th>Topic</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>1–8</td><td>done</td><td>Everything above</td><td class="y">complete</td></tr>
+<tr><td>9</td><td>Mon 24 Aug</td><td>Blocking (Montgomery 4.1)</td><td class="no">to be added</td></tr>
+<tr><td>10</td><td>Tue 25 Aug</td><td>Mixed models (13.3, 13.4)</td><td class="no">to be added — <strong>and it matters</strong>, see below</td></tr>
+<tr><td>11</td><td>Thu 27 Aug</td><td>Nested designs (14.1) and repetition</td><td class="no">to be added</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="b rand"><span class="l">Why lecture 10 matters more than its position suggests</span>
+<p>A <strong>mixed model</strong> has one fixed factor and one random factor — and it appears on past exams. The 2022 paper's fish-yield section has Species fixed and River random; the 2025 paper asks directly whether <code>lm(Size ~ r(Boar) + r(Farm))</code> is a random or mixed model.</p>
+<p>Mixed models have their <em>own</em> expected mean squares, and therefore their own denominator rules — a third row for your N1 table. Leave space on that page.</p>
+</div>
+
+</main>
+
+<footer class="foot">
+  <p><strong>STAT210 · Design of Experiments and Analysis of Variance · NMBU · lectures 1–8.</strong> Written as the single working document for the exam on 31 August 2026. Built from the lecture sources in <code>Rmd/</code> and <code>Forelesninger/</code>, and calibrated against six past papers (2020, H21, H22, H2023, 2024, 2025), the exercise set, and the course timetable. Every numeric result — every sum of squares, mean square, F, critical value, variance component and confidence interval — was re-derived by running R against the course data rather than copied from a slide.</p>
+  <p>Companion documents: <em>Signal Over Noise</em> (lectures 1–4, dense) · <em>Start From Nothing</em> (lectures 1–4, plain language) · <em>Two Kinds of Variation</em> (lecture 5 in depth).</p>
+</footer>
+
+</div>

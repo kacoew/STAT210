@@ -1,0 +1,1184 @@
+<title>Start From Nothing</title>
+
+<style>
+:root{
+  --ground:#F7F6F3;
+  --surface:#FFFFFF;
+  --sunk:#EEEDE8;
+  --ink:#1B1B18;
+  --ink-2:#4E4E48;
+  --ink-3:#7E7E76;
+  --rule:#DDDCD5;
+  --rule-strong:#BEBDB4;
+
+  --mu:#1B5FBE;
+  --tau:#1A8C40;
+  --eps:#C13030;
+  --accent:#8A5A1E;
+
+  --mu-wash:#EAF1FC;
+  --tau-wash:#E7F4EC;
+  --eps-wash:#FBEBEA;
+  --say-wash:#F3EFE7;
+
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#14130F;
+    --surface:#1C1B16;
+    --sunk:#24231D;
+    --ink:#EAE8E1;
+    --ink-2:#ADABA1;
+    --ink-3:#838177;
+    --rule:#33322A;
+    --rule-strong:#4A4940;
+
+    --mu:#77ACF2;
+    --tau:#5FC87F;
+    --eps:#F2786F;
+    --accent:#D9A45E;
+
+    --mu-wash:#15243A;
+    --tau-wash:#12291B;
+    --eps-wash:#2E1917;
+    --say-wash:#282419;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#14130F;
+  --surface:#1C1B16;
+  --sunk:#24231D;
+  --ink:#EAE8E1;
+  --ink-2:#ADABA1;
+  --ink-3:#838177;
+  --rule:#33322A;
+  --rule-strong:#4A4940;
+
+  --mu:#77ACF2;
+  --tau:#5FC87F;
+  --eps:#F2786F;
+  --accent:#D9A45E;
+
+  --mu-wash:#15243A;
+  --tau-wash:#12291B;
+  --eps-wash:#2E1917;
+  --say-wash:#282419;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:19px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+.shell{max-width:1240px;margin:0 auto;padding:0 26px 100px;}
+
+/* ---------------- masthead ---------------- */
+.masthead{border-bottom:3px double var(--ink);padding:60px 0 26px;margin-bottom:16px;}
+.eyebrow{
+  font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin:0 0 16px;
+}
+.masthead h1{
+  font-weight:600;font-size:clamp(2.4rem,6vw,3.9rem);line-height:1.02;
+  letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance;
+}
+.standfirst{font-size:1.16rem;color:var(--ink-2);max-width:58ch;margin:0;}
+.masthead-meta{
+  font-family:var(--sans);font-size:12.5px;color:var(--ink-3);margin-top:22px;
+  display:flex;flex-wrap:wrap;gap:6px 22px;
+}
+
+/* ---------------- two-column body with margin notes ---------------- */
+.band{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0 40px;
+  align-items:start;
+}
+@media(min-width:1000px){
+  .band{grid-template-columns:minmax(0,64ch) 260px;}
+}
+.col{min-width:0;}
+
+/* margin notes: inline on narrow screens, right column on wide */
+.say{
+  background:var(--say-wash);
+  border-left:2px solid var(--accent);
+  padding:11px 14px;
+  margin:18px 0;
+  font-family:var(--sans);
+  font-size:13.5px;
+  line-height:1.5;
+}
+@media(min-width:1000px){
+  .say{grid-column:2;margin:6px 0 18px;}
+}
+.say .sym{
+  font-family:var(--serif);font-size:1.5rem;display:block;margin-bottom:2px;color:var(--ink);
+}
+.say .out{font-weight:700;color:var(--accent);display:block;margin-bottom:4px;}
+
+/* ---------------- headings ---------------- */
+h2.sec{
+  font-size:2.05rem;font-weight:600;letter-spacing:-.014em;line-height:1.12;
+  margin:80px 0 8px;padding-top:24px;border-top:1px solid var(--rule-strong);
+  text-wrap:balance;scroll-margin-top:18px;
+}
+h2.sec .num{
+  display:block;font-family:var(--sans);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:9px;
+}
+h3{font-size:1.34rem;font-weight:600;margin:46px 0 10px;line-height:1.28;text-wrap:balance;scroll-margin-top:18px;}
+h4{
+  font-family:var(--sans);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:700;margin:32px 0 8px;
+}
+p{margin:0 0 17px;}
+.lede{font-size:1.1rem;color:var(--ink-2);}
+strong{font-weight:700;}
+ul,ol{margin:0 0 18px;padding-left:1.35em;}
+li{margin-bottom:9px;}
+li::marker{color:var(--ink-3);}
+a{color:var(--mu);}
+
+/* ---------------- semantic colours ---------------- */
+.mu{color:var(--mu);font-weight:700;}
+.tau{color:var(--tau);font-weight:700;}
+.eps{color:var(--eps);font-weight:700;}
+.m{font-style:italic;white-space:nowrap;}
+
+/* ---------------- boxes ---------------- */
+.box{border-left:3px solid var(--rule-strong);background:var(--surface);padding:16px 20px;margin:26px 0;font-size:.98rem;}
+.box p:last-child{margin-bottom:0;}
+.box .lbl{
+  font-family:var(--sans);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
+  font-weight:700;display:block;margin-bottom:7px;
+}
+.box.plain{border-left-color:var(--accent);background:var(--say-wash);}
+.box.plain .lbl{color:var(--accent);}
+.box.big{border-left-color:var(--tau);background:var(--tau-wash);}
+.box.big .lbl{color:var(--tau);}
+.box.careful{border-left-color:var(--eps);background:var(--eps-wash);}
+.box.careful .lbl{color:var(--eps);}
+.box.why{border-left-color:var(--mu);background:var(--mu-wash);}
+.box.why .lbl{color:var(--mu);}
+
+/* ---------------- formula strip ---------------- */
+.formula{
+  background:var(--sunk);border-top:2px solid var(--rule-strong);border-bottom:1px solid var(--rule);
+  padding:18px 20px;margin:26px 0;
+}
+.formula .maths{
+  font-size:1.28rem;text-align:center;display:block;margin-bottom:12px;overflow-x:auto;line-height:1.9;
+}
+.formula .words{
+  font-family:var(--sans);font-size:14px;text-align:center;color:var(--ink-2);
+  display:block;line-height:1.5;
+}
+.formula .words b{color:var(--ink);}
+.frac{display:inline-flex;flex-direction:column;vertical-align:-0.5em;text-align:center;margin:0 .22em;font-size:.88em;line-height:1.25;}
+.frac > span:first-child{padding:0 .35em .06em;}
+.frac > span:last-child{border-top:1px solid currentColor;padding:.06em .35em 0;}
+.rad{border-top:1px solid currentColor;padding:0 .15em;}
+
+/* ---------------- tables ---------------- */
+.tablewrap{overflow-x:auto;margin:26px 0;}
+table{
+  border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;
+  font-variant-numeric:tabular-nums;
+}
+caption{
+  caption-side:top;text-align:left;font-family:var(--sans);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-bottom:10px;
+}
+th,td{text-align:left;padding:9px 16px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top;}
+thead th{border-bottom:1.5px solid var(--ink-2);color:var(--ink-2);font-weight:700;font-size:12.5px;}
+td.num,th.num{text-align:right;padding-right:24px;}
+tr.total td{font-weight:700;border-top:1px solid var(--rule-strong);}
+.yes{color:var(--tau);font-weight:700;}
+.no{color:var(--ink-3);}
+
+/* ---------------- code ---------------- */
+pre{
+  font-family:var(--mono);font-size:13px;line-height:1.68;background:var(--sunk);
+  border-left:2px solid var(--rule-strong);padding:16px 18px;overflow-x:auto;margin:22px 0;color:var(--ink);
+}
+code{font-family:var(--mono);font-size:.84em;background:var(--sunk);padding:.12em .38em;}
+pre code{background:none;padding:0;font-size:inherit;}
+.cmt{color:var(--ink-3);}
+.res{color:var(--tau);}
+
+/* ---------------- figures ---------------- */
+figure{margin:38px 0;}
+figure svg{
+  display:block;width:100%;height:auto;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--rule);padding:8px;
+}
+figcaption{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-3);margin-top:11px;}
+figcaption b{color:var(--ink-2);}
+svg text{font-family:var(--sans);}
+
+/* ---------------- misc ---------------- */
+.steps{counter-reset:s;list-style:none;padding-left:0;}
+.steps > li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:18px;}
+.steps > li::before{
+  content:counter(s);position:absolute;left:0;top:2px;
+  font-family:var(--sans);font-size:13px;font-weight:700;color:var(--accent);
+  border:1.5px solid var(--accent);width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+}
+.footer{
+  border-top:3px double var(--ink);margin-top:90px;padding-top:22px;
+  font-family:var(--sans);font-size:13px;color:var(--ink-3);
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media print{body{background:#fff;color:#000;font-size:11pt;}.band{grid-template-columns:1fr;}}
+</style>
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">STAT210 · NMBU · The plain-language version</p>
+  <h1>Start From Nothing</h1>
+  <p class="standfirst">The same four lectures, explained without assuming you are comfortable with mathematical symbols. Every symbol is introduced, said out loud, and translated into ordinary words before it is used.</p>
+  <div class="masthead-meta">
+    <span>Companion to <em>Signal Over Noise</em></span>
+    <span>Nothing left out — only explained more slowly</span>
+  </div>
+</header>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Before anything else</span>The symbol problem</h2>
+
+<p class="lede">Statistics is not hard because the ideas are hard. It is hard because the ideas are written in a compressed shorthand that nobody teaches you to read. A formula is a sentence with most of the words removed.</p>
+
+<p>Here is a formula from your course:</p>
+
+<div class="formula">
+  <span class="maths">ȳ<sub>i·</sub></span>
+  <span class="words">Said aloud: <b>"y bar i dot"</b>. It means: <b>the average measurement in group number i</b>.</span>
+</div>
+
+<p>That is all it says. Four characters replaced eight words. Once you know that <strong>a bar over a letter means "the average of"</strong>, and that <strong>a dot in a subscript means "added up across everything in that position"</strong>, the shorthand stops being a wall.</p>
+
+<p>So this document does three things every time a new symbol appears:</p>
+
+<ol class="steps">
+  <li><strong>Shows you how to say it out loud.</strong> You cannot think about something you cannot pronounce.</li>
+  <li><strong>Translates it into an ordinary sentence.</strong> Every formula gets a plain-English caption underneath.</li>
+  <li><strong>Tells you what it is for.</strong> Symbols exist to do a job. Knowing the job makes them memorable.</li>
+</ol>
+
+<p>The little brown boxes in the margin are the pronunciation guides. On a narrow screen they appear between paragraphs instead.</p>
+
+<h3>The colours mean something</h3>
+
+<p>Your lecturer uses three colours. They are the most useful thing in the whole course, so I use them everywhere too:</p>
+
+<div class="tablewrap">
+<table>
+  <tbody>
+    <tr><td><span class="mu">Blue</span></td><td><strong>The baseline.</strong> Where things sit before any treatment does anything. The overall average.</td></tr>
+    <tr><td><span class="tau">Green</span></td><td><strong>The signal.</strong> How much a treatment pushed things away from that baseline. This is what your experiment is trying to find.</td></tr>
+    <tr><td><span class="eps">Red</span></td><td><strong>The noise.</strong> Random variation between individuals that has nothing to do with the treatment. This is what makes the signal hard to see.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box big">
+  <span class="lbl">The whole course in one sentence</span>
+  <p>You measured some things. Some of the variation you see is caused by your treatment (<span class="tau">green</span>), and some is just random differences between individuals (<span class="eps">red</span>). <strong>Statistics is the business of measuring both and asking whether green is big enough, compared to red, to be believed.</strong></p>
+  <p>Everything else — every formula, every table, every test — is a detail of how you measure those two things and compare them.</p>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">ȳ</span>
+  <span class="out">"y bar"</span>
+  A bar over a letter always means <strong>the average of</strong>. So ȳ is "the average of the y measurements".
+</aside>
+
+<aside class="say">
+  <span class="sym">i</span>
+  <span class="out">"eye"</span>
+  A label meaning <strong>which group</strong>. If you have 3 diets, i is 1, 2 or 3.
+</aside>
+
+<aside class="say">
+  <span class="sym">·</span>
+  <span class="out">"dot"</span>
+  A dot in the subscript means <strong>averaged over everything in that slot</strong>. ȳ<sub>i·</sub> = averaged over all animals in group i.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">The example</span>Six piglets</h2>
+
+<p>Everything below uses one small experiment, so the numbers stay familiar. It is deliberately tiny — six animals — so you can check every calculation by hand.</p>
+
+<p><strong>The question:</strong> does adding soya to a piglet's diet change how much weight it gains?</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The whole dataset</caption>
+  <thead><tr><th>Diet</th><th>What it is</th><th>Weights measured (kg)</th><th class="num">Average</th></tr></thead>
+  <tbody>
+    <tr><td><strong>NONS</strong></td><td>No soya — the control group</td><td>80 and 84</td><td class="num">82</td></tr>
+    <tr><td><strong>S1</strong></td><td>Soya recipe 1</td><td>82 and 84</td><td class="num">83</td></tr>
+    <tr><td><strong>S2</strong></td><td>Soya recipe 2</td><td>82 and 86</td><td class="num">84</td></tr>
+    <tr class="total"><td colspan="3">Average of all six piglets</td><td class="num">83</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Three group averages: 82, 83, 84. They are different. <strong>The entire question of this course is whether that difference is real or an accident.</strong></p>
+
+<p>Look at the raw numbers again before reading on. Within the very first group, one piglet weighs 80 and the other 84 — a gap of 4 kg, on <em>exactly the same diet</em>. The gap between the group averages is only 1 kg. So the differences <em>inside</em> a group are bigger than the differences <em>between</em> the groups. That is the answer, and everything that follows is a way of saying it precisely.</p>
+
+<h3>A control group is not optional</h3>
+
+<p>NONS gets no soya. Without it you would know how much piglets on soya weigh, but not whether that is more, less, or the same as piglets that got none. <strong>A comparison needs something to compare to.</strong></p>
+
+</div>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 2, the core idea</span>Splitting each measurement into three pieces</h2>
+
+<p>Take one piglet: the first NONS piglet, weighing 80 kg. Ask where that 80 came from. The answer, in the course's model, has three parts:</p>
+
+<ol class="steps">
+  <li><strong>Start at the overall average of all piglets: <span class="mu">83 kg</span>.</strong> This is the baseline — roughly what any piglet weighs.</li>
+  <li><strong>Adjust for its diet: <span class="tau">minus 1 kg</span>.</strong> The NONS group averages 82, which is 1 below the overall 83. So being on NONS is worth −1.</li>
+  <li><strong>Adjust for the individual animal: <span class="eps">minus 2 kg</span>.</strong> This particular piglet weighs 80, but its group averages 82. It is 2 below its own group, for reasons nothing to do with diet — genetics, appetite, luck.</li>
+</ol>
+
+<p>Add them: <span class="mu">83</span> <span class="tau">− 1</span> <span class="eps">− 2</span> = 80. Exactly the measured weight.</p>
+
+<div class="formula">
+  <span class="maths">y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span></span>
+  <span class="words">Said aloud: <b>"y i t equals mu plus tau i plus epsilon i t"</b>.<br>In words: <b>any measurement = the overall average + the effect of its group + that individual's own randomness.</b></span>
+</div>
+
+<p>That is <em>the model</em>. When lecturers say "the model", this line is what they mean. It is not a prediction machine — it is a statement about where each number comes from.</p>
+
+<figure>
+<svg viewBox="0 0 720 400" role="img" aria-label="Each piglet weight shown as starting from the overall average of 83, moving by a green diet adjustment, then by a red individual adjustment">
+  <defs>
+    <marker id="p-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--tau)"/></marker>
+    <marker id="p-e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="var(--eps)"/></marker>
+  </defs>
+  <line x1="70" y1="40" x2="70" y2="330" stroke="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="end">
+    <text x="62" y="289">80</text><text x="62" y="219">82</text><text x="62" y="149">84</text><text x="62" y="79">86</text>
+  </g>
+  <text x="26" y="190" font-size="11" fill="currentColor" text-anchor="middle" transform="rotate(-90 26 190)">Weight in kg</text>
+
+  <line x1="70" y1="180" x2="672" y2="180" stroke="var(--mu)" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="676" y="176" font-size="12" fill="var(--mu)" font-weight="700">83 kg</text>
+  <text x="676" y="191" font-size="10.5" fill="var(--mu)">everyone's average</text>
+
+  <line x1="110" y1="215" x2="250" y2="215" stroke="var(--tau)" stroke-width="2.5"/>
+  <line x1="295" y1="180" x2="435" y2="180" stroke="var(--tau)" stroke-width="2.5"/>
+  <line x1="480" y1="145" x2="620" y2="145" stroke="var(--tau)" stroke-width="2.5"/>
+
+  <line x1="122" y1="180" x2="122" y2="212" stroke="var(--tau)" stroke-width="2" marker-end="url(#p-t)"/>
+  <text x="130" y="203" font-size="11" fill="var(--tau)" font-weight="700">−1 for diet</text>
+  <text x="303" y="170" font-size="11" fill="var(--tau)" font-weight="700">0 for diet</text>
+  <line x1="492" y1="180" x2="492" y2="148" stroke="var(--tau)" stroke-width="2" marker-end="url(#p-t)"/>
+  <text x="500" y="167" font-size="11" fill="var(--tau)" font-weight="700">+1 for diet</text>
+
+  <g stroke="var(--eps)" stroke-width="1.6">
+    <line x1="145" y1="215" x2="145" y2="282" marker-end="url(#p-e)"/>
+    <line x1="215" y1="215" x2="215" y2="148" marker-end="url(#p-e)"/>
+    <line x1="330" y1="180" x2="330" y2="212" marker-end="url(#p-e)"/>
+    <line x1="400" y1="180" x2="400" y2="148" marker-end="url(#p-e)"/>
+    <line x1="515" y1="145" x2="515" y2="212" marker-end="url(#p-e)"/>
+    <line x1="585" y1="145" x2="585" y2="78" marker-end="url(#p-e)"/>
+  </g>
+  <text x="152" y="258" font-size="10.5" fill="var(--eps)">−2 for being</text>
+  <text x="152" y="271" font-size="10.5" fill="var(--eps)">this piglet</text>
+
+  <g fill="var(--ink)">
+    <circle cx="145" cy="285" r="5.5"/><circle cx="215" cy="145" r="5.5"/>
+    <circle cx="330" cy="215" r="5.5"/><circle cx="400" cy="145" r="5.5"/>
+    <circle cx="515" cy="215" r="5.5"/><circle cx="585" cy="75" r="5.5"/>
+  </g>
+
+  <g font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="700">
+    <text x="180" y="356">NONS</text><text x="365" y="356">S1</text><text x="550" y="356">S2</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle" opacity=".75">
+    <text x="180" y="373">group average 82</text><text x="365" y="373">group average 83</text><text x="550" y="373">group average 84</text>
+  </g>
+</svg>
+<figcaption><b>Follow any black dot backwards.</b> Start at the blue dashed line. The short green arrow moves you to your group's average — that is the diet's effect. The red arrow covers the rest of the distance to the actual animal — that is individual randomness. <b>Notice the green arrows are tiny and the red arrows are long.</b> That is a picture of an experiment that found nothing.</figcaption>
+</figure>
+
+<div class="box plain">
+  <span class="lbl">In plain words</span>
+  <p>The green arrows are what you are trying to detect. The red arrows are the fog you are trying to see through. When the fog is thicker than the thing you are looking for, you cannot honestly claim to have seen it.</p>
+</div>
+
+<h3>Why the green adjustments must add up to zero</h3>
+
+<p>The three diet effects are −1, 0 and +1. Add them: zero. This is not a coincidence — it is a rule built into the model, written <span class="m">Σ τ<sub>i</sub> = 0</span>.</p>
+
+<div class="box why">
+  <span class="lbl">Why this rule exists</span>
+  <p>Without it the model is ambiguous. Suppose I said the baseline is 83 with adjustments of −1, 0, +1. You could equally say the baseline is 100 with adjustments of −18, −17, −16. Both give exactly the same six predicted weights, so the data can never tell them apart.</p>
+  <p>Forcing the adjustments to add to zero picks one answer and makes it meaningful: <strong>the baseline becomes "the overall average", and each adjustment becomes "how far this group sits from that average".</strong> That is the interpretation you actually want.</p>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">μ</span>
+  <span class="out">"mew" (Greek letter mu)</span>
+  The <strong>overall average</strong> across everything. Here, 83 kg.
+</aside>
+
+<aside class="say">
+  <span class="sym">τ</span>
+  <span class="out">"tow" (Greek letter tau)</span>
+  The <strong>effect of a treatment</strong> — how far one group sits from the overall average. Here, −1, 0 and +1.
+</aside>
+
+<aside class="say">
+  <span class="sym">ε</span>
+  <span class="out">"ep-si-lon"</span>
+  The <strong>leftover randomness</strong> for one individual. You can never observe it directly; you only estimate it.
+</aside>
+
+<aside class="say">
+  <span class="sym">Σ</span>
+  <span class="out">"sigma"</span>
+  Means <strong>add up everything that follows</strong>. Σ τ<sub>i</sub> = 0 reads "all the τ values, added together, come to zero".
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 2, the arithmetic</span>Adding up the arrows</h2>
+
+<p>You now have, for every piglet, a green arrow and a red arrow. To get one number for "total signal" and one for "total noise", you add them all up. But there is a catch, and it is the reason for all the squaring you see in the formulas.</p>
+
+<div class="box why">
+  <span class="lbl">Why everything gets squared</span>
+  <p>Some arrows point up (+2) and some point down (−2). If you simply added them, they would cancel out and every total would be zero — useless.</p>
+  <p><strong>Squaring a number makes it positive</strong> (−2 squared is 4, just like +2 squared is 4). So squaring first, then adding, measures <em>how far things are from the middle</em> without caring which direction. That is all the squares are for. They are not deep; they are a trick to stop plus and minus cancelling.</p>
+</div>
+
+<p>Do it for all six piglets. Three columns: total distance from the overall average, the green part, and the red part.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>Every piglet, every piece, squared and added</caption>
+  <thead><tr>
+    <th>Diet</th><th class="num">Weight</th>
+    <th class="num">Distance from<br>83, squared</th>
+    <th class="num">Green part,<br>squared</th>
+    <th class="num">Red part,<br>squared</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>NONS</td><td class="num">80</td><td class="num">(80−83)² = 9</td><td class="num">(−1)² = 1</td><td class="num">(−2)² = 4</td></tr>
+    <tr><td>NONS</td><td class="num">84</td><td class="num">(84−83)² = 1</td><td class="num">(−1)² = 1</td><td class="num">(+2)² = 4</td></tr>
+    <tr><td>S1</td><td class="num">82</td><td class="num">(82−83)² = 1</td><td class="num">(0)² = 0</td><td class="num">(−1)² = 1</td></tr>
+    <tr><td>S1</td><td class="num">84</td><td class="num">(84−83)² = 1</td><td class="num">(0)² = 0</td><td class="num">(+1)² = 1</td></tr>
+    <tr><td>S2</td><td class="num">82</td><td class="num">(82−83)² = 1</td><td class="num">(+1)² = 1</td><td class="num">(−2)² = 4</td></tr>
+    <tr><td>S2</td><td class="num">86</td><td class="num">(86−83)² = 9</td><td class="num">(+1)² = 1</td><td class="num">(+2)² = 4</td></tr>
+    <tr class="total"><td colspan="2">Totals</td><td class="num">22</td><td class="num"><span class="tau">4</span></td><td class="num"><span class="eps">18</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>And notice: <strong>4 + 18 = 22</strong>. The green total and the red total add up exactly to the grand total. Nothing is lost, nothing is counted twice. This is the single most important fact in the course.</p>
+
+<div class="formula">
+  <span class="maths">SS<sub>T</sub> = <span class="tau">SS<sub>Tr</sub></span> + <span class="eps">SS<sub>E</sub></span></span>
+  <span class="words">Said aloud: <b>"S S total equals S S treatment plus S S error"</b>.<br>In words: <b>total variation = variation caused by the treatment + variation that is just noise.</b> Here: 22 = 4 + 18.</span>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — the most common hand-calculation mistake</span>
+  <p>The green column adds to <strong>4</strong>, not 2. There are only three green values (−1, 0, +1), but each one gets counted <strong>once for every piglet in that group</strong>. With 2 piglets per group, each counts twice.</p>
+  <p>This is why the written formula has an <span class="m">n</span> in front of it — <span class="m">n</span> being the number of animals per group. Forget the n and your answer is wrong by a factor of 2 (or 10, in a bigger experiment).</p>
+</div>
+
+<h3>Reading the result</h3>
+
+<p>Of the 22 units of total variation, <span class="tau">4</span> come from diet and <span class="eps">18</span> come from individual differences. Diet accounts for 4 out of 22 — about <strong>18%</strong>. The other 82% is noise. That is a weak signal, and the formal test is about to confirm it.</p>
+
+</div>
+
+<aside class="say">
+  <span class="sym">SS</span>
+  <span class="out">"S S", or "sum of squares"</span>
+  A total of squared distances. Just a number measuring "how much variation is here".
+</aside>
+
+<aside class="say">
+  <span class="sym">SS<sub>E</sub></span>
+  <span class="out">"S S error"</span>
+  The <strong>noise</strong> total. "Error" here does not mean a mistake — it means variation the model cannot explain.
+</aside>
+
+<aside class="say">
+  <span class="sym">n</span>
+  <span class="out">"en"</span>
+  How many measurements <strong>in each group</strong>. Here n = 2.
+</aside>
+
+<aside class="say">
+  <span class="sym">N</span>
+  <span class="out">"big en"</span>
+  How many measurements <strong>in total</strong>. Here N = 6. Capital and small letters mean different things — this catches people out.
+</aside>
+
+<aside class="say">
+  <span class="sym">a</span>
+  <span class="out">"ay"</span>
+  How many <strong>groups</strong>. Here a = 3.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 2, the verdict</span>Degrees of freedom, and the F number</h2>
+
+<p>You cannot compare 4 against 18 directly, and the reason is worth getting right.</p>
+
+<div class="box why">
+  <span class="lbl">Why you cannot just compare 4 and 18</span>
+  <p>The noise total (18) was built by adding up six numbers. The signal total (4) was built from only three group averages. The noise total has more numbers feeding into it, so it would win just by having more terms — regardless of whether there is any real noise.</p>
+  <p>It is like comparing the total weight of a shopping bag with 20 items to one with 3 items. To compare fairly you need the <strong>average weight per item</strong>, not the total. That is exactly what comes next.</p>
+</div>
+
+<p>So you divide each total by how many <em>independent pieces of information</em> went into it. That count is called the <strong>degrees of freedom</strong>.</p>
+
+<div class="box plain">
+  <span class="lbl">What "degrees of freedom" actually means</span>
+  <p>It is the number of values that were genuinely free to be anything, once the constraints are accounted for.</p>
+  <p>Take the three diet effects: −1, 0, +1. They are forced to add to zero. So if I tell you the first two are −1 and 0, the third <em>has to be</em> +1 — it has no freedom left. Three numbers, but only <strong>two</strong> of them were free. Degrees of freedom for the treatment = 2.</p>
+  <p>Same logic for noise: six measurements, but you used the data to work out three group averages, and each average you calculate uses up one piece of freedom. 6 − 3 = <strong>3</strong> degrees of freedom for the noise.</p>
+</div>
+
+<div class="tablewrap">
+<table>
+  <caption>Turning totals into averages</caption>
+  <thead><tr><th>What</th><th class="num">Total</th><th class="num">Degrees of<br>freedom</th><th class="num">Average per<br>degree of freedom</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tau">Signal (diet)</span></td><td class="num">4</td><td class="num">3 − 1 = 2</td><td class="num"><span class="tau">4 ÷ 2 = 2</span></td></tr>
+    <tr><td><span class="eps">Noise</span></td><td class="num">18</td><td class="num">6 − 3 = 3</td><td class="num"><span class="eps">18 ÷ 3 = 6</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>These per-degree-of-freedom averages are called <strong>mean squares</strong>. Now they are comparable, so divide one by the other:</p>
+
+<div class="formula">
+  <span class="maths">F = <span class="frac"><span><span class="tau">2</span></span><span><span class="eps">6</span></span></span> = 0.33</span>
+  <span class="words">Said aloud: <b>"F equals nought point three three"</b>.<br>In words: <b>the signal is one third the size of the noise.</b></span>
+</div>
+
+<div class="box big">
+  <span class="lbl">How to read any F number</span>
+  <p><strong>F is signal divided by noise.</strong> That is the whole thing.</p>
+  <ul>
+    <li><strong>F near 1</strong> — signal is about the same size as noise. Nothing to see. This is what you expect when the treatment does nothing.</li>
+    <li><strong>F much bigger than 1</strong> — signal towers over noise. Something real is probably happening.</li>
+    <li><strong>F less than 1</strong> — the signal is <em>smaller</em> than the noise. Definitely nothing to see.</li>
+  </ul>
+  <p>Our F is <strong>0.33</strong> — less than 1. The differences between diets are smaller than the differences between piglets on the same diet.</p>
+</div>
+
+<h3>Is 0.33 small enough to be "nothing"? The p-value</h3>
+
+<p>Even when a treatment does absolutely nothing, F will not come out at exactly 1 — random luck makes it wobble. So you need to know: <em>if the diets truly had no effect, how often would luck alone produce an F of 0.33 or bigger?</em></p>
+
+<p>The answer here is <strong>74% of the time</strong>. Written as a decimal, <strong>p = 0.74</strong>.</p>
+
+<div class="box plain">
+  <span class="lbl">What a p-value is, plainly</span>
+  <p>A p-value answers exactly one question: <strong>"if there were really no effect at all, how likely is it that I would see results at least as extreme as mine, purely by chance?"</strong></p>
+  <p>p = 0.74 means: three-quarters of the time, pure luck produces results like this. So this result is completely unremarkable.</p>
+  <p>The usual cut-off is <strong>0.05</strong> — 5%. Below that, results this extreme would be rare enough by luck alone that people are willing to believe something real is happening. It is a convention, not a law of nature.</p>
+</div>
+
+<div class="tablewrap">
+<table>
+  <caption>The finished table — this is what R prints, and what an exam asks you to fill in</caption>
+  <thead><tr><th>Source</th><th class="num">Total (SS)</th><th class="num">df</th><th class="num">Mean square</th><th class="num">F</th><th class="num">p</th></tr></thead>
+  <tbody>
+    <tr><td>Diet</td><td class="num">4</td><td class="num">2</td><td class="num">2</td><td class="num">0.33</td><td class="num">0.74</td></tr>
+    <tr><td>Error (noise)</td><td class="num">18</td><td class="num">3</td><td class="num">6</td><td class="num"></td><td class="num"></td></tr>
+    <tr class="total"><td>Total</td><td class="num">22</td><td class="num">5</td><td class="num"></td><td class="num"></td><td class="num"></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — the sentence that loses marks</span>
+  <p>Do <strong>not</strong> write "soya has no effect on weight gain."</p>
+  <p>Write: <strong>"There is no statistically significant evidence that diet affects weight gain (F = 0.33, p = 0.74). With only 2 piglets per group this study has very low power, so a real effect could easily have gone undetected."</strong></p>
+  <p>The difference matters. Failing to find something is not the same as showing it is not there. A study this small could miss an elephant.</p>
+</div>
+
+</div>
+
+<aside class="say">
+  <span class="sym">df</span>
+  <span class="out">"D F", or "degrees of freedom"</span>
+  How many values were genuinely free to vary. Used to turn totals into fair averages.
+</aside>
+
+<aside class="say">
+  <span class="sym">MS</span>
+  <span class="out">"M S", or "mean square"</span>
+  A sum of squares divided by its degrees of freedom. An average amount of variation.
+</aside>
+
+<aside class="say">
+  <span class="sym">F</span>
+  <span class="out">"F"</span>
+  Signal divided by noise. Named after the statistician Ronald Fisher.
+</aside>
+
+<aside class="say">
+  <span class="sym">p</span>
+  <span class="out">"P", or "the p-value"</span>
+  The chance of seeing a result this extreme if nothing real were going on. Small p = surprising = interesting.
+</aside>
+
+<aside class="say">
+  <span class="sym">α</span>
+  <span class="out">"alpha"</span>
+  The cut-off you decide on in advance, almost always 0.05. If p is below α, you call the result significant.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 2, the fine print</span>What has to be true for any of this to work</h2>
+
+<p>The p-value of 0.74 was calculated assuming three things about your data. If they are false, the number is wrong and you would not know it.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>The assumption</th><th>In plain words</th><th>How you check</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Independence</strong></td>
+      <td>Each piglet's weight does not depend on any other piglet's. They are not littermates sharing a pen and competing for food.</td>
+      <td>You cannot test this afterwards. You buy it at the start by <strong>assigning animals to diets at random</strong>. That is what randomisation is for.</td>
+    </tr>
+    <tr>
+      <td><strong>Normality</strong></td>
+      <td>The red arrows — the individual randomness — follow the familiar bell-shaped pattern. Most small, a few large, symmetric.</td>
+      <td>A picture called a <strong>QQ plot</strong>: if the points sit roughly on a straight line, you are fine. Or a formal test called <strong>Shapiro–Wilk</strong>.</td>
+    </tr>
+    <tr>
+      <td><strong>Equal spread</strong></td>
+      <td>All three diets produce roughly the same amount of individual scatter. One group is not far more variable than another.</td>
+      <td>A picture called <strong>residuals vs fitted</strong>: you do not want a funnel or cone shape. Or a test called <strong>Bartlett's</strong>.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — two things people get backwards</span>
+  <p><strong>1.</strong> Normality applies to the <em>red arrows</em>, not the raw weights. If the diets really work, the weights will cluster into several separate humps — which is not bell-shaped, and is not a problem. Always check the leftovers, not the original data.</p>
+  <p><strong>2.</strong> For these checks, a <em>large</em> p-value is the good outcome. Everywhere else in the course a small p is the exciting one. Here the thing being tested is "the assumption holds", so you want <em>not</em> to reject it.</p>
+</div>
+
+<p>Both piglet checks pass — Shapiro–Wilk gives p = 0.11, Bartlett gives p = 0.83. But with six animals these tests are nearly blind; passing them is weak reassurance, not proof.</p>
+
+<h3>Why a bigger study reaches the opposite conclusion</h3>
+
+<p>Your lecture follows the piglets with a plant experiment. Same design — three groups, one measurement each. The only real difference is size.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Study</th><th class="num">Per group</th><th class="num">Total</th><th class="num">F</th><th class="num">p</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>Piglets</td><td class="num">2</td><td class="num">6</td><td class="num">0.33</td><td class="num no">0.74</td><td class="no">Found nothing</td></tr>
+    <tr><td>Plants</td><td class="num">10</td><td class="num">30</td><td class="num">4.85</td><td class="num yes">0.016</td><td class="yes">Found a real difference</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box big">
+  <span class="lbl">Why more measurements help — the one bit of algebra worth knowing</span>
+  <p>Individual piglets vary. You cannot change that. <strong>But averages of several piglets vary much less than individual piglets do.</strong></p>
+  <p>Specifically, if individual measurements have a spread of <span class="m">σ²</span>, then the average of <span class="m">n</span> of them has a spread of <span class="m">σ²/n</span>. Average 10 animals and the wobble in your estimate is a tenth of what it was.</p>
+  <p>So bigger groups give you sharper group averages, and sharper averages let you see smaller real differences through the noise. This one fact is behind every "collect more data" recommendation in statistics.</p>
+</div>
+
+<p>The word for this is <strong>power</strong> — the chance that your study will detect a real effect if one exists. Power goes up when: you measure more individuals, the true effect is larger, or the individuals are less variable to begin with.</p>
+
+</div>
+
+<aside class="say">
+  <span class="sym">σ</span>
+  <span class="out">"sigma" (small letter)</span>
+  The <strong>spread</strong> of individual measurements. Confusingly, capital Σ means "add up" and small σ means "spread" — they are unrelated.
+</aside>
+
+<aside class="say">
+  <span class="sym">σ²</span>
+  <span class="out">"sigma squared"</span>
+  Called the <strong>variance</strong>. Spread, measured in squared units. σ on its own is the <strong>standard deviation</strong> — the same thing back in normal units.
+</aside>
+
+<aside class="say">
+  <span class="sym">MS<sub>E</sub></span>
+  <span class="out">"M S error"</span>
+  Your best estimate of σ² from the data. For the piglets it is 6. <strong>This number reappears in every calculation from here on.</strong>
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 3</span>How sure are we? Confidence, and two kinds of mistake</h2>
+
+<p>Lecture 3 looks like a pile of different tests. It is one test, reused. Here it is:</p>
+
+<div class="formula">
+  <span class="maths">T = <span class="frac"><span>what you measured − what you are testing against</span><span>how much your measurement wobbles</span></span></span>
+  <span class="words">In words: <b>how big is the difference, compared to how uncertain we are about it?</b></span>
+</div>
+
+<div class="box plain">
+  <span class="lbl">In plain words</span>
+  <p>Suppose you find a 1 kg difference. Is that impressive? It depends entirely on your precision. If your measurements are accurate to within 0.1 kg, a 1 kg difference is enormous. If they wobble by 5 kg, a 1 kg difference is nothing.</p>
+  <p><strong>T is that comparison as a single number.</strong> The top is the effect; the bottom is the wobble. A big T means the effect is large relative to the uncertainty.</p>
+</div>
+
+<p>The wobble on the bottom is called the <strong>standard error</strong>. Every quantity you might want to test has its own formula for it, but they all use the same noise estimate <span class="m">MS<sub>E</sub></span> = 6 that you already calculated:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>What you want to say something about</th><th>Its standard error</th></tr></thead>
+  <tbody>
+    <tr><td>One group's average</td><td><span class="m">√<span class="rad">MS<sub>E</sub> ÷ n</span></span> — noise, divided by group size</td></tr>
+    <tr><td>The overall average</td><td><span class="m">√<span class="rad">MS<sub>E</sub> ÷ N</span></span> — noise, divided by <em>total</em> size</td></tr>
+    <tr><td>The gap between two groups</td><td><span class="m">√<span class="rad">MS<sub>E</sub> × (1/n₁ + 1/n₂)</span></span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Worked through: is the control group's average really 83?</h3>
+
+<ol class="steps">
+  <li><strong>What you measured:</strong> the NONS group averages <strong>82</strong>.</li>
+  <li><strong>What you are testing against:</strong> the value <strong>83</strong>.</li>
+  <li><strong>The wobble:</strong> √(6 ÷ 2) = √3 = <strong>1.73</strong>.</li>
+  <li><strong>Put it together:</strong> T = (82 − 83) ÷ 1.73 = <strong>−0.58</strong>.</li>
+  <li><strong>Compare to the threshold.</strong> With 3 degrees of freedom the cut-off is <strong>3.18</strong>. Since 0.58 is much smaller, this is not a significant difference.</li>
+  <li><strong>The p-value is 0.60</strong> — you would see a gap this big 60% of the time by luck alone.</li>
+</ol>
+
+<h3>Confidence intervals — usually more useful than the test</h3>
+
+<p>Instead of a yes/no answer, give a <strong>range of plausible values</strong>:</p>
+
+<div class="formula">
+  <span class="maths">what you measured &nbsp;±&nbsp; threshold × wobble</span>
+  <span class="words">For NONS: <b>82 ± 3.18 × 1.73 = 82 ± 5.5</b>, giving the range <b>76.5 to 87.5 kg</b>.</span>
+</div>
+
+<p>That range is 11 kg wide, on animals weighing about 83 kg. The three diets' ranges overlap almost entirely. <strong>The honest summary of this experiment is that it was too small to learn anything.</strong> A confidence interval says that far more clearly than a p-value does.</p>
+
+<div class="box big">
+  <span class="lbl">A shortcut worth remembering</span>
+  <p>A confidence interval and a test are <strong>the same thing in two outfits</strong>. If the value you are testing falls <em>outside</em> the interval, the test rejects it. If it falls <em>inside</em>, the test does not.</p>
+  <p>83 is inside 76.5–87.5, so we cannot reject it. That is the same conclusion we got the long way round in step 6 above. Once you have an interval, you never need to run the test.</p>
+</div>
+
+<div class="box careful">
+  <span class="lbl">Careful — what "95% confident" does not mean</span>
+  <p>It does <strong>not</strong> mean "there is a 95% chance the true value is in this range". The true average weight is a fixed number; it is either in the range or it is not.</p>
+  <p>What it means is: <strong>if you repeated this whole experiment many times, 95% of the ranges you built this way would contain the true value.</strong> The 95% describes the reliability of the method, not this particular range.</p>
+</div>
+
+<h3>The two ways you can be wrong</h3>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th></th><th>There really is no effect</th><th>There really is an effect</th></tr></thead>
+  <tbody>
+    <tr>
+      <th>You say there is one</th>
+      <td class="no"><strong>False alarm</strong><br>Called a <strong>Type I error</strong>. Its chance is α — you set it, usually 5%.</td>
+      <td class="yes"><strong>Correct</strong><br>The chance of this is called <strong>power</strong>.</td>
+    </tr>
+    <tr>
+      <th>You say there isn't</th>
+      <td class="yes"><strong>Correct</strong></td>
+      <td class="no"><strong>Missed it</strong><br>Called a <strong>Type II error</strong>. Its chance is called β.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 320" role="img" aria-label="Two overlapping bell curves with a decision line between them, showing false alarms on one side and missed effects on the other">
+  <polygon points="385.1,250 385.1,222.2 399.2,233.8 413.3,241.2 427.4,245.5 441.5,247.9 455.6,249.0 469.7,249.6 483.8,249.8 497.9,249.9 512.0,250.0 660,250" fill="var(--mu)" opacity=".40"/>
+  <polygon points="60,250 225.3,249.9 258.4,249.3 285.9,246.8 302.4,242.7 319.0,235.0 330.0,226.8 341.0,215.6 352.0,201.0 363.1,183.0 374.1,162.2 385.1,139.4 385.1,250" fill="var(--eps)" opacity=".32"/>
+
+  <polyline points="60.0,249.9 105.4,248.7 130.6,245.1 150.8,237.6 165.9,227.2 176.0,217.2 186.1,204.4 196.1,188.7 206.2,170.4 216.3,150.2 226.4,129.0 236.5,108.2 246.6,89.4 256.6,74.3 266.7,64.2 276.8,60.1 286.9,62.4 297.0,71.0 307.1,84.9 317.1,102.8 327.2,123.2 337.3,144.4 347.4,165.1 357.5,184.0 367.6,200.4 377.6,214.0 387.7,224.7 397.8,232.9 407.9,238.8 418.0,242.9 428.1,245.6 438.2,247.4 448.2,248.5 458.3,249.2 468.4,249.6 478.5,249.8 498.7,249.9 660.0,250.0" fill="none" stroke="var(--mu)" stroke-width="2.2"/>
+  <polyline points="60.0,250.0 216.3,250.0 246.6,249.7 266.7,248.9 281.8,247.4 296.9,244.4 312.1,238.8 327.2,229.1 337.3,219.7 347.4,207.5 357.5,192.5 367.6,174.8 377.6,154.9 387.7,133.8 397.8,112.8 407.9,93.4 418.0,77.3 428.1,66.0 438.2,60.5 443.2,60.1 453.3,64.2 463.4,74.3 473.4,89.4 483.5,108.2 493.6,129.0 503.7,150.2 513.8,170.4 523.9,188.7 533.9,204.4 544.0,217.2 554.1,227.2 564.2,234.7 574.3,240.0 584.4,243.8 594.5,246.2 604.5,247.8 614.6,248.7 624.7,249.3 634.8,249.6 644.9,249.8 660.0,249.9" fill="none" stroke="var(--eps)" stroke-width="2.2"/>
+
+  <line x1="60" y1="250" x2="680" y2="250" stroke="currentColor"/>
+  <line x1="385.1" y1="40" x2="385.1" y2="264" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text x="385.1" y="32" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">your cut-off</text>
+
+  <text x="240" y="50" font-size="13" fill="var(--mu)" text-anchor="middle" font-weight="700">If there is NO effect</text>
+  <text x="240" y="66" font-size="11" fill="var(--mu)" text-anchor="middle">results land here</text>
+  <text x="500" y="50" font-size="13" fill="var(--eps)" text-anchor="middle" font-weight="700">If there IS an effect</text>
+  <text x="500" y="66" font-size="11" fill="var(--eps)" text-anchor="middle">results land here</text>
+
+  <text x="452" y="238" font-size="11.5" fill="var(--mu)" font-weight="700">false alarms</text>
+  <text x="330" y="238" font-size="11.5" fill="var(--eps)" font-weight="700" text-anchor="end">missed effects</text>
+
+  <text x="370" y="292" font-size="12.5" fill="currentColor" text-anchor="middle">Move the line right and you get fewer false alarms — but miss more real effects.</text>
+  <text x="370" y="310" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="700">Only measuring more individuals shrinks both problems at once.</text>
+</svg>
+<figcaption><b>The two mistakes are on a see-saw.</b> The dashed line is the only thing you control once the data is collected, and moving it trades one error for the other. Measuring more individuals makes both bell shapes narrower, pushing them apart — which is the only way to reduce both kinds of mistake together.</figcaption>
+</figure>
+
+</div>
+
+<aside class="say">
+  <span class="sym">T</span>
+  <span class="out">"T", or "the t-statistic"</span>
+  Effect size divided by uncertainty. Bigger means more convincing.
+</aside>
+
+<aside class="say">
+  <span class="sym">√</span>
+  <span class="out">"square root of"</span>
+  The number which, multiplied by itself, gives what is under the sign. √9 = 3. It undoes squaring.
+</aside>
+
+<aside class="say">
+  <span class="sym">±</span>
+  <span class="out">"plus or minus"</span>
+  Do it both ways to get two numbers — the bottom and top of a range.
+</aside>
+
+<aside class="say">
+  <span class="sym">β</span>
+  <span class="out">"beta"</span>
+  The chance of missing a real effect. <strong>Power = 1 − β.</strong>
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 4</span>Which groups actually differ?</h2>
+
+<p>The F test answers one question: <em>is anything at all going on?</em> It does not say which groups differ. Your lecturer's phrase is worth keeping: <strong>the F test tells you there is a fire, but not which room is burning.</strong></p>
+
+<p>The piglet study never rejected, so it stops here. For lecture 4 the course switches to a bigger experiment where the F test <em>did</em> reject.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The trout experiment — 40 fish, 4 doses of a drug called sulfamerazine</caption>
+  <thead><tr><th>Group</th><th>Dose</th><th class="num">Fish</th><th class="num">Average haemoglobin</th></tr></thead>
+  <tbody>
+    <tr><td>S00</td><td>none — the control</td><td class="num">10</td><td class="num">7.20</td></tr>
+    <tr><td>S05</td><td>5 g</td><td class="num">10</td><td class="num">9.33</td></tr>
+    <tr><td>S10</td><td>10 g</td><td class="num">10</td><td class="num">9.03</td></tr>
+    <tr><td>S15</td><td>15 g</td><td class="num">10</td><td class="num">8.69</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Here F = 5.70 and p = 0.0027 — well under 0.05. Something is real. Now you may ask which groups differ.</p>
+
+<h3>A contrast is a specific question</h3>
+
+<p>A <strong>contrast</strong> is just a comparison you write down using weights. You give each group a number, and those numbers must add up to zero.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>The question you want to ask</th><th>S00</th><th>S05</th><th>S10</th><th>S15</th><th class="num">Add up to</th></tr></thead>
+  <tbody>
+    <tr><td>Is the control different from the 5 g group?</td><td>+1</td><td>−1</td><td>0</td><td>0</td><td class="num yes">0 ✓</td></tr>
+    <tr><td>Do the two higher doses differ from each other?</td><td>0</td><td>0</td><td>+1</td><td>−1</td><td class="num yes">0 ✓</td></tr>
+    <tr><td>Do low doses differ from high doses?</td><td>+1</td><td>+1</td><td>−1</td><td>−1</td><td class="num yes">0 ✓</td></tr>
+    <tr><td>Is the control different from all the treated fish?</td><td>+1</td><td>−⅓</td><td>−⅓</td><td>−⅓</td><td class="num yes">0 ✓</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box why">
+  <span class="lbl">Why the weights must add to zero</span>
+  <p>Because you want to measure a <em>difference</em>, not a level.</p>
+  <p>Imagine every fish suddenly had 100 more units of haemoglobin. Every group average goes up by 100. A genuine comparison should be completely unaffected — the gaps between groups have not changed.</p>
+  <p>When the weights add to zero, the +100 gets multiplied by weights that cancel out, and the answer is unchanged. If they did not add to zero, your "comparison" would shift whenever the overall level shifted, which would make it useless. <strong>Adding to zero is what makes it a comparison rather than a measurement.</strong></p>
+</div>
+
+<h4>Working one out</h4>
+
+<ol class="steps">
+  <li><strong>Multiply and add.</strong> Using +1 and −1 on the first two groups: (+1 × 7.20) + (−1 × 9.33) = <strong>−2.13</strong>. The control has 2.13 units less haemoglobin.</li>
+  <li><strong>Work out the wobble.</strong> This comes to <strong>0.56</strong>.</li>
+  <li><strong>Divide.</strong> −2.13 ÷ 0.56 = <strong>−3.80</strong>. The gap is nearly four times the size of the uncertainty.</li>
+  <li><strong>Compare to the threshold</strong>, which is 2.03 here. 3.80 is bigger, so this is a real difference.</li>
+</ol>
+
+</div>
+
+<aside class="say">
+  <span class="sym">Γ</span>
+  <span class="out">"gamma" (capital)</span>
+  A <strong>contrast</strong> — the answer you get from one specific comparison.
+</aside>
+
+<aside class="say">
+  <span class="sym">c<sub>i</sub></span>
+  <span class="out">"c i"</span>
+  The <strong>weights</strong> you assign to each group. Like +1, −1, 0, 0.
+</aside>
+
+<aside class="say">
+  <span class="sym">^</span>
+  <span class="out">"hat"</span>
+  A hat over a letter means <strong>estimated from data</strong>, as opposed to the unknown true value. μ̂ is "mu hat" — our estimate of the real μ.
+</aside>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Lecture 4, the danger</span>Why testing everything is cheating</h2>
+
+<p>With 4 groups there are 6 possible pairs to compare. Why not just test all 6?</p>
+
+<div class="box careful">
+  <span class="lbl">Because false alarms pile up</span>
+  <p>Each individual test has a 5% chance of a false alarm. That sounds small. But run 6 tests and the chance that <em>at least one</em> of them raises a false alarm is <strong>26.5%</strong>.</p>
+  <p>Think of it like rolling dice. One roll rarely gives a six. Roll six times and a six becomes likely. Each test is a roll, and a false alarm is the six.</p>
+</div>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">Groups</th><th class="num">Pairs to test</th><th class="num">Chance of at least one false alarm</th><th>What that means</th></tr></thead>
+  <tbody>
+    <tr><td class="num">3</td><td class="num">3</td><td class="num">14%</td><td>Already three times worse than the 5% you intended</td></tr>
+    <tr><td class="num">4</td><td class="num">6</td><td class="num">27%</td><td>The trout study — one in four chance of a false claim</td></tr>
+    <tr><td class="num">5</td><td class="num">10</td><td class="num">40%</td><td>Close to a coin flip</td></tr>
+    <tr><td class="num">10</td><td class="num">45</td><td class="num no">90%</td><td class="no">You will almost certainly claim something false</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>This has a name — the <strong>family-wise error rate</strong> — and it is a documented major cause of published research that later turns out to be wrong.</p>
+
+<div class="box big">
+  <span class="lbl">The rule that follows from this</span>
+  <p><strong>Run the overall F test first. Only if it rejects may you look at individual comparisons. And when you do, use a correction.</strong></p>
+  <p>Skipping straight to comparing pairs has a name — <strong>fishing</strong> — and it is treated as misconduct, not as a shortcut.</p>
+</div>
+
+<h3>The three corrections</h3>
+
+<p>All three work the same way: they raise the bar, so you need stronger evidence before calling something significant. They differ in <em>what they are protecting you against</em>.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Name</th><th>What it does</th><th>Use it when</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Bonferroni</strong></td>
+      <td>Divide your 5% by the number of tests. With 6 tests, each must beat 0.83% instead of 5%.</td>
+      <td>You have a few specific comparisons, <strong>decided before you saw the data</strong>. Simple, but gets harsh fast.</td>
+    </tr>
+    <tr>
+      <td><strong>Tukey</strong></td>
+      <td>Works out exactly how big the largest gap between any two groups tends to get by luck alone, and uses that as the bar.</td>
+      <td class="yes">You want to compare <strong>all pairs</strong>. This is the usual choice, and the most powerful one for that job.</td>
+    </tr>
+    <tr>
+      <td><strong>Scheffé</strong></td>
+      <td>Protects against <em>every conceivable comparison</em>, including ones you thought of only after looking at the data.</td>
+      <td>You went looking for patterns first. Safest, but hardest to pass.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box why">
+  <span class="lbl">Why Tukey is better than Bonferroni for comparing all pairs</span>
+  <p>Bonferroni treats the 6 comparisons as 6 unrelated problems and charges you full price for each.</p>
+  <p>Tukey knows something Bonferroni ignores: <strong>if the biggest gap between any two groups is not significant, then no smaller gap can be either.</strong> So it only needs to control that single biggest gap, rather than guarding all 6 separately. Solving the real problem instead of the worst imaginable one is what lets it keep more of your ability to detect real effects.</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img" aria-label="One scale showing four thresholds: 2.03 with no correction, 2.69 for Tukey, 2.79 for Bonferroni, 2.93 for Scheffe, and the observed value 3.80 beyond all of them">
+  <line x1="60" y1="140" x2="680" y2="140" stroke="currentColor" stroke-width="1.5"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle">
+    <text x="60" y="162">1.8</text><text x="215" y="162">2.4</text><text x="370" y="162">3.0</text>
+    <text x="525" y="162">3.6</text><text x="680" y="162">4.2</text>
+    <text x="370" y="186">how big your T has to be to count as significant</text>
+  </g>
+
+  <line x1="118.8" y1="140" x2="118.8" y2="96" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="118.8" y="88" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">2.03</text>
+  <text x="118.8" y="74" font-size="10.5" fill="currentColor" text-anchor="middle">no correction</text>
+
+  <line x1="290.6" y1="140" x2="290.6" y2="56" stroke="var(--tau)" stroke-width="2.5"/>
+  <text x="290.6" y="48" font-size="12.5" fill="var(--tau)" text-anchor="middle" font-weight="700">2.69 Tukey</text>
+  <text x="290.6" y="34" font-size="10.5" fill="var(--tau)" text-anchor="middle">lowest bar of the three</text>
+
+  <line x1="316.1" y1="140" x2="316.1" y2="106" stroke="var(--mu)" stroke-width="1.8"/>
+  <text x="332" y="100" font-size="12" fill="var(--mu)" font-weight="700">2.79 Bonferroni</text>
+
+  <line x1="352.4" y1="140" x2="352.4" y2="122" stroke="var(--eps)" stroke-width="1.8"/>
+  <text x="368" y="134" font-size="12" fill="var(--eps)" font-weight="700">2.93 Scheffé</text>
+
+  <circle cx="577.4" cy="140" r="6" fill="var(--tau)"/>
+  <line x1="577.4" y1="140" x2="577.4" y2="200" stroke="var(--tau)" stroke-width="3"/>
+  <text x="577.4" y="216" font-size="12.5" fill="var(--tau)" text-anchor="middle" font-weight="700">our result: 3.80</text>
+</svg>
+<figcaption><b>Every correction raises the bar, but not by the same amount.</b> With no correction you only need 2.03. Tukey asks for 2.69, Bonferroni 2.79, Scheffé 2.93 — so Tukey is the most forgiving of the three while still keeping false alarms at 5% overall. Our control-versus-5 g result is 3.80, which clears every bar, so it is safe no matter which correction you use.</figcaption>
+</figure>
+
+<h3>What the trout study actually found</h3>
+
+<div class="tablewrap">
+<table>
+  <caption>All six pairs, with Tukey's correction applied</caption>
+  <thead><tr><th>Comparison</th><th class="num">Difference</th><th class="num">Corrected p</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>5 g vs control</td><td class="num">2.13</td><td class="num">0.003</td><td class="yes">Real difference</td></tr>
+    <tr><td>10 g vs control</td><td class="num">1.83</td><td class="num">0.012</td><td class="yes">Real difference</td></tr>
+    <tr><td>15 g vs control</td><td class="num">1.49</td><td class="num">0.054</td><td class="no">Just misses — inconclusive</td></tr>
+    <tr><td>10 g vs 5 g</td><td class="num">−0.30</td><td class="num">0.950</td><td class="no">No difference</td></tr>
+    <tr><td>15 g vs 5 g</td><td class="num">−0.64</td><td class="num">0.666</td><td class="no">No difference</td></tr>
+    <tr><td>15 g vs 10 g</td><td class="num">−0.34</td><td class="num">0.929</td><td class="no">No difference</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box big">
+  <span class="lbl">Read the pattern, not the individual rows</span>
+  <p>Every significant row involves the <strong>control</strong>. No two treated groups differ from each other at all.</p>
+  <p>So the finding is: <strong>giving the drug raises haemoglobin, but the dose does not matter</strong> within the range tested. 5 g works as well as 15 g. That is a genuinely useful scientific conclusion, and the overall F test alone could never have told you it.</p>
+  <p>Note the third row: p = 0.054, agonisingly close to 0.05. Do not report that as "no effect". Report it as inconclusive and say it was borderline.</p>
+</div>
+
+</div>
+</div>
+
+<div class="band">
+<div class="col">
+
+<h2 class="sec"><span class="num">Reference</span>Every symbol in one place</h2>
+
+<div class="tablewrap">
+<table>
+  <caption>The symbol dictionary</caption>
+  <thead><tr><th>Symbol</th><th>Say it</th><th>Means</th><th class="num">Piglets</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">y<sub>it</sub></span></td><td>"y i t"</td><td>One single measurement — animal number t in group number i</td><td class="num">80, 84, …</td></tr>
+    <tr><td><span class="m">ȳ<sub>i·</sub></span></td><td>"y bar i dot"</td><td>The average within group i</td><td class="num">82, 83, 84</td></tr>
+    <tr><td><span class="m">ȳ<sub>··</sub></span></td><td>"y bar dot dot"</td><td>The average of everything</td><td class="num">83</td></tr>
+    <tr><td><span class="m">a</span></td><td>"ay"</td><td>Number of groups</td><td class="num">3</td></tr>
+    <tr><td><span class="m">n</span></td><td>"en"</td><td>Measurements per group</td><td class="num">2</td></tr>
+    <tr><td><span class="m">N</span></td><td>"big en"</td><td>Total measurements</td><td class="num">6</td></tr>
+    <tr><td><span class="mu m">μ</span></td><td>"mew"</td><td>The true overall average (unknown)</td><td class="num">est. 83</td></tr>
+    <tr><td><span class="tau m">τ<sub>i</sub></span></td><td>"tow i"</td><td>The true effect of treatment i (unknown)</td><td class="num">est. −1, 0, +1</td></tr>
+    <tr><td><span class="eps m">ε<sub>it</sub></span></td><td>"ep-si-lon i t"</td><td>Individual randomness (never observable)</td><td class="num">—</td></tr>
+    <tr><td><span class="m">σ²</span></td><td>"sigma squared"</td><td>The true spread of individuals (unknown)</td><td class="num">est. 6</td></tr>
+    <tr><td><span class="m">μ̂</span></td><td>"mew hat"</td><td>A hat means "our estimate of", from data</td><td class="num">83</td></tr>
+    <tr><td><span class="m">Σ</span></td><td>"sigma" (capital)</td><td>Add up everything that follows</td><td class="num">—</td></tr>
+    <tr><td><span class="m">SS<sub>T</sub></span></td><td>"S S total"</td><td>Total variation in the data</td><td class="num">22</td></tr>
+    <tr><td><span class="tau m">SS<sub>Tr</sub></span></td><td>"S S treatment"</td><td>Variation explained by the groups — the signal</td><td class="num">4</td></tr>
+    <tr><td><span class="eps m">SS<sub>E</sub></span></td><td>"S S error"</td><td>Variation left unexplained — the noise</td><td class="num">18</td></tr>
+    <tr><td><span class="m">df</span></td><td>"D F"</td><td>Degrees of freedom — how many values were free</td><td class="num">2, 3, 5</td></tr>
+    <tr><td><span class="m">MS<sub>E</sub></span></td><td>"M S error"</td><td>Your estimate of the noise level. Used everywhere.</td><td class="num">6</td></tr>
+    <tr><td><span class="m">F</span></td><td>"F"</td><td>Signal divided by noise</td><td class="num">0.33</td></tr>
+    <tr><td><span class="m">T</span></td><td>"T"</td><td>Effect divided by its uncertainty</td><td class="num">−0.58</td></tr>
+    <tr><td><span class="m">p</span></td><td>"P"</td><td>Chance of a result this extreme if nothing were real</td><td class="num">0.74</td></tr>
+    <tr><td><span class="m">α</span></td><td>"alpha"</td><td>Your cut-off, chosen in advance. Usually 0.05.</td><td class="num">0.05</td></tr>
+    <tr><td><span class="m">β</span></td><td>"beta"</td><td>Chance of missing a real effect</td><td class="num">—</td></tr>
+    <tr><td><span class="m">Γ</span></td><td>"gamma"</td><td>A contrast — one specific comparison</td><td class="num">—</td></tr>
+    <tr><td><span class="m">c<sub>i</sub></span></td><td>"c i"</td><td>The weights defining a contrast</td><td class="num">—</td></tr>
+    <tr><td><span class="m">χ²</span></td><td>"kai squared"</td><td>A distribution used for questions about spread</td><td class="num">—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Words that mean something different here</h3>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Word</th><th>Everyday meaning</th><th>What it means in statistics</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Error</strong></td><td>A mistake</td><td>Natural variation between individuals. Nobody did anything wrong.</td></tr>
+    <tr><td><strong>Significant</strong></td><td>Important, large</td><td>Unlikely to be a coincidence. A significant result can be tiny and useless.</td></tr>
+    <tr><td><strong>Normal</strong></td><td>Usual, typical</td><td>Bell-shaped. It is the name of a specific curve.</td></tr>
+    <tr><td><strong>Model</strong></td><td>A physical replica, or a prediction</td><td>A written statement of where you think each number comes from.</td></tr>
+    <tr><td><strong>Power</strong></td><td>Strength, electricity</td><td>The chance your study will spot a real effect if there is one.</td></tr>
+    <tr><td><strong>Treatment</strong></td><td>Medical care</td><td>Any group you are comparing — a diet, a dose, a fertiliser.</td></tr>
+    <tr><td><strong>Sample</strong></td><td>A free trial of something</td><td>The individuals you actually measured.</td></tr>
+    <tr><td><strong>Residual</strong></td><td>Leftover</td><td>Actually the same idea — how far one measurement sits from its group average.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="sec"><span class="num">Reference</span>What to do in an exam</h2>
+
+<ol class="steps">
+  <li><strong>Write down a, n and N first.</strong> Number of groups, number per group, total. Every degrees-of-freedom calculation depends on them, and getting them down stops most errors.</li>
+  <li><strong>Work out the group averages and the overall average.</strong> Everything else is built from these.</li>
+  <li><strong>Fill in the table.</strong> Sums of squares, then degrees of freedom, then divide to get mean squares, then divide again for F. Check that your signal and noise totals add to the grand total — if they do not, you have made an arithmetic slip.</li>
+  <li><strong>Compare F to the threshold</strong> from the printed table, using degrees of freedom (groups − 1) across the top and (total − groups) down the side.</li>
+  <li><strong>State the conclusion in a full sentence</strong>, including the F value, the degrees of freedom, and the p-value. If you did not reject, mention power.</li>
+  <li><strong>Only if you rejected</strong>, go on to comparisons — and say which correction you used and why.</li>
+</ol>
+
+<div class="box careful">
+  <span class="lbl">Careful — round only at the very end</span>
+  <p>Keep all the decimal places through the middle of a calculation and round only your final answer. Rounding halfway can change a borderline result. Two of the numbers printed in your own lecture slides are slightly wrong for exactly this reason.</p>
+</div>
+
+<div class="box plain">
+  <span class="lbl">If you remember nothing else</span>
+  <p>Split the variation into the part your treatment explains and the part it does not. Divide each by how many independent pieces of information built it. Compare the two. If the first is much bigger than the second, believe the effect.</p>
+  <p>That is the entire course. Everything else is detail about how to do those four steps carefully.</p>
+</div>
+
+</div>
+</div>
+
+<footer class="footer">
+  <p><strong>STAT210 · NMBU · the plain-language version.</strong> Covers the same material as <em>Signal Over Noise</em> — lectures 1 to 4 — with every symbol pronounced and translated, and every formula given a plain-English caption. All numbers come from running the analysis on the real course data, not copied from the slides.</p>
+</footer>
+
+</div>

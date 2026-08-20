@@ -1,0 +1,1903 @@
+<title>Signal Over Noise</title>
+
+<style>
+/* ============================================================
+   TOKENS — light is the base; dark redefines tokens only.
+   Semantic triad is lifted from the course's own beamer defs:
+   myblue = mu, mygreen = tau, myred = epsilon.
+   ============================================================ */
+:root{
+  --ground:#F5F8F6;
+  --surface:#FFFFFF;
+  --sunk:#EBF0ED;
+  --ink:#141D19;
+  --ink-2:#43534C;
+  --ink-3:#74857D;
+  --rule:#D5DED9;
+  --rule-strong:#B4C2BB;
+
+  --mu:#1B5FBE;          /* grand mean  */
+  --tau:#1A8C40;         /* treatment effect */
+  --eps:#C13030;         /* noise / error */
+  --nmbu:#008B44;        /* institutional accent */
+
+  --mu-wash:#EAF1FC;
+  --tau-wash:#E7F4EC;
+  --eps-wash:#FBEBEA;
+  --warn-wash:#FDF3E3;
+  --warn-edge:#C98A22;
+
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1512;
+    --surface:#161E1A;
+    --sunk:#1D2723;
+    --ink:#E3EAE6;
+    --ink-2:#A2B1AA;
+    --ink-3:#788680;
+    --rule:#293531;
+    --rule-strong:#3C4C46;
+
+    --mu:#77ACF2;
+    --tau:#5FC87F;
+    --eps:#F2786F;
+    --nmbu:#3ECB7C;
+
+    --mu-wash:#15243A;
+    --tau-wash:#12291B;
+    --eps-wash:#2E1917;
+    --warn-wash:#2C2314;
+    --warn-edge:#D9A445;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1512;
+  --surface:#161E1A;
+  --sunk:#1D2723;
+  --ink:#E3EAE6;
+  --ink-2:#A2B1AA;
+  --ink-3:#788680;
+  --rule:#293531;
+  --rule-strong:#3C4C46;
+
+  --mu:#77ACF2;
+  --tau:#5FC87F;
+  --eps:#F2786F;
+  --nmbu:#3ECB7C;
+
+  --mu-wash:#15243A;
+  --tau-wash:#12291B;
+  --eps-wash:#2E1917;
+  --warn-wash:#2C2314;
+  --warn-edge:#D9A445;
+}
+
+/* ============================================================ BASE */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.shell{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 24px 96px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0 48px;
+}
+@media(min-width:1040px){
+  .shell{grid-template-columns:216px minmax(0,1fr);}
+}
+
+/* ============================================================ MASTHEAD */
+.masthead{
+  grid-column:1/-1;
+  border-bottom:2px solid var(--ink);
+  padding:56px 0 22px;
+  margin-bottom:40px;
+}
+.eyebrow{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--nmbu);
+  font-weight:700;
+  margin:0 0 14px;
+}
+.masthead h1{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:clamp(2.3rem,5.6vw,3.6rem);
+  line-height:1.04;
+  letter-spacing:-.018em;
+  margin:0 0 14px;
+  text-wrap:balance;
+}
+.standfirst{
+  font-size:1.09rem;
+  color:var(--ink-2);
+  max-width:60ch;
+  margin:0;
+}
+.masthead-meta{
+  font-family:var(--sans);
+  font-size:12.5px;
+  color:var(--ink-3);
+  margin-top:20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 20px;
+}
+
+/* ============================================================ RAIL */
+.rail{display:none;}
+@media(min-width:1040px){
+  .rail{
+    display:block;
+    position:sticky;
+    top:0;
+    align-self:start;
+    max-height:100vh;
+    overflow-y:auto;
+    padding:4px 0 40px;
+    font-family:var(--sans);
+    font-size:12.5px;
+    line-height:1.45;
+  }
+}
+.rail h2{
+  font-size:10.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  font-weight:700;
+  margin:22px 0 8px;
+  font-family:var(--sans);
+}
+.rail h2:first-child{margin-top:0;}
+.rail a{
+  display:block;
+  color:var(--ink-2);
+  text-decoration:none;
+  padding:3px 0;
+  border-left:2px solid transparent;
+  padding-left:10px;
+  margin-left:-12px;
+}
+.rail a:hover,.rail a:focus-visible{color:var(--nmbu);border-left-color:var(--nmbu);}
+
+/* ============================================================ FLOW */
+.flow{min-width:0;}
+.flow > *{max-width:68ch;}
+.flow > .wide,
+.flow > figure,
+.flow > .tablewrap,
+.flow > .grid2,
+.flow > .grid3,
+.flow > .keycard{max-width:100%;}
+
+h2.sec{
+  font-family:var(--serif);
+  font-size:1.92rem;
+  font-weight:600;
+  letter-spacing:-.012em;
+  line-height:1.15;
+  margin:76px 0 6px;
+  padding-top:22px;
+  border-top:1px solid var(--rule-strong);
+  text-wrap:balance;
+  scroll-margin-top:20px;
+}
+h3{
+  font-family:var(--serif);
+  font-size:1.28rem;
+  font-weight:600;
+  margin:44px 0 10px;
+  line-height:1.25;
+  scroll-margin-top:20px;
+  text-wrap:balance;
+}
+h4{
+  font-family:var(--sans);
+  font-size:12px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  font-weight:700;
+  margin:30px 0 8px;
+}
+.tag{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-weight:700;
+  color:var(--nmbu);
+  display:block;
+  margin-bottom:8px;
+}
+p{margin:0 0 15px;}
+.lede{font-size:1.06rem;color:var(--ink-2);}
+strong{font-weight:700;color:var(--ink);}
+em{font-style:italic;}
+a{color:var(--mu);}
+ul,ol{margin:0 0 16px;padding-left:1.3em;}
+li{margin-bottom:7px;}
+li::marker{color:var(--ink-3);}
+hr{border:0;border-top:1px solid var(--rule);margin:36px 0;}
+
+/* ============================================================ MATH */
+.m{font-family:var(--serif);font-style:italic;white-space:nowrap;}
+.mu{color:var(--mu);font-style:italic;}
+.tau{color:var(--tau);font-style:italic;}
+.eps{color:var(--eps);font-style:italic;}
+.up{font-style:normal;}
+sub,sup{font-size:.7em;font-style:normal;}
+.eq{
+  display:block;
+  text-align:center;
+  font-family:var(--serif);
+  font-size:1.14rem;
+  background:var(--sunk);
+  border-left:2px solid var(--rule-strong);
+  padding:16px 18px;
+  margin:20px 0;
+  overflow-x:auto;
+  line-height:2.1;
+}
+.eq.mu-eq{border-left-color:var(--mu);}
+.eq.tau-eq{border-left-color:var(--tau);}
+.eq.eps-eq{border-left-color:var(--eps);}
+.frac{
+  display:inline-flex;
+  flex-direction:column;
+  vertical-align:-0.52em;
+  text-align:center;
+  margin:0 .22em;
+  font-size:.9em;
+  line-height:1.25;
+}
+.frac > span:first-child{padding:0 .35em .06em;}
+.frac > span:last-child{border-top:1px solid currentColor;padding:.06em .35em 0;}
+.rad{border-top:1px solid currentColor;padding:0 .15em;margin-left:-.05em;}
+
+/* ============================================================ CALLOUTS */
+.note{
+  border-left:3px solid var(--rule-strong);
+  background:var(--surface);
+  padding:14px 18px;
+  margin:22px 0;
+  font-size:.97rem;
+}
+.note p:last-child{margin-bottom:0;}
+.note .lbl{
+  font-family:var(--sans);
+  font-size:10.5px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+.note.key{border-left-color:var(--nmbu);background:var(--tau-wash);}
+.note.key .lbl{color:var(--nmbu);}
+.note.trap{border-left-color:var(--eps);background:var(--eps-wash);}
+.note.trap .lbl{color:var(--eps);}
+.note.why{border-left-color:var(--mu);background:var(--mu-wash);}
+.note.why .lbl{color:var(--mu);}
+.note.exam{border-left-color:var(--warn-edge);background:var(--warn-wash);}
+.note.exam .lbl{color:var(--warn-edge);}
+
+/* ============================================================ KEY CARD */
+.keycard{
+  border:1px solid var(--rule-strong);
+  background:var(--surface);
+  padding:22px 24px;
+  margin:28px 0 40px;
+}
+.keyrow{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  gap:10px 16px;
+  align-items:baseline;
+  font-size:.95rem;
+}
+.swatch{
+  width:13px;height:13px;
+  display:inline-block;
+  align-self:center;
+}
+.keyrow .sym{font-family:var(--serif);font-size:1.22rem;font-style:italic;}
+
+/* ============================================================ TABLES */
+.tablewrap{overflow-x:auto;margin:24px 0;}
+table{
+  border-collapse:collapse;
+  width:100%;
+  font-family:var(--sans);
+  font-size:14px;
+  font-variant-numeric:tabular-nums;
+  min-width:min(100%,460px);
+}
+caption{
+  caption-side:top;
+  text-align:left;
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  font-weight:700;
+  padding-bottom:9px;
+}
+th,td{
+  text-align:left;
+  padding:8px 14px 8px 0;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+}
+thead th{
+  border-bottom:1.5px solid var(--ink-2);
+  color:var(--ink-2);
+  font-weight:700;
+  font-size:12px;
+  letter-spacing:.04em;
+  white-space:nowrap;
+}
+td.num,th.num{text-align:right;padding-right:22px;}
+tbody tr:last-child td{border-bottom:1px solid var(--rule-strong);}
+tr.total td{font-weight:700;border-top:1px solid var(--rule-strong);}
+.hit{color:var(--tau);font-weight:700;}
+.miss{color:var(--ink-3);}
+
+/* ============================================================ CODE */
+pre{
+  font-family:var(--mono);
+  font-size:12.9px;
+  line-height:1.62;
+  background:var(--sunk);
+  border-left:2px solid var(--rule-strong);
+  padding:15px 17px;
+  overflow-x:auto;
+  margin:20px 0;
+  color:var(--ink);
+  tab-size:2;
+}
+code{font-family:var(--mono);font-size:.875em;background:var(--sunk);padding:.1em .35em;}
+pre code{background:none;padding:0;font-size:inherit;}
+.cmt{color:var(--ink-3);}
+.fn{color:var(--mu);}
+.out{color:var(--ink-2);}
+
+/* ============================================================ FIGURES */
+figure{margin:34px 0;}
+figure svg{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:760px;
+  color:var(--ink-2);
+  background:var(--surface);
+  border:1px solid var(--rule);
+  padding:6px;
+}
+figcaption{
+  font-family:var(--sans);
+  font-size:12.5px;
+  line-height:1.5;
+  color:var(--ink-3);
+  margin-top:10px;
+  max-width:62ch;
+}
+figcaption b{color:var(--ink-2);}
+svg text{font-family:var(--sans);}
+
+/* ============================================================ GRIDS */
+.grid2{display:grid;gap:20px;margin:24px 0;}
+.grid3{display:grid;gap:20px;margin:24px 0;}
+@media(min-width:680px){
+  .grid2{grid-template-columns:1fr 1fr;}
+  .grid3{grid-template-columns:repeat(3,1fr);}
+}
+.panel{
+  border-top:2px solid var(--rule-strong);
+  padding-top:12px;
+  font-size:.95rem;
+}
+.panel.mu-p{border-top-color:var(--mu);}
+.panel.tau-p{border-top-color:var(--tau);}
+.panel.eps-p{border-top-color:var(--eps);}
+.panel h5{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  font-weight:700;
+  margin:0 0 7px;
+  color:var(--ink-2);
+}
+.panel p:last-child{margin-bottom:0;}
+
+/* ============================================================ MISC */
+.big-num{
+  font-family:var(--serif);
+  font-size:2.1rem;
+  line-height:1;
+  display:block;
+  margin-bottom:4px;
+}
+.footer{
+  grid-column:1/-1;
+  border-top:2px solid var(--ink);
+  margin-top:80px;
+  padding-top:20px;
+  font-family:var(--sans);
+  font-size:12.5px;
+  color:var(--ink-3);
+  max-width:none;
+}
+:focus-visible{outline:2px solid var(--nmbu);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media print{
+  .rail{display:none;}
+  .shell{grid-template-columns:1fr;}
+  body{background:#fff;color:#000;font-size:11pt;}
+}
+</style>
+
+<div class="shell">
+
+<header class="masthead">
+  <p class="eyebrow">STAT210 · Design and Analysis of Experiments · NMBU</p>
+  <h1>Signal Over Noise</h1>
+  <p class="standfirst">Everything in lectures 1–4 is one idea seen from four angles: split the variation you observe into the part a treatment explains and the part it doesn't, then decide whether the first is big enough to believe. This document rebuilds that idea from the ground up.</p>
+  <div class="masthead-meta">
+    <span>Lectures 1–4 · Aliaksandr Hubin</span>
+    <span>Montgomery ch. 2, 3.1–3.4, 3.5</span>
+    <span>Every number verified by running R on the course data</span>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Contents">
+  <h2>Orientation</h2>
+  <a href="#key">How to read this</a>
+  <a href="#map">The whole course</a>
+  <a href="#workflow">The analysis workflow</a>
+
+  <h2>L1 · Foundations</h2>
+  <a href="#l1-1">Probability space</a>
+  <a href="#l1-2">Random variables</a>
+  <a href="#l1-3">Expectation &amp; variance</a>
+  <a href="#l1-4">Linear rules</a>
+  <a href="#l1-5">The four distributions</a>
+
+  <h2>L2 · One-way ANOVA</h2>
+  <a href="#l2-1">The design</a>
+  <a href="#l2-2">The effects model</a>
+  <a href="#l2-3">Estimating it</a>
+  <a href="#l2-4">Sums of squares</a>
+  <a href="#l2-5">The two extremes</a>
+  <a href="#l2-6">df, MS and F</a>
+  <a href="#l2-7">Assumptions</a>
+  <a href="#l2-8">Power</a>
+
+  <h2>L3 · Inference</h2>
+  <a href="#l3-1">One statistic</a>
+  <a href="#l3-2">Means</a>
+  <a href="#l3-3">Confidence intervals</a>
+  <a href="#l3-4">The error variance</a>
+  <a href="#l3-5">Type I and II</a>
+  <a href="#l3-6">Balance</a>
+  <a href="#l3-7">Reading coefficients</a>
+
+  <h2>L4 · Contrasts</h2>
+  <a href="#l4-1">What a contrast is</a>
+  <a href="#l4-2">Testing one</a>
+  <a href="#l4-3">Orthogonality</a>
+  <a href="#l4-4">T² = F</a>
+  <a href="#l4-5">The FWER problem</a>
+  <a href="#l4-6">Three corrections</a>
+  <a href="#l4-7">R practicum</a>
+
+  <h2>Reference</h2>
+  <a href="#sheet">Formula sheet</a>
+  <a href="#cookbook">R cookbook</a>
+  <a href="#traps">Traps</a>
+  <a href="#errata">Slide errata</a>
+</nav>
+
+<main class="flow">
+
+<!-- ============================================================ KEY -->
+<h2 class="sec" id="key">How to read this document</h2>
+
+<p class="lede">The lecture slides use three colours for the three parts of the model. That colour code is the single most useful thing in the course, so this document uses it everywhere — in formulas, in diagrams, in the tables. If you learn to see which colour a quantity belongs to, most of the confusion disappears.</p>
+
+<div class="keycard">
+  <div class="keyrow">
+    <span class="swatch" style="background:var(--mu)"></span>
+    <span class="sym mu">μ</span>
+    <span><strong>Baseline.</strong> The grand mean — where everything sits before any treatment acts. Blue quantities describe the overall level.</span>
+
+    <span class="swatch" style="background:var(--tau)"></span>
+    <span class="sym tau">τ<sub>i</sub></span>
+    <span><strong>Signal.</strong> The treatment effect — how far group <span class="m">i</span> is pushed away from the baseline. Green quantities are what the experiment is <em>about</em>.</span>
+
+    <span class="swatch" style="background:var(--eps)"></span>
+    <span class="sym eps">ε<sub>it</sub></span>
+    <span><strong>Noise.</strong> Everything else — individual variation you did not control. Red quantities are what makes the signal hard to see.</span>
+  </div>
+</div>
+
+<p>Boxes carry a fixed meaning too:</p>
+
+<div class="note why"><span class="lbl">Why it works</span><p>The reasoning the slides state as a result without deriving. This is the part the missing lecture explanation would have carried.</p></div>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>If you remember one thing from a section, this is it.</p></div>
+
+<div class="note trap"><span class="lbl">Trap</span><p>A silent failure — something that produces a plausible wrong answer rather than an error message.</p></div>
+
+<div class="note exam"><span class="lbl">On the exam</span><p>A step that is graded, or a calculation you should be able to do by hand from a statistical table.</p></div>
+
+<p>Two datasets run through the whole document, so the numbers stay familiar:</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The two running examples</caption>
+  <thead><tr><th>Data</th><th class="num">a</th><th class="num">n</th><th class="num">N</th><th>Question</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Piglets</strong> (Soya)</td><td class="num">3</td><td class="num">2</td><td class="num">6</td><td>Does soya in the diet change weight gain?</td><td>L2, L3 — small, hand-computable, and the answer is <em>no evidence</em></td></tr>
+    <tr><td><strong>Trout</strong></td><td class="num">4</td><td class="num">10</td><td class="num">40</td><td>Does sulfamerazine change blood haemoglobin?</td><td>L4 — big enough to reject, so post-hoc analysis is legal</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The piglet dataset is deliberately too small to detect anything. That is not a flaw in the example — the contrast between the two datasets <em>is</em> the lesson about power in <a href="#l2-8">L2.8</a>.</p>
+
+<!-- ============================================================ MAP -->
+<h2 class="sec" id="map">The whole course in one picture</h2>
+
+<p>Six piglets, three diets, two piglets per diet. Weights: <strong>80, 84</strong> on the control diet NONS; <strong>82, 84</strong> on S1; <strong>82, 86</strong> on S2. Every single thing in lectures 2 through 4 is bookkeeping on the following decomposition.</p>
+
+<figure>
+<svg viewBox="0 0 720 400" role="img" aria-label="Each piglet weight decomposed into the grand mean of 83, a green treatment effect arrow, and a red noise arrow">
+  <defs>
+    <marker id="ar-t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--tau)"/>
+    </marker>
+    <marker id="ar-e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="var(--eps)"/>
+    </marker>
+  </defs>
+
+  <!-- axis -->
+  <line x1="70" y1="40" x2="70" y2="330" stroke="currentColor" stroke-width="1"/>
+  <g font-size="11" fill="currentColor" text-anchor="end">
+    <text x="62" y="289">80</text><text x="62" y="219">82</text>
+    <text x="62" y="149">84</text><text x="62" y="79">86</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1" opacity=".35">
+    <line x1="66" y1="285" x2="70" y2="285"/><line x1="66" y1="215" x2="70" y2="215"/>
+    <line x1="66" y1="145" x2="70" y2="145"/><line x1="66" y1="75" x2="70" y2="75"/>
+  </g>
+  <text x="24" y="190" font-size="11" fill="currentColor" text-anchor="middle" transform="rotate(-90 24 190)">Weight (kg)</text>
+
+  <!-- grand mean -->
+  <line x1="70" y1="180" x2="680" y2="180" stroke="var(--mu)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="684" y="177" font-size="12" fill="var(--mu)" font-weight="700">μ̂ = 83</text>
+
+  <!-- group mean bars -->
+  <line x1="110" y1="215" x2="250" y2="215" stroke="var(--tau)" stroke-width="2.5"/>
+  <line x1="295" y1="180" x2="435" y2="180" stroke="var(--tau)" stroke-width="2.5"/>
+  <line x1="480" y1="145" x2="620" y2="145" stroke="var(--tau)" stroke-width="2.5"/>
+
+  <!-- tau arrows -->
+  <line x1="122" y1="180" x2="122" y2="212" stroke="var(--tau)" stroke-width="2" marker-end="url(#ar-t)"/>
+  <text x="130" y="203" font-size="11" fill="var(--tau)" font-weight="700">τ̂₁ = −1</text>
+  <text x="307" y="170" font-size="11" fill="var(--tau)" font-weight="700">τ̂₂ = 0</text>
+  <line x1="492" y1="180" x2="492" y2="148" stroke="var(--tau)" stroke-width="2" marker-end="url(#ar-t)"/>
+  <text x="500" y="167" font-size="11" fill="var(--tau)" font-weight="700">τ̂₃ = +1</text>
+
+  <!-- epsilon arrows -->
+  <g stroke="var(--eps)" stroke-width="1.6">
+    <line x1="145" y1="215" x2="145" y2="282" marker-end="url(#ar-e)"/>
+    <line x1="215" y1="215" x2="215" y2="148" marker-end="url(#ar-e)"/>
+    <line x1="330" y1="180" x2="330" y2="212" marker-end="url(#ar-e)"/>
+    <line x1="400" y1="180" x2="400" y2="148" marker-end="url(#ar-e)"/>
+    <line x1="515" y1="145" x2="515" y2="212" marker-end="url(#ar-e)"/>
+    <line x1="585" y1="145" x2="585" y2="78" marker-end="url(#ar-e)"/>
+  </g>
+
+  <!-- points -->
+  <g fill="var(--ink)">
+    <circle cx="145" cy="285" r="5"/><circle cx="215" cy="145" r="5"/>
+    <circle cx="330" cy="215" r="5"/><circle cx="400" cy="145" r="5"/>
+    <circle cx="515" cy="215" r="5"/><circle cx="585" cy="75" r="5"/>
+  </g>
+
+  <!-- group labels -->
+  <g font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">
+    <text x="180" y="356">NONS</text><text x="365" y="356">S1</text><text x="550" y="356">S2</text>
+  </g>
+  <g font-size="10.5" fill="currentColor" text-anchor="middle" opacity=".75">
+    <text x="180" y="372">ȳ₁. = 82</text><text x="365" y="372">ȳ₂. = 83</text><text x="550" y="372">ȳ₃. = 84</text>
+  </g>
+</svg>
+<figcaption><b>Read every observation as three stacked pieces.</b> Start at the blue dashed line (μ̂ = 83). A green arrow moves you to your group's mean — that is the treatment effect τ̂ᵢ. A red arrow moves you the rest of the way to the actual piglet — that is noise ε̂ᵢₜ. The green arrows here are tiny and the red arrows are long, which is exactly why this experiment finds nothing.</figcaption>
+</figure>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>ANOVA squares those arrows and adds them up. <strong>Sum the squared green arrows and you get the signal.</strong> <strong>Sum the squared red arrows and you get the noise.</strong> The F-test is their ratio. Everything else — degrees of freedom, contrasts, Tukey — is refinement of that one comparison.</p></div>
+
+<!-- ============================================================ WORKFLOW -->
+<h2 class="sec" id="workflow">The analysis workflow</h2>
+
+<p>The order of these steps is not a style preference; each step is only <em>valid</em> because the one before it passed. Doing them out of order is the single most common way to produce a wrong answer that looks right.</p>
+
+<figure>
+<svg viewBox="0 0 720 430" role="img" aria-label="Flowchart: fit model, check assumptions, run omnibus F test, and only on rejection proceed to contrasts or Tukey">
+  <defs>
+    <marker id="ar-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g font-size="12.5" text-anchor="middle">
+
+    <rect x="250" y="14" width="220" height="42" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="360" y="33" fill="currentColor" font-weight="700">1 · Fit the model</text>
+    <text x="360" y="48" fill="currentColor" font-size="11" opacity=".75">aov(y ~ group)</text>
+
+    <line x1="360" y1="56" x2="360" y2="82" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar-f)"/>
+
+    <rect x="250" y="84" width="220" height="42" fill="none" stroke="var(--eps)" stroke-width="1.5"/>
+    <text x="360" y="103" fill="var(--eps)" font-weight="700">2 · Check assumptions</text>
+    <text x="360" y="118" fill="var(--eps)" font-size="11" opacity=".85">residual plots, QQ, Bartlett</text>
+
+    <line x1="470" y1="105" x2="600" y2="105" stroke="var(--eps)" stroke-width="1.4" marker-end="url(#ar-f)"/>
+    <text x="535" y="98" fill="var(--eps)" font-size="10.5">fails</text>
+    <rect x="602" y="84" width="104" height="42" fill="none" stroke="var(--eps)" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="654" y="103" fill="var(--eps)" font-size="10.5">transform or</text>
+    <text x="654" y="117" fill="var(--eps)" font-size="10.5">Kruskal–Wallis</text>
+
+    <line x1="360" y1="126" x2="360" y2="152" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar-f)"/>
+
+    <rect x="250" y="154" width="220" height="42" fill="none" stroke="var(--mu)" stroke-width="1.5"/>
+    <text x="360" y="173" fill="var(--mu)" font-weight="700">3 · Omnibus F-test</text>
+    <text x="360" y="188" fill="var(--mu)" font-size="11" opacity=".85">H₀: τ₁ = ⋯ = τₐ = 0</text>
+
+    <line x1="250" y1="175" x2="140" y2="175" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar-f)"/>
+    <text x="195" y="168" font-size="10.5" fill="currentColor">p &gt; α</text>
+    <rect x="18" y="154" width="120" height="42" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
+    <text x="78" y="173" font-size="10.5" fill="currentColor">STOP.</text>
+    <text x="78" y="187" font-size="10.5" fill="currentColor">No evidence.</text>
+
+    <line x1="360" y1="196" x2="360" y2="228" stroke="var(--tau)" stroke-width="1.8" marker-end="url(#ar-f)"/>
+    <text x="392" y="216" font-size="11" fill="var(--tau)" font-weight="700">p ≤ α — gate opens</text>
+
+    <rect x="250" y="230" width="220" height="34" fill="none" stroke="var(--tau)" stroke-width="1.5"/>
+    <text x="360" y="252" fill="var(--tau)" font-weight="700">4 · Locate the effect</text>
+
+    <line x1="310" y1="264" x2="180" y2="298" stroke="var(--tau)" stroke-width="1.4" marker-end="url(#ar-f)"/>
+    <line x1="360" y1="264" x2="360" y2="298" stroke="var(--tau)" stroke-width="1.4" marker-end="url(#ar-f)"/>
+    <line x1="410" y1="264" x2="540" y2="298" stroke="var(--tau)" stroke-width="1.4" marker-end="url(#ar-f)"/>
+
+    <rect x="76" y="300" width="200" height="58" fill="none" stroke="currentColor" stroke-width="1"/>
+    <text x="176" y="319" font-size="11.5" fill="currentColor" font-weight="700">Planned, few</text>
+    <text x="176" y="335" font-size="10.5" fill="currentColor">contrasts + Bonferroni</text>
+    <text x="176" y="350" font-size="10.5" fill="currentColor" opacity=".7">decided before seeing data</text>
+
+    <rect x="266" y="300" width="188" height="58" fill="none" stroke="var(--tau)" stroke-width="2"/>
+    <text x="360" y="319" font-size="11.5" fill="var(--tau)" font-weight="700">All pairs</text>
+    <text x="360" y="335" font-size="10.5" fill="var(--tau)">Tukey HSD</text>
+    <text x="360" y="350" font-size="10.5" fill="var(--tau)" opacity=".8">the default choice</text>
+
+    <rect x="444" y="300" width="200" height="58" fill="none" stroke="currentColor" stroke-width="1"/>
+    <text x="544" y="319" font-size="11.5" fill="currentColor" font-weight="700">Anything, post-hoc</text>
+    <text x="544" y="335" font-size="10.5" fill="currentColor">Scheffé</text>
+    <text x="544" y="350" font-size="10.5" fill="currentColor" opacity=".7">contrasts found by looking</text>
+
+    <text x="360" y="396" font-size="11" fill="var(--eps)" font-weight="700">Skipping step 3 and going straight to step 4 is called fishing.</text>
+    <text x="360" y="412" font-size="11" fill="currentColor" opacity=".7">It is treated as malpractice, not a shortcut.</text>
+  </g>
+</svg>
+<figcaption><b>The F-test is a gate, not a formality.</b> It is the only thing standing between you and a 26.5% chance of a false positive when a = 4. The three boxes at the bottom differ in <em>what you are allowed to have decided when</em> — that, not the arithmetic, is what separates the three corrections.</figcaption>
+</figure>
+
+<!-- ============================================================ L1 -->
+<h2 class="sec" id="l1-1"><span class="tag">Lecture 1 · 1</span>The probability setup</h2>
+
+<p>Lecture 1 is a toolbox lecture. Nothing in it is interesting on its own; every piece exists because ANOVA needs it later. It is worth knowing, for each item, <em>which later result depends on it</em> — that is noted throughout.</p>
+
+<p>A probability setup has exactly three components, written together as the triple <span class="m">(Ω, ℱ, P)</span>:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Component</th><th>Symbol</th><th>What it is</th></tr></thead>
+  <tbody>
+    <tr><td>Sample space</td><td><span class="m">Ω</span></td><td>Every outcome the experiment could produce</td></tr>
+    <tr><td>Events</td><td><span class="m">ℱ</span></td><td>The subsets of outcomes you can actually observe and assign probability to</td></tr>
+    <tr><td>Probability measure</td><td><span class="m">P</span></td><td>The rule assigning each event a number in [0, 1]</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Kolmogorov's three axioms (1933)</strong> are the minimum rules <span class="m">P</span> must obey:</p>
+
+<ol>
+  <li><span class="m">P(Ω) = 1</span> — something certainly happens.</li>
+  <li><span class="m">P(A) ≥ 0</span> for every event — probabilities are never negative.</li>
+  <li><strong>Countable additivity</strong>: for disjoint events <span class="m">A₁, A₂, …</span>, &nbsp;<span class="m">P(⋃ᵢ Aᵢ) = Σᵢ P(Aᵢ)</span>.</li>
+</ol>
+
+<div class="note why"><span class="lbl">Why it works</span><p>Axiom 3 is the one that does real work later. Additivity over disjoint pieces is precisely what lets a total sum of squares split into non-overlapping parts. When lecture 4 claims orthogonal contrasts <em>partition</em> <span class="m">SS<sub>Tr</sub></span>, it is the same structural idea: carve a whole into disjoint pieces and the pieces add back to the whole.</p></div>
+
+<h2 class="sec" id="l1-2"><span class="tag">Lecture 1 · 2</span>Random variables, PMFs and PDFs</h2>
+
+<p>A <strong>random variable</strong> is a function that assigns a number to each outcome. Heads → 1, tails → 0. The point is purely practical: you cannot average "heads", but you can average 1s and 0s.</p>
+
+<div class="grid2">
+  <div class="panel mu-p">
+    <h5>Discrete</h5>
+    <p>Countably many values. Described by a <strong>probability mass function</strong> <span class="m">p(y) = P(Y = y)</span>, with <span class="m">Σ p(y) = 1</span>.</p>
+    <p>CDF: <span class="m">F(y) = P(Y ≤ y) = Σ<sub>x ≤ y</sub> p(x)</span>.</p>
+  </div>
+  <div class="panel eps-p">
+    <h5>Continuous</h5>
+    <p>Values fill an interval. Described by a <strong>probability density function</strong> <span class="m">f(y) ≥ 0</span>, with <span class="m">∫ f(y) dy = 1</span>.</p>
+    <p>CDF: <span class="m">F(y) = P(Y ≤ y) = ∫<sub>−∞</sub><sup>y</sup> f(x) dx</span>.</p>
+  </div>
+</div>
+
+<h3>Why <span class="m">P(Y = 172.5) = 0</span> for a continuous variable</h3>
+
+<p>This is the checkpoint question on the slides, and it genuinely confuses people because it sounds false — someone <em>is</em> 172.5 cm tall.</p>
+
+<div class="note why"><span class="lbl">Why it works</span><p>For a continuous variable, probability is <strong>area under the density</strong>, and a single point is a line with zero width — zero area. Density is not probability: <code>dnorm(172.5, 172, 8)</code> returns about 0.0499, which is a <em>height</em>, not a probability, and heights can exceed 1 for a narrow distribution. Probability only appears once you integrate over an interval. So <span class="m">P(168 ≤ Y ≤ 180)</span> is a real, positive number, while <span class="m">P(Y = 172.5)</span> is exactly zero.</p></div>
+
+<div class="note trap"><span class="lbl">Trap</span><p>In R, <code>dnorm</code> gives density (a height), <code>pnorm</code> gives cumulative probability (an area). Reaching for <code>dnorm</code> when you want a p-value is a classic slip. Remember the four prefixes: <strong>d</strong>ensity · <strong>p</strong>robability (area to the left) · <strong>q</strong>uantile (the inverse of p) · <strong>r</strong>andom draws.</p></div>
+
+<h2 class="sec" id="l1-3"><span class="tag">Lecture 1 · 3</span>Expectation and variance</h2>
+
+<span class="eq mu-eq">
+E(Y) = <span class="mu">μ</span> = Σ y · p(y) &nbsp;&nbsp;<span style="color:var(--ink-3)">(discrete)</span>&nbsp;&nbsp; = ∫ y f(y) dy &nbsp;&nbsp;<span style="color:var(--ink-3)">(continuous)</span>
+</span>
+
+<span class="eq eps-eq">
+Var(Y) = <span class="eps">σ²</span> = E[(Y − μ)²] = Σ (y − μ)² · p(y) &nbsp;&nbsp;or&nbsp;&nbsp; ∫ (y − μ)² f(y) dy
+</span>
+
+<p><strong>Expectation is the balance point</strong> of the distribution — put the density on a beam and this is where it balances. <strong>Variance is the average squared distance from that balance point</strong>, so it measures spread. Because it squares, it comes out in squared units; the standard deviation <span class="m">σ = √<span class="rad">Var(Y)</span></span> brings you back to the original units, which is why you report σ but compute with σ².</p>
+
+<h3>Sample versions</h3>
+
+<span class="eq">
+ȳ = <span class="frac"><span>1</span><span>n</span></span> Σ<sub>t=1</sub><sup>n</sup> y<sub>t</sub>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s² = <span class="frac"><span>1</span><span>n − 1</span></span> Σ<sub>t=1</sub><sup>n</sup> (y<sub>t</sub> − ȳ)²
+</span>
+
+<div class="note why"><span class="lbl">Why n − 1 and not n</span><p>You are measuring spread around <span class="m">ȳ</span>, but <span class="m">ȳ</span> was itself computed from the same data, and it sits closer to the data than the true <span class="m">μ</span> does — <span class="m">ȳ</span> is the value that <em>minimises</em> the sum of squared deviations. So dividing by <span class="m">n</span> systematically underestimates. Dividing by <span class="m">n − 1</span> corrects it exactly (<strong>Bessel's correction</strong>). The intuition that generalises: <em>you spent one degree of freedom estimating the mean, so only n − 1 independent pieces of information about spread remain.</em> This is the same accounting that gives <span class="m">df<sub>E</sub> = N − a</span> in ANOVA — there you estimate <span class="m">a</span> group means, so you lose <span class="m">a</span>.</p></div>
+
+<h2 class="sec" id="l1-4"><span class="tag">Lecture 1 · 4</span>Rules for linear combinations</h2>
+
+<p>These four lines look trivial and are the most heavily used result in the entire course. Every standard error in lectures 3 and 4 is derived from them.</p>
+
+<div class="grid2">
+  <div class="panel">
+    <h5>Constants and scaling</h5>
+    <p><span class="m">E(c) = c</span> &nbsp;·&nbsp; <span class="m">E(cY) = c E(Y)</span></p>
+    <p><span class="m">Var(c) = 0</span> &nbsp;·&nbsp; <span class="m">Var(cY) = c² Var(Y)</span></p>
+  </div>
+  <div class="panel">
+    <h5>Sums of independent variables</h5>
+    <p><span class="m">E(Σ cᵢYᵢ) = Σ cᵢμᵢ</span></p>
+    <p><span class="m">Var(Σ cᵢYᵢ) = Σ cᵢ²σᵢ²</span></p>
+  </div>
+</div>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>Variance scales with <strong>c squared</strong>, means scale with <strong>c</strong>. Double a variable and its variance quadruples. The <span class="m">cᵢ²</span> in the variance rule is literally the <span class="m">Σcᵢ²</span> you will see inside every contrast standard error in lecture 4 — it is not a new formula, it is this one.</p></div>
+
+<h3>The consequence that matters: the variance of a mean</h3>
+
+<p>Apply the rules to <span class="m">Ȳ = (1/n) Σ Yᵢ</span> with all <span class="m">cᵢ = 1/n</span>:</p>
+
+<span class="eq eps-eq">
+Var(Ȳ) = Σ <span class="frac"><span>1</span><span>n²</span></span> σ² = n · <span class="frac"><span>σ²</span><span>n²</span></span> = <span class="frac"><span><span class="eps">σ²</span></span><span>n</span></span>
+</span>
+
+<p>This is <em>the</em> reason more data helps. The spread of individual observations never shrinks — σ² is a property of the population. But the spread of the <strong>average</strong> shrinks as <span class="m">1/n</span>. This single fact drives power, confidence interval width, and why <a href="#l2-8">the piglet study fails and the plant study succeeds</a>.</p>
+
+<h2 class="sec" id="l1-5"><span class="tag">Lecture 1 · 5</span>The four distributions and how they connect</h2>
+
+<p>The slides list four distributions as if they were four separate facts. They are not — three of them are <em>built out of</em> the normal, and knowing the construction tells you what each one is for.</p>
+
+<figure>
+<svg viewBox="0 0 720 400" role="img" aria-label="Family tree showing chi-square, t and F all constructed from standard normal variables">
+  <defs>
+    <marker id="ar-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <rect x="270" y="14" width="180" height="44" fill="none" stroke="var(--mu)" stroke-width="2"/>
+  <text x="360" y="34" font-size="13" fill="var(--mu)" text-anchor="middle" font-weight="700">Z ~ N(0, 1)</text>
+  <text x="360" y="50" font-size="10.5" fill="var(--mu)" text-anchor="middle" opacity=".85">the raw material</text>
+
+  <path d="M300,58 L180,110" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#ar-d)"/>
+  <text x="150" y="92" font-size="11" fill="currentColor" text-anchor="middle">square, add k</text>
+
+  <rect x="70" y="112" width="200" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="170" y="132" font-size="13" fill="currentColor" text-anchor="middle" font-weight="700">χ²ₖ = Z₁² + ⋯ + Zₖ²</text>
+  <text x="170" y="148" font-size="10.5" fill="currentColor" text-anchor="middle" opacity=".7">E = k, Var = 2k</text>
+
+  <path d="M420,58 L420,208" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#ar-d)"/>
+  <text x="470" y="140" font-size="11" fill="currentColor" text-anchor="middle">numerator</text>
+  <path d="M170,156 L300,208" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#ar-d)"/>
+  <text x="196" y="196" font-size="11" fill="currentColor" text-anchor="middle">denominator</text>
+
+  <rect x="270" y="210" width="200" height="44" fill="none" stroke="var(--tau)" stroke-width="2"/>
+  <text x="370" y="230" font-size="13" fill="var(--tau)" text-anchor="middle" font-weight="700">tₖ = Z ⁄ √(χ²ₖ⁄k)</text>
+  <text x="370" y="246" font-size="10.5" fill="var(--tau)" text-anchor="middle" opacity=".85">E = 0, Var = k/(k−2)</text>
+
+  <path d="M240,140 C 470,150 560,180 585,268" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#ar-d)"/>
+  <text x="600" y="200" font-size="11" fill="currentColor" text-anchor="middle">ratio of two,</text>
+  <text x="600" y="214" font-size="11" fill="currentColor" text-anchor="middle">each ÷ its df</text>
+
+  <rect x="480" y="270" width="210" height="44" fill="none" stroke="var(--eps)" stroke-width="2"/>
+  <text x="585" y="290" font-size="13" fill="var(--eps)" text-anchor="middle" font-weight="700">F<sub>u,v</sub> = (χ²ᵤ⁄u) ⁄ (χ²ᵥ⁄v)</text>
+  <text x="585" y="306" font-size="10.5" fill="var(--eps)" text-anchor="middle" opacity=".85">right-skewed, ≈ 1 under H₀</text>
+
+  <path d="M370,254 L520,270" stroke="var(--tau)" stroke-width="1.4" stroke-dasharray="5 3" fill="none"/>
+  <text x="424" y="276" font-size="11" fill="var(--tau)" font-weight="700">t²ₖ = F₁,ₖ</text>
+
+  <g font-size="11.5" fill="currentColor">
+    <text x="30" y="352" font-weight="700">What each one is for:</text>
+    <text x="30" y="371" opacity=".85">χ² — sums of squares, so inference about σ².  ·  t — a mean when σ² had to be estimated.</text>
+    <text x="30" y="388" opacity=".85">F — comparing two variance estimates, which is exactly what ANOVA does.</text>
+  </g>
+</svg>
+<figcaption><b>Three distributions, one source.</b> The dashed link is not decoration — <span style="color:var(--tau)">t²ₖ = F₁,ₖ</span> is the identity lecture 3 calls the bridge and lecture 4 calls the fundamental theorem. It is true because squaring the t construction gives you a ratio of a χ²₁ over a χ²ₖ⁄k, which is the definition of F with 1 numerator degree of freedom.</figcaption>
+</figure>
+
+<div class="note why"><span class="lbl">Why t has fatter tails than the normal</span><p>In <span class="m">Z = (ȳ − μ)/(σ/√<span class="rad">n</span>)</span> the denominator is a fixed constant. In <span class="m">T = (ȳ − μ)/(s/√<span class="rad">n</span>)</span> the denominator is <em>itself estimated</em> and therefore random. You now have two sources of variation instead of one, so extreme values happen more often — fatter tails. With few degrees of freedom your variance estimate is poor and the tails are very fat (<span class="m">t<sub>0.025,3</sub> = 3.182</span>); with many they are barely distinguishable from normal (<span class="m">t<sub>0.025,36</sub> = 2.028</span> against <span class="m">z = 1.960</span>). As <span class="m">k → ∞</span>, <span class="m">t<sub>k</sub> → N(0,1)</span>.</p></div>
+
+<div class="note exam"><span class="lbl">On the exam</span><p>Three identities are worth memorising outright: <span class="m">Z² = χ²₁</span>, &nbsp;<span class="m">t²ₖ = F<sub>1,k</sub></span>, &nbsp;<span class="m">t<sub>∞</sub> = N(0,1)</span>. Also note that <span class="m">Var(t<sub>k</sub>) = k/(k−2)</span> only exists for <span class="m">k &gt; 2</span> — with 1 or 2 df the t-distribution has no finite variance.</p></div>
+
+<!-- ============================================================ L2 -->
+<h2 class="sec" id="l2-1"><span class="tag">Lecture 2 · 1</span>The completely randomized design</h2>
+
+<p>Before any mathematics, the <em>design</em> has to be right, because no analysis can rescue a badly designed experiment. A <strong>completely randomized design</strong> (CRD) means experimental units are assigned to treatments entirely at random, with no other structure imposed.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>The four design principles</caption>
+  <thead><tr><th>Principle</th><th>What it does</th><th>What breaks without it</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Randomization</strong></td><td>Assigns units to treatments by chance</td><td>Systematic differences between groups get mistaken for treatment effects</td></tr>
+    <tr><td><strong>Replication</strong></td><td>Multiple units per treatment</td><td>You have no way to estimate σ² at all — no <span class="m">SS<sub>E</sub></span>, no F-test</td></tr>
+    <tr><td><strong>Blocking</strong></td><td>Groups similar units before randomizing within</td><td>Known nuisance variation stays in the error term and hides the signal</td></tr>
+    <tr><td><strong>Blinding</strong></td><td>Hides the assignment from subject and/or assessor</td><td>Expectation influences measurement</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Randomization is what licenses the independence assumption.</strong> That is its statistical job — not fairness, but the fact that the errors then have no shared structure you failed to model.</p>
+
+<h3>Why balance matters</h3>
+
+<p>A design is <strong>balanced</strong> when every group has the same <span class="m">n</span>. The piglet data has <span class="m">n = 2</span> in all three groups, so it is balanced. Three reasons this is worth arranging:</p>
+
+<ul>
+  <li><strong>Maximum power for a given total N.</strong> Shown algebraically in <a href="#l3-6">L3.6</a> — it is not a rule of thumb, it falls out of minimising the variance of a difference.</li>
+  <li><strong>Robustness.</strong> The F-test tolerates unequal variances far better when group sizes are equal.</li>
+  <li><strong>Simpler algebra.</strong> With balance, the grand mean is just the average of the group means: <span class="m"><span class="mu">μ</span> = (1/a) Σ μᵢ</span>. Without balance it is a weighted average, and the neat identities stop holding.</li>
+</ul>
+
+<h2 class="sec" id="l2-2"><span class="tag">Lecture 2 · 2</span>The effects model</h2>
+
+<span class="eq">
+y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:var(--ink-3);font-size:.85em">subject to</span> &nbsp; Σ<sub>i=1</sub><sup>a</sup> <span class="tau">τ<sub>i</sub></span> = 0,
+&nbsp; <span class="eps">ε<sub>it</sub></span> ~ iid N(0, <span class="eps">σ²</span>)
+</span>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Symbol</th><th>Name</th><th>Status</th><th>In the piglet data</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">y<sub>it</sub></span></td><td>Observation <span class="m">t</span> in group <span class="m">i</span></td><td>Observed</td><td>80, 84, 82, 84, 82, 86</td></tr>
+    <tr><td><span class="mu m">μ</span></td><td>Grand mean</td><td>Fixed, unknown parameter</td><td>estimated as 83</td></tr>
+    <tr><td><span class="tau m">τ<sub>i</sub></span></td><td>Effect of treatment <span class="m">i</span></td><td>Fixed, unknown parameter</td><td>estimated as −1, 0, +1</td></tr>
+    <tr><td><span class="eps m">ε<sub>it</sub></span></td><td>Random noise</td><td>Random, <strong>never observable</strong></td><td>estimated by residuals</td></tr>
+    <tr><td><span class="m">a, n, N</span></td><td>Groups, reps per group, total</td><td>Chosen by you</td><td>3, 2, 6</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Why the constraint Σ τᵢ = 0 is necessary</h3>
+
+<div class="note why"><span class="lbl">Why it works</span><p>Count the parameters: you have <span class="m">a</span> group means to describe, but the model as written has <span class="m">1 + a</span> parameters (<span class="m">μ</span> plus <span class="m">a</span> taus). That is one too many — the model is <strong>over-parameterised</strong>. Add 5 to <span class="m">μ</span> and subtract 5 from every <span class="m">τᵢ</span> and every fitted value is identical, so the data can never tell those solutions apart. A constraint pins down one specific solution. Sum-to-zero is the choice that makes <span class="m">μ</span> mean "the overall level" and each <span class="m">τᵢ</span> mean "this group's deviation from that level" — the interpretation the course wants. R's default constraint is different, which is why <a href="#l3-7">L3.7</a> matters.</p></div>
+
+<h3>The equivalent means model</h3>
+
+<p>Absorbing <span class="m"><span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span></span> into a single group mean <span class="m">μ<sub>i</sub></span> gives <span class="m">y<sub>it</sub> = μ<sub>i</sub> + <span class="eps">ε<sub>it</sub></span></span>. Same model, different bookkeeping. Use the <strong>means model</strong> when you care about group levels; use the <strong>effects model</strong> when you care about how much the treatment moved things, which is usually the scientific question.</p>
+
+<h2 class="sec" id="l2-3"><span class="tag">Lecture 2 · 3</span>Estimating the model</h2>
+
+<p>Least squares gives estimates that are exactly what intuition suggests:</p>
+
+<span class="eq">
+<span class="mu">μ̂</span> = ȳ<sub>··</sub>
+&nbsp;&nbsp;&nbsp;
+<span class="tau">τ̂<sub>i</sub></span> = ȳ<sub>i·</sub> − ȳ<sub>··</sub>
+&nbsp;&nbsp;&nbsp;
+<span class="eps">e<sub>it</sub></span> = y<sub>it</sub> − ȳ<sub>i·</sub>
+</span>
+
+<p>For the piglets: <span class="m"><span class="mu">μ̂</span> = 83</span>, and <span class="m"><span class="tau">τ̂</span> = (82−83, 83−83, 84−83) = (−1, 0, +1)</span>, which duly sums to zero. Residuals within each group:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Group</th><th>Weights</th><th class="num">ȳ<sub>i·</sub></th><th>Residuals</th><th class="num">Σ e²</th></tr></thead>
+  <tbody>
+    <tr><td>NONS</td><td>80, 84</td><td class="num">82</td><td>−2, +2</td><td class="num">8</td></tr>
+    <tr><td>S1</td><td>82, 84</td><td class="num">83</td><td>−1, +1</td><td class="num">2</td></tr>
+    <tr><td>S2</td><td>82, 86</td><td class="num">84</td><td>−2, +2</td><td class="num">8</td></tr>
+    <tr class="total"><td colspan="4">SS<sub>E</sub></td><td class="num">18</td></tr>
+  </tbody>
+</table>
+</div>
+
+<span class="eq eps-eq">
+<span class="eps">σ̂²</span> = MS<sub>E</sub> = <span class="frac"><span>SS<sub>E</sub></span><span>N − a</span></span> = <span class="frac"><span>18</span><span>6 − 3</span></span> = 6
+</span>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p><span class="m">MS<sub>E</sub></span> is <em>the</em> estimate of σ². It is not one number among several — it is the single pooled noise estimate that every standard error in lectures 3 and 4 divides by, and its degrees of freedom <span class="m">N − a</span> follow it everywhere.</p></div>
+
+<p>Also recall the sampling distribution of a group mean, straight from <a href="#l1-4">L1.4</a>:</p>
+
+<span class="eq">ȳ<sub>i·</sub> ~ N(μ<sub>i</sub>, <span class="frac"><span><span class="eps">σ²</span></span><span>n</span></span>)</span>
+
+<h2 class="sec" id="l2-4"><span class="tag">Lecture 2 · 4</span>The sums of squares decomposition</h2>
+
+<p>Take one observation's total distance from the grand mean and split it at the group mean:</p>
+
+<span class="eq">
+(y<sub>it</sub> − ȳ<sub>··</sub>) = <span class="tau">(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)</span> + <span class="eps">(y<sub>it</sub> − ȳ<sub>i·</sub>)</span>
+</span>
+
+<p>That is trivially true — the middle terms cancel. The non-obvious part is that it survives squaring and summing:</p>
+
+<span class="eq">
+SS<sub>T</sub> = <span class="tau">SS<sub>Tr</sub></span> + <span class="eps">SS<sub>E</sub></span>
+</span>
+
+<div class="note why"><span class="lbl">Why the cross-term vanishes</span><p>Squaring a sum normally leaves a cross-term <span class="m">2Σ(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)(y<sub>it</sub> − ȳ<sub>i·</sub>)</span>. Sum over <span class="m">t</span> within a group: the first factor is constant inside the group and comes out, leaving <span class="m">Σ<sub>t</sub>(y<sub>it</sub> − ȳ<sub>i·</sub>)</span> — the sum of deviations from their own mean, which is <strong>zero by construction</strong>. So the cross-term dies for every group, and the identity holds exactly. Geometrically the two components are orthogonal, which is the same fact stated in vector language.</p></div>
+
+<h3>Computed by hand on the piglet data</h3>
+
+<div class="tablewrap">
+<table>
+  <caption>Every term of the decomposition, six observations</caption>
+  <thead><tr>
+    <th>Diet</th><th class="num">y<sub>it</sub></th><th class="num">ȳ<sub>··</sub></th><th class="num">ȳ<sub>i·</sub></th>
+    <th class="num">(y<sub>it</sub>−ȳ<sub>··</sub>)²</th><th class="num">(ȳ<sub>i·</sub>−ȳ<sub>··</sub>)²</th><th class="num">(y<sub>it</sub>−ȳ<sub>i·</sub>)²</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>NONS</td><td class="num">80</td><td class="num">83</td><td class="num">82</td><td class="num">9</td><td class="num">1</td><td class="num">4</td></tr>
+    <tr><td>NONS</td><td class="num">84</td><td class="num">83</td><td class="num">82</td><td class="num">1</td><td class="num">1</td><td class="num">4</td></tr>
+    <tr><td>S1</td><td class="num">82</td><td class="num">83</td><td class="num">83</td><td class="num">1</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td>S1</td><td class="num">84</td><td class="num">83</td><td class="num">83</td><td class="num">1</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td>S2</td><td class="num">82</td><td class="num">83</td><td class="num">84</td><td class="num">1</td><td class="num">1</td><td class="num">4</td></tr>
+    <tr><td>S2</td><td class="num">86</td><td class="num">83</td><td class="num">84</td><td class="num">9</td><td class="num">1</td><td class="num">4</td></tr>
+    <tr class="total"><td colspan="4">Sums</td><td class="num">SS<sub>T</sub> = 22</td><td class="num">SS<sub>Tr</sub> = 4</td><td class="num">SS<sub>E</sub> = 18</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note trap"><span class="lbl">Trap</span><p>The middle column sums to 4, not 2. Each squared group deviation is counted <strong>once per observation in that group</strong>, so with n = 2 you count each of the three values twice. This is the <span class="m">n</span> in the formula <span class="m">SS<sub>Tr</sub> = n Σ<sub>i</sub>(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)²</span>, and forgetting it is the most common hand-calculation error in this course.</p></div>
+
+<p><strong>Reading the result:</strong> 4 units of variation out of 22 are attributable to diet; 18 are individual noise. Diet explains 18% of what you see. That is a weak signal, and the F-test will say so.</p>
+
+<h2 class="sec" id="l2-5"><span class="tag">Lecture 2 · 5</span>The two extremes</h2>
+
+<p>The slides show these as separate examples. Seeing them side by side is what makes the decomposition click, because they are the two ends of a single scale.</p>
+
+<div class="grid2">
+  <div class="panel tau-p">
+    <h5>Pure signal · SS<sub>E</sub> = 0</h5>
+    <p>Every piglet weighs exactly its group mean: 82, 82 / 83, 83 / 84, 84.</p>
+    <p><span class="m">SS<sub>T</sub> = 4</span>, <span class="m"><span class="tau">SS<sub>Tr</sub> = 4</span></span>, <span class="m"><span class="eps">SS<sub>E</sub> = 0</span></span>.</p>
+    <p>All the red arrows in the opening figure collapse to nothing. 100% of variation is explained by diet, and F is infinite.</p>
+  </div>
+  <div class="panel eps-p">
+    <h5>Pure noise · SS<sub>Tr</sub> = 0</h5>
+    <p>Every group has the identical pair 82, 84 — all three means are 83.</p>
+    <p><span class="m">SS<sub>T</sub> = 6</span>, <span class="m"><span class="tau">SS<sub>Tr</sub> = 0</span></span>, <span class="m"><span class="eps">SS<sub>E</sub> = 6</span></span>.</p>
+    <p>All the green arrows vanish. Diet explains exactly 0%, F = 0, and p = 1.</p>
+  </div>
+</div>
+
+<div class="note trap"><span class="lbl">Trap</span><p>In the pure-noise case p = 1.00, and it is tempting to write "the diets have no effect". That is wrong. <strong>p = 1 means the data are perfectly consistent with H₀, not that H₀ is true.</strong> You have failed to reject; you have not proven the null. With n = 2 you had almost no chance of detecting anything in the first place.</p></div>
+
+<h2 class="sec" id="l2-6"><span class="tag">Lecture 2 · 6</span>Degrees of freedom, mean squares, and F</h2>
+
+<p>Sums of squares are not comparable as they stand — <span class="m">SS<sub>E</sub></span> is built from more numbers than <span class="m">SS<sub>Tr</sub></span> and would win by sheer volume. Dividing each by its degrees of freedom converts it into an average, and averages are comparable.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>Degrees of freedom, counted as independent pieces of information</caption>
+  <thead><tr><th>Source</th><th>df</th><th>Why that number</th><th class="num">Piglets</th><th class="num">Trout</th></tr></thead>
+  <tbody>
+    <tr><td>Treatment</td><td><span class="m">a − 1</span></td><td><span class="m">a</span> effects, but they must sum to zero — one is determined by the rest</td><td class="num">2</td><td class="num">3</td></tr>
+    <tr><td>Error</td><td><span class="m">N − a</span></td><td><span class="m">N</span> observations, minus the <span class="m">a</span> group means you estimated</td><td class="num">3</td><td class="num">36</td></tr>
+    <tr class="total"><td>Total</td><td><span class="m">N − 1</span></td><td><span class="m">N</span> observations, minus the one grand mean</td><td class="num">5</td><td class="num">39</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>They add exactly as the sums of squares do: <span class="m">df<sub>T</sub> = df<sub>Tr</sub> + df<sub>E</sub></span>.</p>
+
+<span class="eq">
+MS<sub>Tr</sub> = <span class="frac"><span>SS<sub>Tr</sub></span><span>a − 1</span></span>
+&nbsp;&nbsp;&nbsp;
+MS<sub>E</sub> = <span class="frac"><span>SS<sub>E</sub></span><span>N − a</span></span>
+&nbsp;&nbsp;&nbsp;
+F = <span class="frac"><span><span class="tau">MS<sub>Tr</sub></span></span><span><span class="eps">MS<sub>E</sub></span></span></span>
+</span>
+
+<div class="note why"><span class="lbl">Why F is centred at 1 under H₀</span><p>Both mean squares estimate the same σ² when H₀ is true — <span class="m">MS<sub>E</sub></span> always does, and <span class="m">MS<sub>Tr</sub></span> does too when there are no real treatment effects, because then the group means differ only by sampling noise. A ratio of two estimates of the same quantity sits near 1. When treatments <em>do</em> differ, <span class="m">MS<sub>Tr</sub></span> picks up the real spread between means <em>on top of</em> the noise, so it inflates and F grows. This also explains why the test is <strong>upper-tailed only</strong>: real effects can only push F up, never down.</p></div>
+
+<h3>The ANOVA table — piglets</h3>
+
+<div class="tablewrap">
+<table>
+  <caption>anova(lm(Weight ~ Diet, data = SoyaData))</caption>
+  <thead><tr><th>Source</th><th class="num">df</th><th class="num">SS</th><th class="num">MS</th><th class="num">F</th><th class="num">p</th></tr></thead>
+  <tbody>
+    <tr><td>Diet</td><td class="num">2</td><td class="num">4</td><td class="num">2</td><td class="num">0.3333</td><td class="num">0.7401</td></tr>
+    <tr><td>Error</td><td class="num">3</td><td class="num">18</td><td class="num">6</td><td class="num"></td><td class="num"></td></tr>
+    <tr class="total"><td>Total</td><td class="num">5</td><td class="num">22</td><td class="num"></td><td class="num"></td><td class="num"></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Critical value <span class="m">F<sub>0.05, 2, 3</sub> = 9.552</span>. Observed F = 0.333 is nowhere near it — in fact F &lt; 1, meaning the between-group variation is <em>smaller</em> than the within-group variation. <strong>No evidence that soya changes weight gain.</strong></p>
+
+<h3>The same table for the trout — where it does reject</h3>
+
+<div class="tablewrap">
+<table>
+  <caption>summary(aov(Hemo ~ Sulfamerazine, data = Trout))</caption>
+  <thead><tr><th>Source</th><th class="num">df</th><th class="num">SS</th><th class="num">MS</th><th class="num">F</th><th class="num">p</th></tr></thead>
+  <tbody>
+    <tr><td>Sulfamerazine</td><td class="num">3</td><td class="num">26.803</td><td class="num">8.934</td><td class="num hit">5.696</td><td class="num hit">0.00268</td></tr>
+    <tr><td>Error</td><td class="num">36</td><td class="num">56.471</td><td class="num">1.5686</td><td class="num"></td><td class="num"></td></tr>
+    <tr class="total"><td>Total</td><td class="num">39</td><td class="num">83.274</td><td class="num"></td><td class="num"></td><td class="num"></td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 360" role="img" aria-label="F distribution with 3 and 36 degrees of freedom, showing the rejection region beyond 2.866 and the observed F of 5.696 far inside it">
+  <line x1="70" y1="300" x2="680" y2="300" stroke="currentColor" stroke-width="1"/>
+  <polygon points="281.4,300 281.4,283.1 291.1,285.4 300.8,287.4 310.5,289.2 320.2,290.7 329.9,291.9 339.6,293.0 349.3,294.0 359.1,294.8 368.8,295.5 378.5,296.1 388.2,296.6 397.9,297.1 407.6,297.4 417.3,297.8 427.0,298.1 436.7,298.3 446.4,298.5 456.1,298.7 465.8,298.9 475.5,299.0 485.3,299.1 495.0,299.3 504.7,299.3 514.4,299.4 524.1,299.5 533.8,299.6 543.5,299.6 553.2,299.7 562.9,299.7 572.6,299.7 582.3,299.8 592.0,299.8 601.8,299.8 611.5,299.8 621.2,299.9 630.9,299.9 640.6,299.9 650.3,299.9 660.0,299.9 660,300" fill="var(--eps)" opacity=".22"/>
+  <polyline points="70.1,279.4 75.5,142.6 80.9,102.9 86.3,85.6 91.7,79.8 97.1,80.9 102.5,86.2 108.0,94.1 113.4,103.6 118.8,114.0 124.2,124.9 129.6,135.8 135.0,146.6 140.4,157.1 145.8,167.2 151.3,176.8 156.7,185.9 162.1,194.4 167.5,202.5 172.9,210.0 178.3,217.0 183.7,223.5 189.1,229.5 194.6,235.1 200.0,240.3 205.4,245.0 210.8,249.4 216.2,253.5 221.6,257.2 227.0,260.7 232.4,263.9 237.9,266.8 243.3,269.5 248.7,271.9 254.1,274.2 259.5,276.3 264.9,278.2 270.3,279.9 275.7,281.5 281.1,283.0 286.6,284.4 292.0,285.6 297.4,286.8 302.8,287.8 308.2,288.8 313.6,289.7 319.0,290.5 324.4,291.2 329.9,291.9 335.3,292.6 340.7,293.1 346.1,293.7 351.5,294.2 356.9,294.6 362.3,295.0 367.7,295.4 373.2,295.8 378.6,296.1 384.0,296.4 389.4,296.7 394.8,296.9 400.2,297.2 405.6,297.4 411.0,297.6 416.5,297.8 421.9,297.9 427.3,298.1 432.7,298.2 438.1,298.4 443.5,298.5 448.9,298.6 454.3,298.7 459.7,298.8 465.2,298.9 470.6,299.0 476.0,299.0 481.4,299.1 486.8,299.2 492.2,299.2 497.6,299.3 503.0,299.3 508.5,299.4 513.9,299.4 519.3,299.5 524.7,299.5 530.1,299.5 535.5,299.6 540.9,299.6 546.3,299.6 551.8,299.7 557.2,299.7 562.6,299.7 568.0,299.7 573.4,299.7 578.8,299.8 584.2,299.8 589.6,299.8 595.1,299.8 600.5,299.8 605.9,299.8 611.3,299.8 616.7,299.9 622.1,299.9 627.5,299.9 632.9,299.9 638.4,299.9 643.8,299.9 649.2,299.9 654.6,299.9 660.0,299.9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+
+  <line x1="281.4" y1="60" x2="281.4" y2="300" stroke="var(--eps)" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <text x="288" y="76" font-size="11.5" fill="var(--eps)" font-weight="700">F₀.₀₅,₃,₃₆ = 2.866</text>
+  <text x="288" y="91" font-size="10.5" fill="var(--eps)">reject beyond here</text>
+
+  <line x1="490.0" y1="90" x2="490.0" y2="300" stroke="var(--tau)" stroke-width="2.4"/>
+  <text x="497" y="106" font-size="12" fill="var(--tau)" font-weight="700">observed F = 5.696</text>
+  <text x="497" y="121" font-size="10.5" fill="var(--tau)">p = 0.00268</text>
+
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="70" y="320">0</text><text x="217.5" y="320">2</text><text x="365" y="320">4</text>
+    <text x="512.5" y="320">6</text><text x="660" y="320">8</text>
+    <text x="375" y="344">F value</text>
+  </g>
+</svg>
+<figcaption><b>The trout F sits deep in the tail.</b> Under H₀ the distribution piles up near 1; only 5% of it lies beyond 2.866. An observed 5.696 is far out in territory the null hypothesis rarely visits, so the null is rejected — <span style="color:var(--tau)">and only now</span> is the post-hoc work of lecture 4 permitted.</figcaption>
+</figure>
+
+<h2 class="sec" id="l2-7"><span class="tag">Lecture 2 · 7</span>Assumptions and how to check them</h2>
+
+<p>The F-test's distribution is derived <em>assuming</em> three things. If they fail, the p-value is not the number you think it is.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Assumption</th><th>In the barn</th><th>How to check</th><th>If violated</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Independence</strong></td><td>Piglets don't influence each other's growth</td><td>Not testable after the fact — it is bought by <em>randomization</em> at design time</td><td>Nothing can fix it later; the whole analysis is compromised</td></tr>
+    <tr><td><strong>Normality</strong> of errors</td><td>Measurement errors follow a bell curve</td><td>QQ plot of residuals; <code>shapiro.test(residuals(m))</code></td><td>t-tests fairly robust; F loses power. Transform, or Kruskal–Wallis</td></tr>
+    <tr><td><strong>Equal variance</strong></td><td>All diets give similarly spread weights</td><td>Residuals-vs-fitted (look for a funnel); <code>bartlett.test()</code></td><td>Standard errors wrong, CIs misleading. Transform, or weighted least squares</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>Normality is assumed of the <strong>errors</strong>, not of the raw data. The observations are <em>not</em> expected to look normal — if the treatments work, the data are a mixture of several different means, which will look multi-humped. Always run the diagnostics on <code>residuals(model)</code>.</p></div>
+
+<h4>Both datasets pass</h4>
+
+<pre><code><span class="cmt"># Piglets</span>
+<span class="fn">shapiro.test</span>(<span class="fn">residuals</span>(m1))    <span class="out">W = 0.8326,  p = 0.113</span>
+<span class="fn">bartlett.test</span>(Weight ~ Diet, data = SoyaData)   <span class="out">K² = 0.362, p = 0.834</span>
+
+<span class="cmt"># Trout</span>
+<span class="fn">shapiro.test</span>(<span class="fn">residuals</span>(model))  <span class="out">W = 0.9827,  p = 0.787</span>
+<span class="fn">bartlett.test</span>(Hemo ~ Sulfamerazine, data = Trout)  <span class="out">K² = 3.683, p = 0.298</span></code></pre>
+
+<div class="note trap"><span class="lbl">Trap</span><p>These are the one place where a <strong>large p-value is what you want</strong> — here H₀ is "the assumption holds". Also note the piglet Shapiro test has almost no power with 6 observations; passing it is close to meaningless. Small samples pass assumption tests because the tests cannot see anything, not because the assumptions are met.</p></div>
+
+<h2 class="sec" id="l2-8"><span class="tag">Lecture 2 · 8</span>Power — why the same design reaches opposite conclusions</h2>
+
+<p>The lecture puts the <code>PlantGrowth</code> case study immediately after the piglets for a reason. Both are one-way CRDs with three groups. The only meaningful difference is <span class="m">n</span>.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Study</th><th class="num">a</th><th class="num">n</th><th class="num">N</th><th class="num">df<sub>E</sub></th><th class="num">F</th><th class="num">p</th><th>Conclusion</th></tr></thead>
+  <tbody>
+    <tr><td>Piglets</td><td class="num">3</td><td class="num">2</td><td class="num">6</td><td class="num">3</td><td class="num">0.333</td><td class="num miss">0.7401</td><td class="miss">Fail to reject</td></tr>
+    <tr><td>PlantGrowth</td><td class="num">3</td><td class="num">10</td><td class="num">30</td><td class="num">27</td><td class="num">4.846</td><td class="num hit">0.0159</td><td class="hit">Reject H₀</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Power</strong> is the probability of rejecting H₀ when it is genuinely false — <span class="m">1 − β</span>. It rises with:</p>
+
+<ul>
+  <li><strong>Sample size n</strong> — because <span class="m">Var(ȳ) = σ²/n</span>, so bigger n makes group means more precise and real gaps easier to see.</li>
+  <li><strong>Effect size</strong> — larger true differences are easier to detect.</li>
+  <li><strong>Lower σ²</strong> — less noise to see through. Blocking and tight experimental control both work by shrinking σ².</li>
+</ul>
+
+<div class="note exam"><span class="lbl">On the exam</span><p>Never write "the diets have no effect" after a non-significant F. The defensible sentence is: <em>"There is no statistically significant evidence at α = 0.05 that diet affects weight gain (F<sub>2,3</sub> = 0.33, p = 0.74). With n = 2 per group the study has very low power, so a real effect could easily have gone undetected."</em> The second sentence is what separates a good answer from a merely correct one.</p></div>
+
+<!-- ============================================================ L3 -->
+<h2 class="sec" id="l3-1"><span class="tag">Lecture 3 · 1</span>One statistic behind every test</h2>
+
+<p>Lecture 3 appears to introduce many different tests. It introduces <strong>one</strong>, applied to different quantities:</p>
+
+<span class="eq mu-eq">
+T = <span class="frac"><span>estimate − hypothesised value</span><span>standard error of the estimate</span></span>
+&nbsp;&nbsp;&nbsp;
+<span style="color:var(--ink-3);font-size:.85em">with</span> &nbsp; df = N − a
+</span>
+
+<p>The numerator is the size of the effect you think you found. The denominator is how much that estimate would bounce around from experiment to experiment. Their ratio asks: <em>is this gap large relative to the uncertainty in measuring it?</em></p>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p><strong>Every test in lectures 3 and 4 changes only the numerator.</strong> A group mean, the grand mean, a difference of two means, a contrast — same formula, same pooled <span class="m">MS<sub>E</sub></span>, same <span class="m">df = N − a</span>. Learn the table of standard errors and you have learned all of it.</p></div>
+
+<div class="tablewrap">
+<table>
+  <caption>Every standard error in the course — all use pooled MS<sub>E</sub> with df = N − a</caption>
+  <thead><tr><th>Target</th><th>Estimate</th><th>Standard error</th><th>Where</th></tr></thead>
+  <tbody>
+    <tr><td>A treatment mean <span class="m">μ<sub>i</sub></span></td><td><span class="m">ȳ<sub>i·</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub>/n</span></span></td><td>L3</td></tr>
+    <tr><td>The grand mean <span class="m">μ</span></td><td><span class="m">ȳ<sub>··</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub>/N</span></span></td><td>L3</td></tr>
+    <tr><td>A difference <span class="m">μ<sub>i</sub> − μ<sub>j</sub></span></td><td><span class="m">ȳ<sub>i·</sub> − ȳ<sub>j·</sub></span></td><td><span class="m">√<span class="rad">MS<sub>E</sub>(1/n<sub>i</sub> + 1/n<sub>j</sub>)</span></span></td><td>L3</td></tr>
+    <tr><td>A contrast <span class="m">Γ = Σ c<sub>i</sub>μ<sub>i</sub></span></td><td><span class="m">Σ c<sub>i</sub>ȳ<sub>i·</sub></span></td><td><span class="m">√<span class="rad">(MS<sub>E</sub>/n) Σ c<sub>i</sub>²</span></span></td><td>L4</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Why pooled MS<sub>E</sub> and not the group's own variance</h3>
+
+<div class="note why"><span class="lbl">Why it works</span><p>You <em>assumed</em> all groups share the same σ². Under that assumption, each group's variance is an independent estimate of the same number, so averaging them all gives a far more stable estimate than using one group alone. Concretely for the piglets: NONS alone gives <span class="m">s² = 8</span> on 1 df; pooling all three gives <span class="m">MS<sub>E</sub> = 6</span> on 3 df. More degrees of freedom means a smaller critical value (3.182 instead of 12.706) and therefore more power. <strong>Pooling buys precision, and the equal-variance assumption is the price.</strong> That is why you check it.</p></div>
+
+<h2 class="sec" id="l3-2"><span class="tag">Lecture 3 · 2</span>Testing a treatment mean</h2>
+
+<p>Test <span class="m">H₀: μ<sub>NONS</sub> = 83</span> against <span class="m">H<sub>A</sub>: μ<sub>NONS</sub> ≠ 83</span>.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">Step</th><th>Quantity</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Estimate</td><td><span class="m">ȳ<sub>1·</sub> = 82</span></td></tr>
+    <tr><td class="num">2</td><td>Standard error</td><td><span class="m">√<span class="rad">MS<sub>E</sub>/n</span> = √<span class="rad">6/2</span> = √<span class="rad">3</span> = 1.7321</span></td></tr>
+    <tr><td class="num">3</td><td>Test statistic</td><td><span class="m">T = (82 − 83)/1.7321 = −0.5774</span></td></tr>
+    <tr><td class="num">4</td><td>Degrees of freedom</td><td><span class="m">N − a = 6 − 3 = 3</span></td></tr>
+    <tr><td class="num">5</td><td>Critical value</td><td><span class="m">t<sub>0.025, 3</sub> = 3.1824</span></td></tr>
+    <tr><td class="num">6</td><td>Decision</td><td><span class="m">|−0.5774| = 0.577 &lt; 3.182</span> → <strong class="miss">fail to reject</strong></td></tr>
+    <tr><td class="num">7</td><td>p-value</td><td><code>2 * pt(-abs(-0.5774), 3)</code> = <strong>0.6042</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Conclusion: no evidence that the control group's mean differs from 83 kg.</p>
+
+<div class="note trap"><span class="lbl">Trap · the slide rounds early</span><p>The lecture slide computes <code>2*pt(-0.58, 3)</code> = 0.6026, having rounded T to −0.58 first. Carrying the exact <span class="m">T = −0.57735</span> gives <strong>0.60418</strong>. The conclusion is unchanged here, but rounding an intermediate value and then feeding it into a tail probability is a habit that will eventually flip a borderline decision. Round only at the very end.</p></div>
+
+<h3>Decision rules for all three alternatives</h3>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Alternative</th><th>Reject when</th><th>R critical value</th><th>R p-value</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">θ ≠ θ₀</span> (two-sided)</td><td><span class="m">|T| &gt; t<sub>α/2, df</sub></span></td><td><code>qt(1 - alpha/2, df)</code></td><td><code>2 * pt(-abs(T), df)</code></td></tr>
+    <tr><td><span class="m">θ &gt; θ₀</span> (upper)</td><td><span class="m">T &gt; t<sub>α, df</sub></span></td><td><code>qt(1 - alpha, df)</code></td><td><code>pt(T, df, lower.tail = FALSE)</code></td></tr>
+    <tr><td><span class="m">θ &lt; θ₀</span> (lower)</td><td><span class="m">T &lt; −t<sub>α, df</sub></span></td><td><code>-qt(1 - alpha, df)</code></td><td><code>pt(T, df)</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="sec" id="l3-3"><span class="tag">Lecture 3 · 3</span>Confidence intervals and their duality with tests</h2>
+
+<span class="eq">
+CI = estimate ± t<sub>α/2, N−a</sub> · se(estimate)
+</span>
+
+<p>For the three piglet diets, with <span class="m">t<sub>0.025,3</sub> · √<span class="rad">3</span> = 3.1824 × 1.7321 = 5.512</span>:</p>
+
+<div class="tablewrap">
+<table>
+  <caption>predict(model, newdata, interval = "confidence")</caption>
+  <thead><tr><th>Diet</th><th class="num">Estimate</th><th class="num">Lower</th><th class="num">Upper</th><th class="num">Width</th></tr></thead>
+  <tbody>
+    <tr><td>NONS</td><td class="num">82</td><td class="num">76.488</td><td class="num">87.512</td><td class="num">11.02</td></tr>
+    <tr><td>S1</td><td class="num">83</td><td class="num">77.488</td><td class="num">88.512</td><td class="num">11.02</td></tr>
+    <tr><td>S2</td><td class="num">84</td><td class="num">78.488</td><td class="num">89.512</td><td class="num">11.02</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Those intervals are 11 kg wide on animals that weigh about 83 kg, and they overlap almost completely. The estimates are close to worthless — which is the honest summary of an experiment with two piglets per diet.</p>
+
+<div class="note key"><span class="lbl">Duality — the shortcut worth knowing</span><p>A two-sided test at level α and a <span class="m">(1−α)</span> confidence interval are <strong>the same procedure</strong>. Reject <span class="m">H₀: θ = θ₀</span> if and only if <span class="m">θ₀</span> falls outside the interval. So once you have the CI you never need to run the test — just look. This works in both directions and is frequently the fastest route to an exam answer.</p></div>
+
+<div class="note trap"><span class="lbl">Trap · what "95% confident" means</span><p>It is a statement about the <em>procedure</em>, not about this one interval. If you repeated the whole experiment many times, 95% of the intervals so constructed would contain the true μ. The true μ is a fixed number; it does not have a probability distribution. Saying "there is a 95% probability that μ is in [76.5, 87.5]" is the classic misstatement.</p></div>
+
+<h2 class="sec" id="l3-4"><span class="tag">Lecture 3 · 4</span>Inference on the error variance</h2>
+
+<p>So far σ² has been a nuisance parameter. Sometimes it is the quantity of interest — how noisy is this measurement process? The relevant sampling result is:</p>
+
+<span class="eq eps-eq">
+<span class="frac"><span>SS<sub>E</sub></span><span><span class="eps">σ²</span></span></span> ~ χ²<sub>N−a</sub>
+</span>
+
+<p>Rearranging for σ² gives an interval — but note carefully what happens to the direction:</p>
+
+<span class="eq eps-eq">
+CI for <span class="eps">σ²</span> = [ <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>1−α/2, df<sub>E</sub></sub></span></span> , <span class="frac"><span>SS<sub>E</sub></span><span>χ²<sub>α/2, df<sub>E</sub></sub></span></span> ]
+</span>
+
+<figure>
+<svg viewBox="0 0 720 340" role="img" aria-label="Chi-square distribution with 3 degrees of freedom showing the small 0.025 quantile at 0.216 and the large 0.975 quantile at 9.348">
+  <line x1="70" y1="280" x2="680" y2="280" stroke="currentColor" stroke-width="1"/>
+  <polyline points="70.8,230.8 76.2,154.5 81.7,119.2 87.1,97.6 92.5,83.7 97.9,74.9 103.3,69.8 108.7,67.4 114.1,67.2 119.5,68.5 124.9,71.1 130.3,74.7 135.7,79.0 141.1,83.8 146.5,89.2 151.9,94.8 157.3,100.7 162.7,106.7 168.1,112.8 173.5,118.9 178.9,125.0 184.4,131.1 189.8,137.1 195.2,143.0 200.6,148.7 206.0,154.4 211.4,159.8 216.8,165.2 222.2,170.3 227.6,175.3 233.0,180.2 238.4,184.8 243.8,189.3 249.2,193.6 254.6,197.8 260.0,201.8 265.4,205.6 270.8,209.3 276.2,212.8 281.6,216.1 287.0,219.3 292.5,222.4 297.9,225.3 303.3,228.1 308.7,230.8 314.1,233.3 319.5,235.7 324.9,238.0 330.3,240.2 335.7,242.3 341.1,244.3 346.5,246.2 351.9,248.0 357.3,249.7 362.7,251.3 368.1,252.8 373.5,254.3 378.9,255.7 384.3,257.0 389.7,258.2 395.1,259.4 400.6,260.5 406.0,261.6 411.4,262.6 416.8,263.5 422.2,264.4 427.6,265.3 433.0,266.1 438.4,266.9 443.8,267.6 449.2,268.3 454.6,268.9 460.0,269.6 465.4,270.1 470.8,270.7 476.2,271.2 481.6,271.7 487.0,272.2 492.4,272.6 497.8,273.0 503.3,273.4 508.7,273.8 514.1,274.1 519.5,274.5 524.9,274.8 530.3,275.1 535.7,275.3 541.1,275.6 546.5,275.9 551.9,276.1 557.3,276.3 562.7,276.5 568.1,276.7 573.5,276.9 578.9,277.1 584.3,277.3 589.7,277.4 595.1,277.6 600.5,277.7 605.9,277.8 611.4,278.0 616.8,278.1 622.2,278.2 627.6,278.3 633.0,278.4 638.4,278.5 643.8,278.6 649.2,278.7 654.6,278.7 660.0,278.8" fill="none" stroke="currentColor" stroke-width="1.8"/>
+
+  <line x1="79.1" y1="60" x2="79.1" y2="280" stroke="var(--mu)" stroke-width="1.8"/>
+  <text x="86" y="74" font-size="11.5" fill="var(--mu)" font-weight="700">χ²₀.₀₂₅,₃ = 0.216</text>
+  <text x="86" y="89" font-size="10.5" fill="var(--mu)">small quantile → 18/0.216 = 83.41 → <tspan font-weight="700">UPPER</tspan> bound</text>
+
+  <line x1="464.0" y1="120" x2="464.0" y2="280" stroke="var(--eps)" stroke-width="1.8"/>
+  <text x="456" y="134" font-size="11.5" fill="var(--eps)" font-weight="700" text-anchor="end">χ²₀.₉₇₅,₃ = 9.348</text>
+  <text x="456" y="149" font-size="10.5" fill="var(--eps)" text-anchor="end">large quantile → 18/9.348 = 1.93 → <tspan font-weight="700">LOWER</tspan> bound</text>
+
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="70" y="300">0</text><text x="238.6" y="300">4</text><text x="407.1" y="300">8</text>
+    <text x="575.7" y="300">12</text>
+    <text x="375" y="326">χ² with 3 df — note the strong right skew</text>
+  </g>
+</svg>
+<figcaption><b>The bounds swap because SS<sub>E</sub> is divided by the quantile.</b> Dividing by a small number gives a large result, so the <em>small</em> χ² quantile produces the <em>upper</em> confidence bound. The distribution's skew is why the resulting interval is wildly asymmetric — 1.93 below, 83.41 above, around a point estimate of 6.</figcaption>
+</figure>
+
+<p>For the piglets, <span class="m">SS<sub>E</sub> = 18</span> on <span class="m">df<sub>E</sub> = 3</span>:</p>
+
+<pre><code><span class="fn">qchisq</span>(<span class="fn">c</span>(0.975, 0.025), df = 3)      <span class="out">9.348404   0.2157953</span>
+18 / <span class="fn">qchisq</span>(<span class="fn">c</span>(0.975, 0.025), df = 3) <span class="out">1.925462  83.412390</span></code></pre>
+
+<p>So the 95% CI for σ² is <strong>[1.93, 83.41]</strong>. Testing <span class="m">H₀: σ² = 1</span> by duality: 1 is outside the interval, so reject. Testing <span class="m">H₀: σ² = 20</span>: inside, so fail to reject. The interval spans a factor of forty — with 3 degrees of freedom you know almost nothing about σ².</p>
+
+<div class="note trap"><span class="lbl">Trap</span><p>The slide gives the upper bound as 81.8, from rounding <span class="m">χ²<sub>0.025,3</sub></span> to 0.22. The exact value 0.2157953 gives <strong>83.41</strong>. If you work from a printed statistical table you will legitimately get ≈81.8 — say which you used. The lesson is that dividing by a small, heavily-rounded number amplifies the rounding error enormously.</p></div>
+
+<h2 class="sec" id="l3-5"><span class="tag">Lecture 3 · 5</span>Type I and Type II errors</h2>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th></th><th>H₀ is true</th><th>H₀ is false</th></tr></thead>
+  <tbody>
+    <tr><th>Reject H₀</th><td class="miss"><strong>Type I error</strong> — probability α<br>A false discovery</td><td class="hit"><strong>Correct</strong> — probability <span class="m">1 − β</span><br>This is <strong>power</strong></td></tr>
+    <tr><th>Fail to reject</th><td class="hit"><strong>Correct</strong> — probability <span class="m">1 − α</span></td><td class="miss"><strong>Type II error</strong> — probability β<br>A missed real effect</td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 720 320" role="img" aria-label="Two overlapping normal distributions separated by a decision threshold, with alpha shaded in the right tail of the null and beta shaded under the alternative to the left of the threshold">
+  <polygon points="385.1,250 385.1,222.2 392.1,228.6 399.2,233.8 406.2,237.9 413.3,241.2 420.3,243.6 427.4,245.5 434.4,246.9 441.5,247.9 448.5,248.6 455.6,249.0 462.6,249.4 469.7,249.6 476.7,249.7 483.8,249.8 490.8,249.9 497.9,249.9 504.9,250.0 512.0,250.0 660,250" fill="var(--mu)" opacity=".38"/>
+  <polygon points="60,250 225.3,249.9 258.4,249.3 285.9,246.8 302.4,242.7 319.0,235.0 330.0,226.8 341.0,215.6 352.0,201.0 363.1,183.0 374.1,162.2 385.1,139.4 385.1,250" fill="var(--eps)" opacity=".30"/>
+
+  <polyline points="60.0,249.9 105.4,248.7 130.6,245.1 150.8,237.6 165.9,227.2 176.0,217.2 186.1,204.4 196.1,188.7 206.2,170.4 216.3,150.2 226.4,129.0 236.5,108.2 246.6,89.4 256.6,74.3 266.7,64.2 276.8,60.1 286.9,62.4 297.0,71.0 307.1,84.9 317.1,102.8 327.2,123.2 337.3,144.4 347.4,165.1 357.5,184.0 367.6,200.4 377.6,214.0 387.7,224.7 397.8,232.9 407.9,238.8 418.0,242.9 428.1,245.6 438.2,247.4 448.2,248.5 458.3,249.2 468.4,249.6 478.5,249.8 488.6,249.9 498.7,249.9 513.8,250.0 660.0,250.0" fill="none" stroke="var(--mu)" stroke-width="2"/>
+  <polyline points="60.0,250.0 216.3,250.0 246.6,249.7 266.7,248.9 281.8,247.4 296.9,244.4 312.1,238.8 327.2,229.1 337.3,219.7 347.4,207.5 357.5,192.5 367.6,174.8 377.6,154.9 387.7,133.8 397.8,112.8 407.9,93.4 418.0,77.3 428.1,66.0 438.2,60.5 443.2,60.1 453.3,64.2 463.4,74.3 473.4,89.4 483.5,108.2 493.6,129.0 503.7,150.2 513.8,170.4 523.9,188.7 533.9,204.4 544.0,217.2 554.1,227.2 564.2,234.7 574.3,240.0 584.4,243.8 594.5,246.2 604.5,247.8 614.6,248.7 624.7,249.3 634.8,249.6 644.9,249.8 660.0,249.9" fill="none" stroke="var(--eps)" stroke-width="2"/>
+
+  <line x1="60" y1="250" x2="680" y2="250" stroke="currentColor" stroke-width="1"/>
+  <line x1="385.1" y1="42" x2="385.1" y2="262" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <text x="385.1" y="34" font-size="11.5" fill="currentColor" text-anchor="middle" font-weight="700">decision threshold</text>
+
+  <text x="256" y="52" font-size="12.5" fill="var(--mu)" text-anchor="middle" font-weight="700">H₀ true</text>
+  <text x="452" y="52" font-size="12.5" fill="var(--eps)" text-anchor="middle" font-weight="700">H₀ false</text>
+
+  <text x="440" y="240" font-size="12" fill="var(--mu)" font-weight="700">α</text>
+  <text x="446" y="228" font-size="10" fill="var(--mu)">false positive</text>
+  <text x="336" y="240" font-size="12" fill="var(--eps)" font-weight="700" text-anchor="end">β</text>
+  <text x="330" y="228" font-size="10" fill="var(--eps)" text-anchor="end">missed effect</text>
+
+  <text x="375" y="290" font-size="11.5" fill="currentColor" text-anchor="middle">Slide the threshold right → α shrinks, β grows. Slide it left → the reverse.</text>
+  <text x="375" y="308" font-size="11.5" fill="currentColor" text-anchor="middle" font-weight="700">Only more data separates the two curves and shrinks both at once.</text>
+</svg>
+<figcaption><b>α and β are two ends of one lever.</b> The threshold is the only thing you control at analysis time, and moving it trades one error for the other. Increasing n narrows both curves, pushing them apart — which is why "collect more data" is the only genuine escape from the trade-off.</figcaption>
+</figure>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>α is chosen by you, before seeing the data. β is a consequence — of your α, your sample size, the true effect size, and σ². You never observe β directly, which is exactly why a non-significant result is so easy to over-interpret.</p></div>
+
+<h2 class="sec" id="l3-6"><span class="tag">Lecture 3 · 6</span>Why balance maximises power</h2>
+
+<p>This is stated as a design principle in L2. Here is the algebra that makes it a theorem.</p>
+
+<span class="eq eps-eq">
+Var(ȳ<sub>1·</sub> − ȳ<sub>2·</sub>) = <span class="eps">σ²</span> ( <span class="frac"><span>1</span><span>n₁</span></span> + <span class="frac"><span>1</span><span>n₂</span></span> )
+</span>
+
+<p>Hold the total <span class="m">N = n₁ + n₂</span> fixed and see what happens as you shift units between groups:</p>
+
+<div class="tablewrap">
+<table>
+  <caption>Allocating N = 22 units to two groups, variance in units of σ²</caption>
+  <thead><tr><th class="num">n₁</th><th class="num">n₂</th><th class="num">1/n₁ + 1/n₂</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td class="num">11</td><td class="num">11</td><td class="num hit">0.1818</td><td class="hit"><strong>Balanced — minimum</strong></td></tr>
+    <tr><td class="num">8</td><td class="num">14</td><td class="num">0.1964</td><td>8% worse</td></tr>
+    <tr><td class="num">4</td><td class="num">18</td><td class="num">0.3056</td><td>68% worse</td></tr>
+    <tr><td class="num">2</td><td class="num">20</td><td class="num miss">0.5500</td><td class="miss">Three times worse</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note why"><span class="lbl">Why it works</span><p>The reciprocal <span class="m">1/n</span> falls steeply for small n and flattens for large n. So moving one unit <em>out of</em> a small group costs far more than the same unit <em>gains</em> when added to a large one. The small group dominates the uncertainty of the comparison, and the twentieth observation in a group of twenty adds almost nothing. Formally, <span class="m">1/n₁ + 1/n₂</span> subject to <span class="m">n₁ + n₂ = N</span> is minimised at <span class="m">n₁ = n₂ = N/2</span>.</p></div>
+
+<h2 class="sec" id="l3-7"><span class="tag">Lecture 3 · 7</span>Reading R's coefficients — the contr.sum setting</h2>
+
+<p>This is the single most confusing practical detail in the course, and it is entirely about R's default not matching the course's model.</p>
+
+<pre><code><span class="fn">options</span>(contrasts = <span class="fn">c</span>(<span style="color:var(--tau)">"contr.sum"</span>, <span style="color:var(--tau)">"contr.poly"</span>))   <span class="cmt"># put this at the top of EVERY script</span>
+
+r1 <- <span class="fn">lm</span>(Weight ~ Diet, data = SoyaData)
+<span class="fn">coef</span>(r1)
+<span class="out">(Intercept)       Diet1       Diet2
+         83          -1           0</span></code></pre>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>R output</th><th>Means</th><th class="num">Value</th></tr></thead>
+  <tbody>
+    <tr><td><code>(Intercept)</code></td><td><span class="mu m">μ̂</span> — the grand mean</td><td class="num">83</td></tr>
+    <tr><td><code>Diet1</code></td><td><span class="tau m">τ̂₁</span> — NONS deviation</td><td class="num">−1</td></tr>
+    <tr><td><code>Diet2</code></td><td><span class="tau m">τ̂₂</span> — S1 deviation</td><td class="num">0</td></tr>
+    <tr><td><em>not shown</em></td><td><span class="tau m">τ̂₃</span> — recover as <span class="m">−(τ̂₁ + τ̂₂)</span></td><td class="num">+1</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note trap"><span class="lbl">Trap · the one that silently changes your answer</span><p>R's factory default is <code>contr.treatment</code>, not <code>contr.sum</code>. Under the default, <code>(Intercept)</code> is the <em>first group's mean</em> (82, not 83) and each coefficient is a <em>difference from that baseline group</em>, not a deviation from the grand mean. The ANOVA table, F-statistic and p-values are <strong>identical</strong> either way — only the coefficients change meaning. So this fails silently: you get plausible numbers that answer a different question. Set the option at the top of every script.</p>
+<p>Two more details: R numbers the levels <strong>alphabetically</strong> (NONS, S1, S2 → Diet1, Diet2, Diet3), and under <code>contr.sum</code> the <strong>last</strong> level is the one omitted from the output.</p></div>
+
+<h3>The bridge to lecture 4</h3>
+
+<p>Testing one <span class="m">τ<sub>i</sub> = 0</span> is a one-degree-of-freedom question carved out of the global F-test, and the two agree exactly:</p>
+
+<span class="eq">T²<sub>N−a</sub> = F<sub>1, N−a</sub></span>
+
+<p>Both use the same <span class="m">MS<sub>E</sub></span> and the same <span class="m">df<sub>E</sub> = N − a</span>, and produce identical two-sided p-values. Lecture 4 turns this from a curiosity into the main tool.</p>
+
+<!-- ============================================================ L4 -->
+<h2 class="sec" id="l4-1"><span class="tag">Lecture 4 · 1</span>What a contrast is</h2>
+
+<p>The F-test tells you there is a fire but not which room is burning. A <strong>contrast</strong> is how you ask a specific question.</p>
+
+<span class="eq tau-eq">
+Γ = Σ<sub>i=1</sub><sup>a</sup> c<sub>i</sub> μ<sub>i</sub>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<span style="color:var(--ink-3);font-size:.85em">subject to</span> &nbsp; Σ<sub>i=1</sub><sup>a</sup> c<sub>i</sub> = 0
+</span>
+
+<div class="note why"><span class="lbl">Why the coefficients must sum to zero</span><p>Substitute <span class="m">μ<sub>i</sub> = μ + τ<sub>i</sub></span>:</p>
+<p style="text-align:center"><span class="m">Γ = Σ c<sub>i</sub>(μ + τ<sub>i</sub>) = μ Σ c<sub>i</sub> + Σ c<sub>i</sub>τ<sub>i</sub></span></p>
+<p>When <span class="m">Σ c<sub>i</sub> = 0</span> the first term vanishes and <span class="m">Γ = Σ c<sub>i</sub>τ<sub>i</sub></span> — <strong>a pure statement about treatment effects, with the baseline μ algebraically eliminated</strong>. Add 100 to every group mean and Γ is unchanged. That is what makes a contrast a comparison rather than a level.</p></div>
+
+<div class="tablewrap">
+<table>
+  <caption>Building coefficient vectors for the trout data, a = 4</caption>
+  <thead><tr><th>Question</th><th>c = (S00, S05, S10, S15)</th><th class="num">Σcᵢ</th><th class="num">Σcᵢ²</th></tr></thead>
+  <tbody>
+    <tr><td>Control vs 5 g</td><td><span class="m">(1, −1, 0, 0)</span></td><td class="num">0 ✓</td><td class="num">2</td></tr>
+    <tr><td>10 g vs 15 g</td><td><span class="m">(0, 0, 1, −1)</span></td><td class="num">0 ✓</td><td class="num">2</td></tr>
+    <tr><td>Low doses vs high doses</td><td><span class="m">(1, 1, −1, −1)</span></td><td class="num">0 ✓</td><td class="num">4</td></tr>
+    <tr><td>Control vs mean of all treated</td><td><span class="m">(1, −⅓, −⅓, −⅓)</span></td><td class="num">0 ✓</td><td class="num">1.333</td></tr>
+    <tr><td class="miss">Average of all groups</td><td class="miss"><span class="m">(¼, ¼, ¼, ¼)</span></td><td class="num miss">1 ✗</td><td class="num miss">—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>The last row is <strong>not a contrast</strong> — it estimates the overall level, not a difference. Useful, but it is not what this machinery is for.</p>
+
+<h2 class="sec" id="l4-2"><span class="tag">Lecture 4 · 2</span>Estimating and testing a contrast</h2>
+
+<p>The estimate replaces each unknown <span class="m">μ<sub>i</sub></span> with its sample mean, and the variance comes straight from the <a href="#l1-4">L1.4</a> rules:</p>
+
+<span class="eq">
+Γ̂ = Σ c<sub>i</sub> ȳ<sub>i·</sub>
+&nbsp;&nbsp;&nbsp;
+V(Γ̂) = Σ c<sub>i</sub>² · <span class="frac"><span>σ²</span><span>n</span></span> = <span class="frac"><span>σ²</span><span>n</span></span> Σ c<sub>i</sub>²
+&nbsp;&nbsp;&nbsp;
+se(Γ̂) = √<span class="rad"><span class="frac"><span>MS<sub>E</sub></span><span>n</span></span> Σ c<sub>i</sub>²</span>
+</span>
+
+<p>That <span class="m">Σc<sub>i</sub>²</span> is literally the <span class="m">Σc<sub>i</sub>²σ<sub>i</sub>²</span> rule from lecture 1 — nothing new has been introduced.</p>
+
+<h3>Worked by hand: control vs 5 g in the trout data</h3>
+
+<div class="tablewrap">
+<table>
+  <caption>Trout group summaries, a = 4, n = 10, N = 40</caption>
+  <thead><tr><th>Level</th><th>Dose</th><th class="num">n</th><th class="num">Mean</th><th class="num">SD</th></tr></thead>
+  <tbody>
+    <tr><td>S00</td><td>0 g</td><td class="num">10</td><td class="num">7.20</td><td class="num">1.0187</td></tr>
+    <tr><td>S05</td><td>5 g</td><td class="num">10</td><td class="num">9.33</td><td class="num">1.7166</td></tr>
+    <tr><td>S10</td><td>10 g</td><td class="num">10</td><td class="num">9.03</td><td class="num">1.1353</td></tr>
+    <tr><td>S15</td><td>15 g</td><td class="num">10</td><td class="num">8.69</td><td class="num">1.0005</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">Step</th><th>Quantity</th><th>Working</th><th class="num">Value</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Estimate</td><td><span class="m">(1)(7.20) + (−1)(9.33)</span></td><td class="num">−2.13</td></tr>
+    <tr><td class="num">2</td><td><span class="m">Σcᵢ²</span></td><td><span class="m">1² + (−1)²</span></td><td class="num">2</td></tr>
+    <tr><td class="num">3</td><td>Standard error</td><td><span class="m">√<span class="rad">(1.5686/10) × 2</span></span></td><td class="num">0.5601</td></tr>
+    <tr><td class="num">4</td><td>Test statistic</td><td><span class="m">−2.13 / 0.5601</span></td><td class="num">−3.8028</td></tr>
+    <tr><td class="num">5</td><td>Critical value</td><td><span class="m">t<sub>0.025, 36</sub></span></td><td class="num">2.0281</td></tr>
+    <tr><td class="num">6</td><td>Decision</td><td><span class="m">3.803 &gt; 2.028</span></td><td class="num hit">Reject</td></tr>
+    <tr><td class="num">7</td><td>p-value</td><td><code>2 * pt(-3.8028, 36)</code></td><td class="num hit">0.000534</td></tr>
+    <tr><td class="num">8</td><td>95% CI</td><td><span class="m">−2.13 ± 2.0281 × 0.5601</span></td><td class="num">[−3.266, −0.994]</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Zero is not in the interval, so the control and the 5 g group genuinely differ. <strong>But this p-value is uncorrected</strong> — it is only defensible if this comparison was planned before looking at the data. See <a href="#l4-5">L4.5</a>.</p>
+
+<h2 class="sec" id="l4-3"><span class="tag">Lecture 4 · 3</span>Orthogonality and the partition theorem</h2>
+
+<p>Two contrasts are <strong>orthogonal</strong> — mathematically independent, carrying non-overlapping information — when</p>
+
+<span class="eq">Σ<sub>i=1</sub><sup>a</sup> c<sub>1i</sub> c<sub>2i</sub> = 0</span>
+
+<p>Check the three trout contrasts pairwise:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Pair</th><th>Element-by-element products</th><th class="num">Sum</th><th></th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">c₁ · c₂</span></td><td><span class="m">(1)(0) + (−1)(0) + (0)(1) + (0)(−1)</span></td><td class="num">0</td><td class="hit">orthogonal</td></tr>
+    <tr><td><span class="m">c₁ · c₃</span></td><td><span class="m">(1)(1) + (−1)(1) + (0)(−1) + (0)(−1)</span></td><td class="num">0</td><td class="hit">orthogonal</td></tr>
+    <tr><td><span class="m">c₂ · c₃</span></td><td><span class="m">(0)(1) + (0)(1) + (1)(−1) + (−1)(−1)</span></td><td class="num">0</td><td class="hit">orthogonal</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Each contrast has its own sum of squares, with exactly one degree of freedom because it asks exactly one question:</p>
+
+<span class="eq tau-eq">
+SS<sub>C</sub> = <span class="frac"><span>(Σ c<sub>i</sub> ȳ<sub>i·</sub>)²</span><span><span class="frac"><span>1</span><span>n</span></span> Σ c<sub>i</sub>²</span></span>
+&nbsp;&nbsp;&nbsp;
+df<sub>C</sub> = 1
+&nbsp;&nbsp;&nbsp;
+MS<sub>C</sub> = SS<sub>C</sub>
+</span>
+
+<div class="note key"><span class="lbl">The partition theorem</span><p>With <span class="m">a</span> groups you can build exactly <span class="m">a − 1</span> mutually orthogonal contrasts — matching <span class="m">df<sub>Tr</sub> = a − 1</span> exactly, which is not a coincidence. When you do, their sums of squares <strong>add up to the treatment sum of squares</strong>: <span class="m">SS<sub>Tr</sub> = Σ<sub>j</sub> SS<sub>C<sub>j</sub></sub></span>. The omnibus test has been dissected into <span class="m">a−1</span> independent one-df questions with nothing left over and nothing double-counted.</p></div>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img" aria-label="Stacked bar showing the trout treatment sum of squares of 26.80 split into three orthogonal contrast components of 22.68, 0.58 and 3.54">
+  <text x="30" y="30" font-size="12.5" fill="currentColor" font-weight="700">SS_Tr = 26.803, all three degrees of freedom</text>
+
+  <rect x="30" y="44" width="640" height="46" fill="var(--tau)" opacity=".26" stroke="var(--tau)" stroke-width="1.5"/>
+  <text x="350" y="73" font-size="13" fill="currentColor" text-anchor="middle" font-weight="700">26.803</text>
+
+  <g stroke="currentColor" stroke-width="1" opacity=".5" stroke-dasharray="3 3">
+    <line x1="30" y1="90" x2="30" y2="118"/>
+    <line x1="670" y1="90" x2="670" y2="118"/>
+  </g>
+
+  <rect x="30" y="120" width="541.6" height="46" fill="var(--tau)" opacity=".55" stroke="var(--tau)" stroke-width="1.5"/>
+  <rect x="571.6" y="120" width="13.8" height="46" fill="var(--mu)" opacity=".45" stroke="var(--mu)" stroke-width="1.5"/>
+  <rect x="585.4" y="120" width="84.6" height="46" fill="var(--eps)" opacity=".40" stroke="var(--eps)" stroke-width="1.5"/>
+
+  <text x="300" y="149" font-size="13" fill="currentColor" text-anchor="middle" font-weight="700">22.685</text>
+
+  <line x1="578" y1="120" x2="578" y2="196" stroke="var(--mu)" stroke-width="1"/>
+  <text x="578" y="210" font-size="11" fill="var(--mu)" text-anchor="middle" font-weight="700">0.578</text>
+  <text x="627" y="149" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">3.540</text>
+
+  <g font-size="11.5">
+    <text x="300" y="186" fill="var(--tau)" text-anchor="middle" font-weight="700">c₁ = (1,−1,0,0) · 0 g vs 5 g · p = 0.00053</text>
+    <text x="578" y="226" fill="var(--mu)" text-anchor="middle">c₂ · 10 vs 15 g · p = 0.55</text>
+    <text x="627" y="186" fill="var(--eps)" text-anchor="middle">c₃ · low vs high</text>
+    <text x="627" y="202" fill="var(--eps)" text-anchor="middle">p = 0.14</text>
+  </g>
+
+  <text x="30" y="244" font-size="11.5" fill="currentColor">22.685 + 0.578 + 3.540 = 26.803 — the partition is exact.</text>
+</svg>
+<figcaption><b>One significant question and two null ones.</b> Nearly all of the treatment effect (85% of SS<sub>Tr</sub>) lives in the single comparison between the control and the 5 g dose. The doses do not differ meaningfully from each other, and low-versus-high is not significant either — so the finding is <em>"any sulfamerazine helps"</em>, not <em>"more sulfamerazine helps more"</em>. The omnibus F alone could never have told you that.</figcaption>
+</figure>
+
+<div class="note trap"><span class="lbl">Trap · the slide's split numbers are wrong</span><p>The lecture 4 slide states the partition as <strong>11.10 + 12.79 + 2.91 = 26.80</strong>. Those three values do sum correctly, but they are <em>not</em> what the stated contrasts produce. Running the code on the slide's own page gives <strong>22.685 + 0.578 + 3.540</strong>. Trust the R output — and note that the difference matters scientifically: the slide's version implies the two largest effects are comparable, while the real split shows one comparison dominating everything else.</p></div>
+
+<h2 class="sec" id="l4-4"><span class="tag">Lecture 4 · 4</span>Why T² = F</h2>
+
+<p>Square the contrast t-statistic and watch it turn into an F-statistic:</p>
+
+<span class="eq">
+T₀² = ( <span class="frac"><span>Γ̂</span><span>se(Γ̂)</span></span> )² = <span class="frac"><span>(Σ c<sub>i</sub>ȳ<sub>i·</sub>)²</span><span><span class="frac"><span>MS<sub>E</sub></span><span>n</span></span> Σ c<sub>i</sub>²</span></span> = <span class="frac"><span>SS<sub>C</sub></span><span>MS<sub>E</sub></span></span> = F₀
+</span>
+
+<p>Verify numerically on the trout contrast: <span class="m">T₀ = −3.8028</span>, so <span class="m">T₀² = 14.461</span>. And <span class="m">SS<sub>C</sub>/MS<sub>E</sub> = 22.685/1.5686 = 14.461</span>. Identical, and both give p = 0.000534.</p>
+
+<div class="note key"><span class="lbl">The load-bearing idea</span><p>A t-test <em>is</em> an F-test with one numerator degree of freedom. This is why you may test a contrast either way, why the <code>split=</code> output in R agrees with a hand t-test, and why the same tables serve both. The only asymmetry: t is signed, so it tells you the <em>direction</em>; F is squared and does not.</p></div>
+
+<h2 class="sec" id="l4-5"><span class="tag">Lecture 4 · 5</span>The multiple testing problem</h2>
+
+<p>With <span class="m">a</span> groups there are <span class="m">m = a(a−1)/2</span> pairwise comparisons. Test each at α = 0.05 and, treating the tests as independent:</p>
+
+<span class="eq eps-eq">
+FWER = P(at least one false positive) = 1 − (1 − α)<sup>m</sup>
+</span>
+
+<div class="tablewrap">
+<table>
+  <caption>The family-wise error rate compounds fast</caption>
+  <thead><tr><th class="num">Groups a</th><th class="num">Tests m</th><th class="num">FWER at α = 0.05</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td class="num">3</td><td class="num">3</td><td class="num">14.3%</td><td>Already triple the nominal rate</td></tr>
+    <tr><td class="num">4</td><td class="num">6</td><td class="num">26.5%</td><td>The trout study — a 1-in-4 chance of a false claim</td></tr>
+    <tr><td class="num">5</td><td class="num">10</td><td class="num">40.1%</td><td>Coin-flip territory</td></tr>
+    <tr><td class="num">10</td><td class="num">45</td><td class="num miss">90.1%</td><td class="miss">A false discovery is now near-certain</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note why"><span class="lbl">Why it compounds</span><p>Each test has a 95% chance of behaving. Run <span class="m">m</span> independent tests and the chance that <em>all</em> behave is <span class="m">0.95<sup>m</sup></span>, which decays geometrically. As <span class="m">a</span> grows linearly, <span class="m">m</span> grows quadratically and the error rate compounds on top of that. This is a major documented cause of irreproducible published science, not a theoretical worry.</p></div>
+
+<div class="note trap"><span class="lbl">Trap · the independence assumption</span><p>The formula <span class="m">1 − (1−α)<sup>m</sup></span> assumes the <span class="m">m</span> tests are independent. Pairwise comparisons are <strong>not</strong> — they share group means (S05−S00 and S10−S00 both involve S00) and they share the same <span class="m">MS<sub>E</sub></span>. The true FWER is somewhat lower than the table. The formula is a useful bound and is what the exam expects, but it is an approximation and you should say so.</p></div>
+
+<h2 class="sec" id="l4-6"><span class="tag">Lecture 4 · 6</span>The three corrections</h2>
+
+<p>All three raise the bar for significance. They differ in <strong>what set of comparisons they protect</strong> — and that is what should drive your choice.</p>
+
+<div class="grid3">
+  <div class="panel mu-p">
+    <h5>Bonferroni</h5>
+    <p><span class="big-num">α/m</span></p>
+    <p>Test each comparison at <span class="m">α/m</span> instead of α. For a = 4: <span class="m">0.05/6 = 0.0083</span>.</p>
+    <p><strong>Protects:</strong> any <span class="m">m</span> comparisons you named in advance.</p>
+    <p><strong>Use when</strong> m is small and every comparison was planned. Gets brutal fast as m grows.</p>
+  </div>
+  <div class="panel tau-p">
+    <h5>Tukey HSD</h5>
+    <p><span class="big-num">q<sub>α,a,N−a</sub></span></p>
+    <p>Uses the studentized range distribution — the distribution of <span class="m">(ȳ<sub>max</sub> − ȳ<sub>min</sub>)/se</span>.</p>
+    <p><strong>Protects:</strong> all <span class="m">a(a−1)/2</span> pairwise comparisons, exactly.</p>
+    <p><strong>Use when</strong> you want all pairs. Highest power for that job — the default choice.</p>
+  </div>
+  <div class="panel eps-p">
+    <h5>Scheffé</h5>
+    <p><span class="big-num">√<span class="rad">(a−1)F</span></span></p>
+    <p>Threshold <span class="m">S = √<span class="rad">(a−1) F<sub>α,a−1,N−a</sub></span></span>.</p>
+    <p><strong>Protects:</strong> <em>every possible</em> contrast, including ones you invented after seeing the data.</p>
+    <p><strong>Use when</strong> you went looking. Broadest protection, lowest power.</p>
+  </div>
+</div>
+
+<div class="note why"><span class="lbl">Why Tukey beats Bonferroni for pairwise work</span><p>Bonferroni treats the <span class="m">m</span> comparisons as unrelated and pays full price for each. Tukey knows something Bonferroni doesn't: <strong>if the largest gap between any two means is not significant, no other gap can be either.</strong> So it only needs to control the distribution of that single largest range, rather than bounding all <span class="m">m</span> tests separately. Modelling the actual worst case instead of assuming the worst possible case is what buys back the power.</p></div>
+
+<h3>All four thresholds on one scale</h3>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img" aria-label="A single axis of absolute T values showing thresholds at 2.028 uncorrected, 2.693 Tukey, 2.792 Bonferroni and 2.932 Scheffe, with the observed statistic 3.803 beyond all of them">
+  <line x1="60" y1="150" x2="680" y2="150" stroke="currentColor" stroke-width="1.5"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="60" y="172">1.8</text><text x="215" y="172">2.4</text><text x="370" y="172">3.0</text>
+    <text x="525" y="172">3.6</text><text x="680" y="172">4.2</text>
+    <text x="370" y="196">critical value on the |T| scale, df = 36</text>
+  </g>
+
+  <line x1="118.8" y1="150" x2="118.8" y2="98" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="118.8" y="90" font-size="11.5" fill="currentColor" text-anchor="middle" font-weight="700">2.028</text>
+  <text x="118.8" y="76" font-size="10.5" fill="currentColor" text-anchor="middle">no correction</text>
+
+  <line x1="290.6" y1="150" x2="290.6" y2="60" stroke="var(--tau)" stroke-width="2.5"/>
+  <text x="290.6" y="52" font-size="12" fill="var(--tau)" text-anchor="middle" font-weight="700">2.693</text>
+  <text x="290.6" y="38" font-size="10.5" fill="var(--tau)" text-anchor="middle">Tukey</text>
+
+  <line x1="316.1" y1="150" x2="316.1" y2="110" stroke="var(--mu)" stroke-width="1.8"/>
+  <text x="330" y="104" font-size="11.5" fill="var(--mu)" text-anchor="start" font-weight="700">2.792 Bonferroni</text>
+
+  <line x1="352.4" y1="150" x2="352.4" y2="126" stroke="var(--eps)" stroke-width="1.8"/>
+  <text x="366" y="140" font-size="11.5" fill="var(--eps)" text-anchor="start" font-weight="700">2.932 Scheffé</text>
+
+  <line x1="577.4" y1="150" x2="577.4" y2="212" stroke="var(--tau)" stroke-width="3"/>
+  <circle cx="577.4" cy="150" r="5" fill="var(--tau)"/>
+  <text x="577.4" y="228" font-size="12" fill="var(--tau)" text-anchor="middle" font-weight="700">observed |T₀| = 3.803</text>
+  <text x="577.4" y="243" font-size="10.5" fill="var(--tau)" text-anchor="middle">0 g vs 5 g — survives every correction</text>
+</svg>
+<figcaption><b>Tukey is the least conservative of the three corrections for pairwise work</b> — its threshold sits below both Bonferroni and Scheffé, so it will detect real differences the other two miss, while still holding the family-wise error rate at exactly 5%. The control-versus-5 g result clears all four bars, so it is safe under any correction you choose.</figcaption>
+</figure>
+
+<h3>Tukey's decision rule</h3>
+
+<span class="eq tau-eq">
+|ȳ<sub>i·</sub> − ȳ<sub>j·</sub>| &gt; q<sub>α, a, N−a</sub> √<span class="rad"><span class="frac"><span>MS<sub>E</sub></span><span>n</span></span></span>
+&nbsp;&nbsp;&nbsp;<span style="color:var(--ink-3);font-size:.85em">the right-hand side is the HSD</span>
+</span>
+
+<p>For the trout: <span class="m">q<sub>0.05,4,36</sub> = 3.8088</span> and <span class="m">√<span class="rad">1.5686/10</span> = 0.3961</span>, so</p>
+
+<span class="eq tau-eq">HSD = 3.8088 × 0.3961 = <strong>1.5085</strong></span>
+
+<p>Any two group means differing by more than 1.51 g/100 ml are significantly different.</p>
+
+<div class="tablewrap">
+<table>
+  <caption>TukeyHSD(model) — 95% family-wise confidence level</caption>
+  <thead><tr><th>Comparison</th><th class="num">Difference</th><th class="num">Lower</th><th class="num">Upper</th><th class="num">Adjusted p</th><th></th></tr></thead>
+  <tbody>
+    <tr><td>S05 − S00</td><td class="num">2.13</td><td class="num">0.621</td><td class="num">3.639</td><td class="num">0.00287</td><td class="hit">significant</td></tr>
+    <tr><td>S10 − S00</td><td class="num">1.83</td><td class="num">0.321</td><td class="num">3.339</td><td class="num">0.01223</td><td class="hit">significant</td></tr>
+    <tr><td>S15 − S00</td><td class="num">1.49</td><td class="num">−0.019</td><td class="num">2.999</td><td class="num">0.05392</td><td class="miss">just misses</td></tr>
+    <tr><td>S10 − S05</td><td class="num">−0.30</td><td class="num">−1.809</td><td class="num">1.209</td><td class="num">0.94978</td><td class="miss">no</td></tr>
+    <tr><td>S15 − S05</td><td class="num">−0.64</td><td class="num">−2.149</td><td class="num">0.869</td><td class="num">0.66602</td><td class="miss">no</td></tr>
+    <tr><td>S15 − S10</td><td class="num">−0.34</td><td class="num">−1.849</td><td class="num">1.169</td><td class="num">0.92919</td><td class="miss">no</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Reading the table:</strong> every significant comparison involves the control. No two treated groups differ from one another. The scientific conclusion is that sulfamerazine raises haemoglobin, but the dose does not matter within the range tested. Note S15 − S00 at p = 0.0539 — a difference of 1.49 against an HSD of 1.5085, missing by 0.02. Do not report that as "no effect"; report it as inconclusive and note the borderline.</p>
+
+<div class="note trap"><span class="lbl">Trap</span><p>Each Tukey interval is a <em>simultaneous</em> interval — all six together have 95% coverage, which is why they are wider than six separate 95% intervals would be. Do not compare a Tukey interval against an ordinary t-interval and conclude R made an error.</p></div>
+
+<h4>Unbalanced data</h4>
+
+<p>When <span class="m">n<sub>i</sub> ≠ n<sub>j</sub></span>, R silently switches to the <strong>Tukey–Kramer</strong> adjustment, replacing <span class="m">√<span class="rad">MS<sub>E</sub>/n</span></span> with <span class="m">√<span class="rad">(MS<sub>E</sub>/2)(1/n<sub>i</sub> + 1/n<sub>j</sub>)</span></span>. Each pair then gets its own margin. Nothing needs changing in your code — but know it happened.</p>
+
+<h2 class="sec" id="l4-7"><span class="tag">Lecture 4 · 7</span>The R practicum, end to end</h2>
+
+<pre><code><span class="cmt"># ---- 0. Always first ----------------------------------------</span>
+<span class="fn">options</span>(contrasts = <span class="fn">c</span>(<span style="color:var(--tau)">"contr.sum"</span>, <span style="color:var(--tau)">"contr.poly"</span>))
+
+<span class="cmt"># ---- 1. Load. European CSV: ";" separator, "," decimal ------</span>
+Trout <- <span class="fn">read.csv2</span>(<span style="color:var(--tau)">"Data/Trout-1.csv"</span>)
+Trout$Sulfamerazine <- <span class="fn">as.factor</span>(Trout$Sulfamerazine)   <span class="cmt"># the factor trap</span>
+<span class="fn">str</span>(Trout); <span class="fn">table</span>(Trout$Sulfamerazine)                   <span class="cmt"># 10 per level — balanced</span>
+
+<span class="cmt"># ---- 2. Look before you model -------------------------------</span>
+<span class="fn">boxplot</span>(Hemo ~ Sulfamerazine, data = Trout)
+<span class="fn">tapply</span>(Trout$Hemo, Trout$Sulfamerazine, mean)   <span class="out">7.20  9.33  9.03  8.69</span>
+
+<span class="cmt"># ---- 3. Fit and check assumptions ---------------------------</span>
+model <- <span class="fn">aov</span>(Hemo ~ Sulfamerazine, data = Trout)
+<span class="fn">par</span>(mfrow = <span class="fn">c</span>(1, 2)); <span class="fn">plot</span>(model, which = 1:2)
+<span class="fn">shapiro.test</span>(<span class="fn">residuals</span>(model))                          <span class="out">p = 0.787  ok</span>
+<span class="fn">bartlett.test</span>(Hemo ~ Sulfamerazine, data = Trout)      <span class="out">p = 0.298  ok</span>
+
+<span class="cmt"># ---- 4. The gate: omnibus F ---------------------------------</span>
+<span class="fn">summary</span>(model)                       <span class="out">F = 5.696 on 3 and 36 df,  p = 0.00268</span>
+<span class="fn">qf</span>(0.95, 3, 36)                      <span class="out">2.866 — observed F clears it, so continue</span>
+
+<span class="cmt"># ---- 5a. Planned orthogonal contrasts -----------------------</span>
+c1 <- <span class="fn">c</span>(1, -1, 0, 0); c2 <- <span class="fn">c</span>(0, 0, 1, -1); c3 <- <span class="fn">c</span>(1, 1, -1, -1)
+<span class="fn">contrasts</span>(Trout$Sulfamerazine) <- <span class="fn">cbind</span>(c1, c2, c3)
+model2 <- <span class="fn">aov</span>(Hemo ~ Sulfamerazine, data = Trout)
+<span class="fn">summary</span>(model2, split = <span class="fn">list</span>(Sulfamerazine = <span class="fn">list</span>(
+  <span style="color:var(--tau)">"0g vs 5g"</span> = 1, <span style="color:var(--tau)">"10g vs 15g"</span> = 2, <span style="color:var(--tau)">"Low vs High"</span> = 3)))
+<span class="out">#   0g vs 5g     SS 22.68   F 14.461   p 0.000534
+#   10g vs 15g   SS  0.58   F  0.368   p 0.5476
+#   Low vs High  SS  3.54   F  2.257   p 0.1417
+#   -> 22.68 + 0.58 + 3.54 = 26.80 = SS_Tr, exactly</span>
+
+<span class="cmt"># ---- 5b. All pairwise: Tukey --------------------------------</span>
+<span class="fn">TukeyHSD</span>(model)
+<span class="fn">plot</span>(<span class="fn">TukeyHSD</span>(model), las = 1)    <span class="cmt"># interval crossing 0 = not significant</span>
+
+<span class="cmt"># ---- 6. Critical values by hand -----------------------------</span>
+<span class="fn">qt</span>(0.975, 36)                       <span class="out">2.0281  uncorrected</span>
+<span class="fn">qtukey</span>(0.95, 4, 36)                 <span class="out">3.8088  Tukey q</span>
+<span class="fn">qt</span>(1 - 0.05/12, 36)                 <span class="out">2.7920  Bonferroni, m = 6, two-sided</span>
+<span class="fn">sqrt</span>(3 * <span class="fn">qf</span>(0.95, 3, 36))          <span class="out">2.9324  Scheffé</span></code></pre>
+
+<p>The lecture also demonstrates <code>emmeans</code>, which gives the same answers through a more modern interface — <code>emmeans(model, "Sulfamerazine")</code>, then <code>contrast()</code> for custom coefficients and <code>pairs(emm, adjust = "tukey")</code> for all pairs. It requires installing the package; everything above is base R.</p>
+
+<!-- ============================================================ SHEET -->
+<h2 class="sec" id="sheet">Formula sheet</h2>
+
+<h4>Notation</h4>
+<div class="tablewrap">
+<table>
+  <tbody>
+    <tr><td><span class="m">a</span></td><td>number of groups</td><td><span class="m">ȳ<sub>i·</sub></span></td><td>mean of group <span class="m">i</span></td></tr>
+    <tr><td><span class="m">n</span></td><td>replicates per group (balanced)</td><td><span class="m">ȳ<sub>··</sub></span></td><td>grand mean</td></tr>
+    <tr><td><span class="m">N = an</span></td><td>total observations</td><td><span class="m">y<sub>it</sub></span></td><td>observation <span class="m">t</span> in group <span class="m">i</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>The model</h4>
+<span class="eq">
+y<sub>it</sub> = <span class="mu">μ</span> + <span class="tau">τ<sub>i</sub></span> + <span class="eps">ε<sub>it</sub></span>,&nbsp;&nbsp; Σ<span class="tau">τ<sub>i</sub></span> = 0,&nbsp;&nbsp; <span class="eps">ε<sub>it</sub></span> ~ iid N(0, <span class="eps">σ²</span>)
+<br>
+<span class="mu">μ̂</span> = ȳ<sub>··</sub> &nbsp;·&nbsp; <span class="tau">τ̂<sub>i</sub></span> = ȳ<sub>i·</sub> − ȳ<sub>··</sub> &nbsp;·&nbsp; ȳ<sub>i·</sub> ~ N(μ<sub>i</sub>, <span class="eps">σ²</span>/n)
+</span>
+
+<h4>ANOVA table</h4>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th></tr></thead>
+  <tbody>
+    <tr><td>Treatment</td><td><span class="m">n Σ<sub>i</sub>(ȳ<sub>i·</sub> − ȳ<sub>··</sub>)²</span></td><td><span class="m">a − 1</span></td><td><span class="m">SS<sub>Tr</sub>/(a−1)</span></td><td><span class="m">MS<sub>Tr</sub>/MS<sub>E</sub></span></td></tr>
+    <tr><td>Error</td><td><span class="m">Σ<sub>i,t</sub>(y<sub>it</sub> − ȳ<sub>i·</sub>)²</span></td><td><span class="m">N − a</span></td><td><span class="m">MS<sub>E</sub> = σ̂²</span></td><td></td></tr>
+    <tr class="total"><td>Total</td><td><span class="m">Σ<sub>i,t</sub>(y<sub>it</sub> − ȳ<sub>··</sub>)²</span></td><td><span class="m">N − 1</span></td><td></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+<p>Reject <span class="m">H₀: τ₁ = ⋯ = τ<sub>a</sub> = 0</span> when <span class="m">F &gt; F<sub>α, a−1, N−a</sub></span>. Upper tail only.</p>
+
+<h4>Inference — all with df = N − a</h4>
+<span class="eq">
+T = <span class="frac"><span>estimate − hypothesised</span><span>se(estimate)</span></span>
+&nbsp;&nbsp;·&nbsp;&nbsp;
+CI = estimate ± t<sub>α/2, N−a</sub> · se
+</span>
+<p>Standard errors: <span class="m">μ<sub>i</sub>: √<span class="rad">MS<sub>E</sub>/n</span></span> &nbsp;·&nbsp; <span class="m">μ: √<span class="rad">MS<sub>E</sub>/N</span></span> &nbsp;·&nbsp; <span class="m">μ<sub>i</sub>−μ<sub>j</sub>: √<span class="rad">MS<sub>E</sub>(1/n<sub>i</sub>+1/n<sub>j</sub>)</span></span> &nbsp;·&nbsp; <span class="m">Γ: √<span class="rad">(MS<sub>E</sub>/n)Σc<sub>i</sub>²</span></span></p>
+
+<span class="eq eps-eq">
+CI for <span class="eps">σ²</span> = [ SS<sub>E</sub>/χ²<sub>1−α/2, df<sub>E</sub></sub> , SS<sub>E</sub>/χ²<sub>α/2, df<sub>E</sub></sub> ]
+</span>
+
+<h4>Contrasts</h4>
+<span class="eq tau-eq">
+Γ = Σc<sub>i</sub>μ<sub>i</sub> with Σc<sub>i</sub> = 0 &nbsp;⟹&nbsp; Γ = Σc<sub>i</sub>τ<sub>i</sub>
+<br>
+T₀ = Γ̂/se(Γ̂) &nbsp;·&nbsp; SS<sub>C</sub> = (Σc<sub>i</sub>ȳ<sub>i·</sub>)² ⁄ (Σc<sub>i</sub>²/n) &nbsp;·&nbsp; df<sub>C</sub> = 1 &nbsp;·&nbsp; F₀ = SS<sub>C</sub>/MS<sub>E</sub> = T₀²
+</span>
+<p>Orthogonal when <span class="m">Σc<sub>1i</sub>c<sub>2i</sub> = 0</span>. Exactly <span class="m">a−1</span> exist, and then <span class="m">SS<sub>Tr</sub> = Σ<sub>j</sub>SS<sub>C<sub>j</sub></sub></span>. Rescaling a contrast changes <span class="m">Γ̂</span> and <span class="m">se</span> but never <span class="m">T₀</span>, <span class="m">p</span>, or <span class="m">SS<sub>C</sub></span>.</p>
+
+<h4>Multiple testing</h4>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Method</th><th>Threshold</th><th>Use for</th><th class="num">Trout value</th></tr></thead>
+  <tbody>
+    <tr><td>None</td><td><span class="m">|T| &gt; t<sub>α/2, N−a</sub></span></td><td>a single planned comparison</td><td class="num">2.028</td></tr>
+    <tr><td>Tukey HSD</td><td><span class="m">|ȳ<sub>i</sub>−ȳ<sub>j</sub>| &gt; q<sub>α,a,N−a</sub>√<span class="rad">MS<sub>E</sub>/n</span></span></td><td>all pairwise</td><td class="num">2.693</td></tr>
+    <tr><td>Bonferroni</td><td>test each at <span class="m">α/m</span></td><td>few, pre-planned</td><td class="num">2.792</td></tr>
+    <tr><td>Scheffé</td><td><span class="m">|T₀| &gt; √<span class="rad">(a−1)F<sub>α,a−1,N−a</sub></span></span></td><td>contrasts chosen after seeing data</td><td class="num">2.932</td></tr>
+  </tbody>
+</table>
+</div>
+<p><span class="m">m = a(a−1)/2</span> &nbsp;·&nbsp; <span class="m">FWER = 1 − (1−α)<sup>m</sup></span> (independence approximation).</p>
+
+<h4>Reference numbers</h4>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Piglets · a=3, n=2, N=6</th><th>Trout · a=4, n=10, N=40</th></tr></thead>
+  <tbody>
+    <tr><td><span class="m">SS<sub>T</sub>=22, SS<sub>Tr</sub>=4, SS<sub>E</sub>=18</span></td><td><span class="m">SS<sub>T</sub>=83.27, SS<sub>Tr</sub>=26.80, SS<sub>E</sub>=56.47</span></td></tr>
+    <tr><td><span class="m">MS<sub>E</sub>=6, F=0.333, p=0.740</span></td><td><span class="m">MS<sub>E</sub>=1.5686, F=5.696, p=0.00268</span></td></tr>
+    <tr><td><span class="m">t<sub>0.025,3</sub>=3.182, F<sub>0.05,2,3</sub>=9.552</span></td><td><span class="m">t<sub>0.025,36</sub>=2.028, F<sub>0.05,3,36</sub>=2.866</span></td></tr>
+    <tr><td><span class="m">χ²<sub>0.975,3</sub>=9.348, χ²<sub>0.025,3</sub>=0.216</span></td><td><span class="m">q<sub>0.05,4,36</sub>=3.809, HSD=1.509</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ COOKBOOK -->
+<h2 class="sec" id="cookbook">R cookbook</h2>
+
+<div class="tablewrap">
+<table>
+  <caption>Distribution functions — prefix × suffix</caption>
+  <thead><tr><th>Prefix</th><th>Returns</th><th>Use for</th></tr></thead>
+  <tbody>
+    <tr><td><code>d</code></td><td>density — the <em>height</em> of the curve</td><td>drawing curves, almost never for inference</td></tr>
+    <tr><td><code>p</code></td><td>cumulative probability — area to the <em>left</em></td><td>p-values (add <code>lower.tail = FALSE</code> for the right tail)</td></tr>
+    <tr><td><code>q</code></td><td>quantile — the inverse of <code>p</code></td><td>critical values</td></tr>
+    <tr><td><code>r</code></td><td>random draws</td><td>simulation</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Suffixes: <code>norm</code>, <code>t</code>, <code>chisq</code>, <code>f</code>, <code>tukey</code>. Note the exception — <code>ptukey</code>/<code>qtukey</code> take <span class="m">(nmeans, df)</span>, not a single df.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Task</th><th>Code</th></tr></thead>
+  <tbody>
+    <tr><td>Read a European CSV</td><td><code>read.csv2("file.csv")</code></td></tr>
+    <tr><td>Make the grouping a factor</td><td><code>d$g &lt;- as.factor(d$g)</code></td></tr>
+    <tr><td>Sum-to-zero coding</td><td><code>options(contrasts = c("contr.sum","contr.poly"))</code></td></tr>
+    <tr><td>Fit</td><td><code>m &lt;- aov(y ~ g, data = d)</code> or <code>lm(...)</code></td></tr>
+    <tr><td>ANOVA table</td><td><code>summary(m)</code> · <code>anova(m)</code></td></tr>
+    <tr><td>Pull out MS<sub>E</sub></td><td><code>anova(m)["Residuals","Mean Sq"]</code></td></tr>
+    <tr><td>Group means</td><td><code>tapply(d$y, d$g, mean)</code></td></tr>
+    <tr><td>Diagnostics</td><td><code>plot(m, which = 1:2)</code></td></tr>
+    <tr><td>Normality / equal variance</td><td><code>shapiro.test(residuals(m))</code> · <code>bartlett.test(y ~ g, data = d)</code></td></tr>
+    <tr><td>CI for treatment means</td><td><code>predict(m, newdata, interval = "confidence")</code></td></tr>
+    <tr><td>CI for σ²</td><td><code>SSE / qchisq(c(0.975, 0.025), df_E)</code></td></tr>
+    <tr><td>All pairwise</td><td><code>TukeyHSD(m)</code> · <code>plot(TukeyHSD(m), las = 1)</code></td></tr>
+    <tr><td>Split by contrasts</td><td><code>contrasts(d$g) &lt;- cbind(c1,c2,c3)</code> then <code>summary(m, split = ...)</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ TRAPS -->
+<h2 class="sec" id="traps">The traps, collected</h2>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th class="num">#</th><th>Trap</th><th>What actually happens</th></tr></thead>
+  <tbody>
+    <tr><td class="num">1</td><td>Grouping column left as text or numbers</td><td>R fits a <em>regression</em> on a numeric predictor, or errors on text. Wrong df, no warning. Always <code>as.factor()</code>.</td></tr>
+    <tr><td class="num">2</td><td><code>read.csv</code> instead of <code>read.csv2</code></td><td>European decimal commas parse as text; numeric columns silently become character.</td></tr>
+    <tr><td class="num">3</td><td>Forgetting <code>contr.sum</code></td><td>Coefficients silently mean "difference from the first group" instead of "deviation from grand mean". F and p unaffected, so nothing looks wrong.</td></tr>
+    <tr><td class="num">4</td><td>Pairwise tests before the omnibus F rejects</td><td>Fishing. The FWER is uncontrolled and the result is not defensible.</td></tr>
+    <tr><td class="num">5</td><td>Reading a large p as "no effect"</td><td>It means "no evidence", which with small n usually means low power.</td></tr>
+    <tr><td class="num">6</td><td>Using one group's variance instead of pooled MS<sub>E</sub></td><td>Fewer df, larger critical value, less power — and it contradicts the equal-variance assumption you already made.</td></tr>
+    <tr><td class="num">7</td><td>Swapping the χ² CI bounds</td><td>The <strong>large</strong> quantile gives the <strong>lower</strong> bound, because SS<sub>E</sub> is divided by it.</td></tr>
+    <tr><td class="num">8</td><td>Forgetting the <span class="m">n</span> in <span class="m">SS<sub>Tr</sub></span></td><td>Each squared group deviation counts once per observation. Off by a factor of n.</td></tr>
+    <tr><td class="num">9</td><td>Rounding intermediate values</td><td>Rounding T to 2 decimals before a tail probability can flip a borderline decision. Round last.</td></tr>
+    <tr><td class="num">10</td><td>Checking normality of the raw data</td><td>The assumption is about the <em>errors</em>. Use <code>residuals(m)</code>.</td></tr>
+    <tr><td class="num">11</td><td>R's <code>sd</code> vs variance in <code>dnorm</code>/<code>pnorm</code>/<code>qnorm</code></td><td>These take the standard deviation, not σ². Passing a variance silently gives wrong probabilities.</td></tr>
+    <tr><td class="num">12</td><td>Comparing a Tukey interval to a plain t-interval</td><td>Tukey intervals are simultaneous and therefore wider by design.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ============================================================ ERRATA -->
+<h2 class="sec" id="errata">Where the slides and the data disagree</h2>
+
+<p>Every number in this document was produced by running R against the course CSVs. Five places where the slides state something the code does not reproduce — worth knowing so you are not confused when your own output differs.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Where</th><th>Slide says</th><th>Data gives</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>L4 · ANOVA split</td><td class="miss">11.10 + 12.79 + 2.91</td><td class="hit">22.685 + 0.578 + 3.540</td><td>The slide's components do not correspond to the contrasts defined on the same slide. Both sum to 26.80. <strong>This one changes the interpretation</strong>, so use the R output.</td></tr>
+    <tr><td>L3 · t-test p-value</td><td class="miss">0.6026</td><td class="hit">0.6042</td><td>Slide rounds T to −0.58 before calling <code>pt</code>. Exact T = −0.57735.</td></tr>
+    <tr><td>L3 · CI for σ²</td><td class="miss">[1.9, 81.8]</td><td class="hit">[1.925, 83.412]</td><td>Slide uses <span class="m">χ²<sub>0.025,3</sub> ≈ 0.22</span>; exact is 0.2157953. A printed table legitimately gives ≈81.8.</td></tr>
+    <tr><td>L4 · omnibus p</td><td class="miss">0.00268 and 0.00269</td><td class="hit">0.0026847</td><td>Two different roundings of the same number on different slides.</td></tr>
+    <tr><td>L2 · summary slide</td><td class="miss"><span class="m">y<sub>ij</sub> = μ<sub>i</sub> + τ<sub>ij</sub> + ε<sub>ij</sub></span></td><td class="hit"><span class="m">y<sub>it</sub> = μ + τ<sub>i</sub> + ε<sub>it</sub></span></td><td>Typo on the final summary slide — subscripts on μ and τ are swapped. The correct form is used everywhere else.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note exam"><span class="lbl">On the exam</span><p>If you compute by hand from printed statistical tables, your answers will differ from R in the third decimal. That is expected and fine — state which you used. What is not fine is rounding <em>midway</em> through a calculation, which is what produces the two p-value discrepancies above.</p></div>
+
+</main>
+
+<footer class="footer">
+  <p><strong>STAT210 · Design and Analysis of Experiments · NMBU.</strong> Covers lectures 1–4: probability foundations, completely randomized design and one-way ANOVA, inference in ANOVA, contrasts and post-hoc comparisons. Built from the lecture <code>.Rmd</code> sources; every numeric result re-derived by running R 4.6.1 against the course data in <code>Data/</code>. Lecture 5 introduces random effects and is not covered here.</p>
+</footer>
+
+</div>
